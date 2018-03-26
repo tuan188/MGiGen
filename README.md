@@ -131,3 +131,51 @@ extension User {
     }
 }
 ```
+
+## Create input builder:
+
+Copy json text to clipboard then using command:
+
+```
+$ python ib.py
+```
+
+For example :
+
+Copy view model text to clipboard:
+```
+struct NotificationsViewModel: ViewModelType {
+    struct Input {
+        let trigger: Driver<Void>
+        let reloadTrigger: Driver<Void>
+        let loadmoreTrigger: Driver<Void>
+        let seletionTrigger: Driver<IndexPath>
+    }
+```
+
+then using command:
+```
+$ python ib.py
+
+extension NotificationsViewModel {
+    struct InputBuilder {
+       var trigger: Driver<Void> = Driver.empty()
+       var reloadTrigger: Driver<Void> = Driver.empty()
+       var loadmoreTrigger: Driver<Void> = Driver.empty()
+       var seletionTrigger: Driver<IndexPath> = Driver.empty()
+    }
+}
+
+extension NotificationsViewModel.Input {
+    init(builder: NotificationsViewModel.InputBuilder) {
+        self.init(
+            trigger: builder.trigger,
+            reloadTrigger: builder.reloadTrigger,
+            loadmoreTrigger: builder.loadmoreTrigger,
+            seletionTrigger: builder.seletionTrigger
+        )
+    }
+}
+
+Text has been copied to clipboard.
+```
