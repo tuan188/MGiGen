@@ -17,29 +17,6 @@ def pasteboard_write(output):
         'pbcopy', env={'LANG': 'en_US.UTF-8'}, stdin=subprocess.PIPE)
     process.communicate(output.encode('utf-8'))
 
-data = """
-struct DocumentTypesViewModel: ViewModelType {
-
-    struct Input {
-        let trigger: Driver<Void>
-        let reloadTrigger: Driver<Void>
-        let loadmoreTrigger: Driver<Void>
-        let seletionTrigger: Driver<IndexPath>
-    }
-
-	struct Output {
-        let error: Driver<Error>
-        let loading: Driver<Bool>
-        let refreshing: Driver<Bool>
-        let loadingMore: Driver<Bool>
-        let fetchItems: Driver<Void>
-        let documentTypes: Driver<[DocumentType]>
-        let selectedDocumentType: Driver<Void>
-    }
-
-}
-"""
-
 class Property(object):
 	def __init__(self, name, type_name):
 		super(Property, self).__init__()
