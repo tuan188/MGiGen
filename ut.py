@@ -80,30 +80,8 @@ def create_ut(str):
 	content += "}\n\n"
 	return content
 
-data = """
-struct NotificationsViewModel: ViewModelType {
-    struct Input {
-        let trigger: Driver<Void>
-        let reloadTrigger: Driver<Void>
-        let loadmoreTrigger: Driver<Void>
-        let seletionTrigger: Driver<IndexPath>
-    }
-    
-    struct Output {
-        let error: Driver<Error>
-        let loading: Driver<Bool>
-        let refreshing: Driver<Bool>
-        let loadingMore: Driver<Bool>
-        let fetchItems: Driver<Void>
-        let notifications: Driver<[NotificationInfo]>
-        let selectedNotification: Driver<Void>
-    }
-
-"""
-
-
 try:
-	# data = pasteboard_read()
+	data = pasteboard_read()
 	output = create_ut(data)
 	pasteboard_write(output)
 	print("Text has been copied to clipboard.")
