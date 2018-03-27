@@ -42,16 +42,18 @@ def create_ut(str):
 	input_properties_regex = re.compile("let (\w+): Driver<(\w+)>")
 	input_properties = [Property(p[0], p[1]) for p in input_properties_regex.findall(input_block)]
 	output_block_regex = re.compile("struct Output {([^}]+)")
-	output_block = input_block_regex.search(str).group(1)
+	output_block = output_block_regex.search(str).group(1)
 	output_properties_regex = re.compile("let (\w+): Driver<(\w+)>")
-	output_properties = [Property(p[0], p[1]) for p in input_properties_regex.findall(input_block)]
-	content = "final class {}ViewModelTests: XCTestCase {{\n".format(view_model)
+	output_properties = [Property(p[0], p[1]) for p in output_properties_regex.findall(output_block)]
+	content = "final class {}ViewModelTests: XCTestCase {{\n\n".format(view_model)
 	content += "    var viewModel: {}ViewModel!\n".format(view_model)
 	content += "    var navigator: {}NavigatorMock!\n".format(view_model)
 	content += "    var useCase: {}UseCaseMock!\n".format(view_model)
 	content += "    var disposeBag: DisposeBag!\n\n"
+	content += "    var input: {}ViewModel.Input!\n".format(view_model)
+	content += "    var output: {}ViewModel.Output!\n".format(view_model)
 	for p in input_properties:
-		content += "    var {}: PublishSubject<{}>!\n".format(p.name, p.type_name)
+		content += "    var {} = PublishSubject<{}>()\n".format(p.name, p.type_name)
 	content += "\n"
 	content += "    override func setUp() {\n"
 	content += "        super.setUp()\n"
@@ -77,7 +79,7 @@ def create_ut(str):
 		content += "        // assert\n"
 		content += "        XCTAssert(true)\n"
 		content += "    }\n\n"
-	content += "}\n\n"
+	content += "}\n"
 	return content
 
 try:
