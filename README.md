@@ -132,9 +132,9 @@ extension User {
 }
 ```
 
-## Create input builder:
+## Create input builder from view model:
 
-Copy json text to clipboard then using command:
+Copy view model text to clipboard then using command:
 
 ```
 $ python ib.py
@@ -149,20 +149,24 @@ struct NotificationsViewModel: ViewModelType {
         let trigger: Driver<Void>
         let reloadTrigger: Driver<Void>
         let loadmoreTrigger: Driver<Void>
-        let seletionTrigger: Driver<IndexPath>
+        let selectionTrigger: Driver<IndexPath>
     }
 ```
 
 then using command:
 ```
 $ python ib.py
+Text has been copied to clipboard.
+```
 
+Result
+```
 extension NotificationsViewModel {
     struct InputBuilder {
        var trigger: Driver<Void> = Driver.empty()
        var reloadTrigger: Driver<Void> = Driver.empty()
        var loadmoreTrigger: Driver<Void> = Driver.empty()
-       var seletionTrigger: Driver<IndexPath> = Driver.empty()
+       var selectionTrigger: Driver<IndexPath> = Driver.empty()
     }
 }
 
@@ -172,10 +176,131 @@ extension NotificationsViewModel.Input {
             trigger: builder.trigger,
             reloadTrigger: builder.reloadTrigger,
             loadmoreTrigger: builder.loadmoreTrigger,
-            seletionTrigger: builder.seletionTrigger
+            selectionTrigger: builder.selectionTrigger
         )
     }
 }
+```
 
+## Create unit tests from view model:
+
+Copy view model text to clipboard then using command:
+
+```
+$ python ut.py
+```
+
+For example :
+
+Copy view model text to clipboard:
+```
+struct NotificationsViewModel: ViewModelType {
+    struct Input {
+        let trigger: Driver<Void>
+        let reloadTrigger: Driver<Void>
+        let loadmoreTrigger: Driver<Void>
+        let selectionTrigger: Driver<IndexPath>
+    }
+    
+    struct Output {
+        let error: Driver<Error>
+        let loading: Driver<Bool>
+        let refreshing: Driver<Bool>
+        let loadingMore: Driver<Bool>
+        let fetchItems: Driver<Void>
+        let notifications: Driver<[NotificationInfo]>
+        let selectedNotification: Driver<Void>
+    }
+```
+
+then using command:
+```
+$ python ib.py
 Text has been copied to clipboard.
+```
+
+Result
+```
+final class NotificationsViewModelTests: XCTestCase {
+
+    var viewModel: NotificationsViewModel!
+    var navigator: NotificationsNavigatorMock!
+    var useCase: NotificationsUseCaseMock!
+    var disposeBag: DisposeBag!
+
+    var input: NotificationsViewModel.Input!
+    var output: NotificationsViewModel.Output!
+    var trigger = PublishSubject<Void>()
+    var reloadTrigger = PublishSubject<Void>()
+    var loadmoreTrigger = PublishSubject<Void>()
+    var selectionTrigger = PublishSubject<IndexPath>()
+
+    override func setUp() {
+        super.setUp()
+        navigator = NotificationsNavigatorMock()
+        useCase = NotificationsUseCaseMock()
+        viewModel = NotificationsViewModel(navigator: navigator, useCase: useCase)
+        disposeBag = DisposeBag()
+
+        input = NotificationsViewModel.Input(
+            trigger: trigger.asDriverOnErrorJustComplete(),
+            reloadTrigger: reloadTrigger.asDriverOnErrorJustComplete(),
+            loadmoreTrigger: loadmoreTrigger.asDriverOnErrorJustComplete(),
+            selectionTrigger: selectionTrigger.asDriverOnErrorJustComplete()
+        )
+        output = viewModel.transform(input)
+        output.error.drive().disposed(by: disposeBag)
+        output.loading.drive().disposed(by: disposeBag)
+        output.refreshing.drive().disposed(by: disposeBag)
+        output.loadingMore.drive().disposed(by: disposeBag)
+        output.fetchItems.drive().disposed(by: disposeBag)
+        output.selectedNotification.drive().disposed(by: disposeBag)
+    }
+
+    func test_triggerInvoked_() {
+        // arrange
+
+
+        // act
+
+
+        // assert
+        XCTAssert(true)
+    }
+
+    func test_reloadTriggerInvoked_() {
+        // arrange
+
+
+        // act
+
+
+        // assert
+        XCTAssert(true)
+    }
+
+    func test_loadmoreTriggerInvoked_() {
+        // arrange
+
+
+        // act
+
+
+        // assert
+        XCTAssert(true)
+    }
+
+    func test_selectionTriggerInvoked_() {
+        // arrange
+
+
+        // act
+
+
+        // assert
+        XCTAssert(true)
+    }
+
+}
+
 ```
