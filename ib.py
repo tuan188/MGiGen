@@ -60,7 +60,6 @@ def create_builder(str):
 try:
 	data = pasteboard_read()
 	output = create_builder(data)
-	print(output)
 	pasteboard_write(output)
 	print("Text has been copied to clipboard.")
 except:
