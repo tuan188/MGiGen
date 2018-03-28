@@ -1,7 +1,7 @@
 # coding=utf-8
 # Created by Tuan Truong on 2018-03-26.
 # © 2018 Framgia.
-# v1.0.0
+# v1.0.1
 
 import sys
 import os
@@ -38,7 +38,7 @@ def __get_view_model_name(str):
 def create_builder(str):
 	input_block_regex = re.compile("struct Input {([^}]+)")
 	input_block = input_block_regex.search(str).group(1)
-	properties_regex = re.compile("let (\w+): Driver<(\w+)>")
+	properties_regex = re.compile("let (\w+): Driver<([^>]+)>")
 	properties = [Property(p[0], p[1]) for p in properties_regex.findall(input_block)]
 	view_model = __get_view_model_name(str)
 	content = "\nextension {}ViewModel {{\n".format(view_model)

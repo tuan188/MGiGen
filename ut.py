@@ -1,7 +1,7 @@
 # coding=utf-8
 # Created by Tuan Truong on 2018-03-26.
 # © 2018 Framgia.
-# v1.0.0
+# v1.0.1
 
 import sys
 import os
@@ -39,11 +39,11 @@ def create_ut(str):
 	view_model = __get_view_model_name(str)
 	input_block_regex = re.compile("struct Input {([^}]+)")
 	input_block = input_block_regex.search(str).group(1)
-	input_properties_regex = re.compile("let (\w+): Driver<(\w+)>")
+	input_properties_regex = re.compile("let (\w+): Driver<([^>]+)>")
 	input_properties = [Property(p[0], p[1]) for p in input_properties_regex.findall(input_block)]
 	output_block_regex = re.compile("struct Output {([^}]+)")
 	output_block = output_block_regex.search(str).group(1)
-	output_properties_regex = re.compile("let (\w+): Driver<(\w+)>")
+	output_properties_regex = re.compile("let (\w+): Driver<([^>]+)>")
 	output_properties = [Property(p[0], p[1]) for p in output_properties_regex.findall(output_block)]
 	content = "final class {}ViewModelTests: XCTestCase {{\n\n".format(view_model)
 	content += "    var viewModel: {}ViewModel!\n".format(view_model)
