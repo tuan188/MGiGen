@@ -42,7 +42,7 @@ def create_builder(str):
 	properties = [Property(p[0], p[1]) for p in properties_regex.findall(input_block)]
 	view_model = __get_view_model_name(str)
 	content = "\nextension {}ViewModel {{\n".format(view_model)
-	content += "    struct InputBuilder {\n"
+	content += "    final class InputBuilder: Then {\n"
 	for p in properties:
 		content += "       {}\n".format(p.builder_property())
 	content += "    }\n}\n\n"
