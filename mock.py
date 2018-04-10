@@ -71,7 +71,7 @@ def create_mock(str):
 			return_value = DEFAULT_VALUES[f.return_type]
 		else:
 			return_value = "{}()".format(f.return_type)
-		content += "    var {}_ReturnValue = {}\n\n".format(f.name, return_value)
+		content += "    var {}_ReturnValue: {} = {}\n\n".format(f.name, f.return_type, return_value)
 		content += "    {} {{\n".format(f.origin)
 		content += "        {}_Called = true\n".format(f.name)
 		content += "        return {}_ReturnValue\n".format(f.name)
