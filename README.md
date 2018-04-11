@@ -304,3 +304,65 @@ final class NotificationsViewModelTests: XCTestCase {
 }
 
 ```
+
+## Create mock class from protocol:
+
+Copy protocol text to clipboard then using command:
+
+```
+$ python mock.py
+```
+
+For example :
+
+Copy protocol text to clipboard:
+```
+protocol NotificationsUseCaseType {
+    func getNotifications() -> Observable<PagingInfo<NotificationInfo>>
+    func loadMoreNotifications(page: Int) -> Observable<PagingInfo<NotificationInfo>>
+    func updateReadNotification(id: Int) -> Observable<Void>
+}
+```
+
+then using command:
+```
+$ python mock.py
+Text has been copied to clipboard.
+```
+
+Result
+```
+final class NotificationsUseCaseMock: NotificationsUseCaseType {
+
+// MARK: - getNotifications
+
+    var getNotifications_Called = false
+    var getNotifications_ReturnValue: Observable<PagingInfo<NotificationInfo>> = Observable.empty()
+
+    func getNotifications() -> Observable<PagingInfo<NotificationInfo>> {
+        getNotifications_Called = true
+        return getNotifications_ReturnValue
+    }
+
+// MARK: - loadMoreNotifications
+
+    var loadMoreNotifications_Called = false
+    var loadMoreNotifications_ReturnValue: Observable<PagingInfo<NotificationInfo>> = Observable.empty()
+
+    func loadMoreNotifications(page: Int) -> Observable<PagingInfo<NotificationInfo>> {
+        loadMoreNotifications_Called = true
+        return loadMoreNotifications_ReturnValue
+    }
+
+// MARK: - updateReadNotification
+
+    var updateReadNotification_Called = false
+    var updateReadNotification_ReturnValue: Observable<Void> = Observable.empty()
+
+    func updateReadNotification(id: Int) -> Observable<Void> {
+        updateReadNotification_Called = true
+        return updateReadNotification_ReturnValue
+    }
+
+}
+```
