@@ -57,7 +57,7 @@ def create_mock(str):
 	funcs = [Function(f.group(), f.group(1), f.group(3)) for f in func_regex.finditer(str)]
 	content = "final class {}Mock: {} {{\n\n".format(class_name, protocol_name)
 	for f in funcs:
-		content += "// MARK: - {}\n\n".format(f.name)
+		content += "    // MARK: - {}\n\n".format(f.name)
 		content += "    var {}_Called = false\n".format(f.name)
 		if f.return_type == None:
 			return_value = "()"
