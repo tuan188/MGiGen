@@ -215,7 +215,7 @@ struct NotificationsViewModel: ViewModelType {
 
 then using command:
 ```
-$ python ib.py
+$ python ut.py
 Text has been copied to clipboard.
 ```
 
