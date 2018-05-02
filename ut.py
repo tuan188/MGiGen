@@ -1,7 +1,7 @@
 # coding=utf-8
 # Created by Tuan Truong on 2018-03-26.
 # © 2018 Framgia.
-# v1.0.1
+# v1.0.2
 
 import sys
 import os
@@ -31,7 +31,7 @@ class Property(object):
 
 
 def __get_view_model_name(str):
-	regex = re.compile("struct (.+)ViewModel:")
+	regex = re.compile("(?:struct|extension) (\w+)ViewModel")
 	mo = regex.search(str)
 	return mo.group(1)
 
@@ -46,12 +46,12 @@ def create_ut(str):
 	output_properties_regex = re.compile("let (\w+): Driver<([^>]+)>")
 	output_properties = [Property(p[0], p[1]) for p in output_properties_regex.findall(output_block)]
 	content = "final class {}ViewModelTests: XCTestCase {{\n\n".format(view_model)
-	content += "    var viewModel: {}ViewModel!\n".format(view_model)
-	content += "    var navigator: {}NavigatorMock!\n".format(view_model)
-	content += "    var useCase: {}UseCaseMock!\n".format(view_model)
-	content += "    var disposeBag: DisposeBag!\n\n"
-	content += "    var input: {}ViewModel.Input!\n".format(view_model)
-	content += "    var output: {}ViewModel.Output!\n".format(view_model)
+	content += "    private var viewModel: {}ViewModel!\n".format(view_model)
+	content += "    private var navigator: {}NavigatorMock!\n".format(view_model)
+	content += "    private var useCase: {}UseCaseMock!\n".format(view_model)
+	content += "    private var disposeBag: DisposeBag!\n\n"
+	content += "    private var input: {}ViewModel.Input!\n".format(view_model)
+	content += "    private var output: {}ViewModel.Output!\n".format(view_model)
 	for p in input_properties:
 		content += "    var {} = PublishSubject<{}>()\n".format(p.name, p.type_name)
 	content += "\n"

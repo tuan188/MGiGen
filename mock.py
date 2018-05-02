@@ -1,7 +1,7 @@
 # coding=utf-8
 # Created by Tuan Truong on 2018-04-10.
 # © 2018 Framgia.
-# v1.0.0
+# v1.0.1
 
 import sys
 import os
