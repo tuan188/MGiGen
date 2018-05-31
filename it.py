@@ -9,6 +9,7 @@ from datetime import datetime
 import subprocess
 import re
 from collections import OrderedDict
+import json
 
 #=================== Helpers ===================
 
@@ -85,6 +86,15 @@ class Template(object):
 		BASE = "-base"
 		LIST = "-list"
 		DETAIL = "-detail"
+
+	def _parse_model(self, model_text):
+		model_regex = re.compile("(?:struct|class) (\w+) {((.|\n)*)}")
+		match = model_regex.search(model_text)
+		model_name = match.group(1)
+		property_block = match.group(2)
+		property_regex = re.compile("(?:let|var) (\w+): (.*)")
+		properties = [Template.Property(p.group()) for p in property_regex.finditer(property_block)]
+		return Template.Model(model_name, properties)
 
 	class BaseTemplate(object):
 		def __init__(self, name, project, developer, company, date):
@@ -311,11 +321,6 @@ class Template(object):
 			self._create_table_view_cell_tests()
 			print(" ")
 
-		def _create_file(self, file_path, file_name, content):
-			with open(file_path, "w") as f:
-				f.write(content)
-				print("        new file:   {}".format(file_path))
-
 		def _create_view_model(self):
 			class_name = self.name + "ViewModel"
 			content = self._file_header(class_name)
@@ -358,7 +363,7 @@ class Template(object):
 			content += "                return {}List[indexPath.row]\n".format(self.model_variable)
 			content += "            }\n"
 			content += "            .do(onNext: {{ {} in\n".format(self.model_variable)
-			content += "                self.navigator.to{}Detail({}: {})".format(self.model_name, self.model_variable, self.model_variable)
+			content += "                self.navigator.to{}Detail({}: {})\n".format(self.model_name, self.model_variable, self.model_variable)
 			content += "            })\n"
 			content += "            .mapToVoid()\n\n"
 			content += "        let isEmptyData = Driver.combineLatest({}List, loading)\n".format(self.model_variable)
@@ -829,6 +834,182 @@ class Template(object):
 			file_path = "{}/Test/{}.swift".format(self.name, class_name)
 			self._create_file(file_path, file_name, content)
 
+#=================== JSON ===================
+
+
+class JSON(object):
+	JSON_TO_SWIFT_TYPES = { 
+		"int": "Int",
+		"bool": "Bool",
+		"unicode": "String",
+		"float": "Double",
+		"NoneType": "Any?"
+	}
+
+	SWIFT_TYPES_DEFAULT_VALUES = {
+		"Int": "0",
+		"Bool": "false",
+		"String": '""',
+		"Double": "0.0",
+		"Date": "Date()"
+	}
+
+	SWIFT_TYPES = { "Int", "Bool", "String", "Double", "Date", "Any" }
+
+	DATE_REGEX = r"(\d{4})[-/](\d{2})[-/](\d{2})"
+
+	class Property(object):
+		def __init__(self, raw_name, name, type_name):
+			self.raw_name = raw_name
+			self.name = name
+			self.type_name = type_name
+
+		def is_user_type(self):
+			return self.type_name.endswith("?") and self.original_type_name() not in JSON.SWIFT_TYPES
+
+		def is_array(self):
+			return self.type_name.startswith("[")
+
+		def original_type_name(self):
+			return ''.join(c for c in self.type_name if c not in '?[]')
+
+	class Model(object):
+		def __init__(self, name, properties):
+			self.name = name
+			self.properties = properties
+
+		def model(self):
+			content = "struct {} {{\n".format(self.name)
+			for p in self.properties:
+				content += "    let {}: {}\n".format(p.name, p.type_name)
+			content += "}\n\n"
+			return content
+
+		def builder(self):
+			content = "final class {}Builder: Then {{\n".format(self.name)
+			for p in self.properties:
+				if p.type_name.endswith("?"):
+					if p.original_type_name() in JSON.SWIFT_TYPES:
+						content += "    var {}: {}\n".format(p.name, p.type_name)
+					else:
+						if not p.is_array():
+							content += "    var {}: {}Builder?\n".format(p.name, p.original_type_name())
+						else:
+							content += "    var {}: [{}Builder]?\n".format(p.name, p.original_type_name())
+				else:
+					if p.type_name in JSON.SWIFT_TYPES_DEFAULT_VALUES:
+						default_value = JSON.SWIFT_TYPES_DEFAULT_VALUES[p.type_name]
+					else:
+						default_value = "{}()".format(p.type_name)
+					content += "    var {}: {} = {}\n".format(p.name, p.type_name, default_value)
+			
+			content += "\n"
+			content += "    init() {\n\n    }\n\n"
+			lower_name = camel_case(self.name)
+			content += "    init({}: {}) {{\n".format(lower_name, self.name)
+			for p in self.properties:
+				if not p.is_user_type():
+					content += "        {} = {}.{}\n".format(p.name, lower_name, p.name)
+				else:
+					if not p.is_array():	
+						content += "        {} = {}.{}.map {{ {}Builder({}: $0) }}\n".format(
+							p.name, lower_name, p.name, p.original_type_name(), to_camel(p.name)) 
+					else:
+						content += "        {} = {}.{}.map {{ $0.map {{ {}Builder({}: $0) }} }}\n".format(
+							p.name, lower_name, p.name, p.original_type_name(), plural_to_singular(to_camel(p.name))) 
+			content += "    }\n}\n\n"
+			# ObjectMapper
+			content += "extension {}Builder: Mappable {{\n".format(self.name)
+			content += "    convenience init?(map: Map) {\n        self.init()\n    }\n\n"
+			content += "    func mapping(map: Map) {\n"
+			for p in self.properties:
+				if not p.original_type_name() == "Date":
+					content += '        {} <- map["{}"]\n'.format(p.name, p.raw_name)
+				else:
+					content += '        {} <- (map["{}"], DateTransform())\n'.format(p.name, p.raw_name)
+			content += "    }\n}\n\n"
+			# Init
+			content += "extension {} {{\n".format(self.name)
+			content += "    init(builder: {}Builder) {{\n".format(self.name)
+			content += "        self.init(\n"
+			args = []
+			for p in self.properties:
+				if not p.is_user_type():
+					arg = "            {}: builder.{}".format(p.name, p.name)
+				elif p.is_array():
+					arg = "            {}: builder.{}.map {{ $0.map {{ {}(builder: $0) }} }}".format(
+						p.name, p.name, p.original_type_name())
+				else:
+					arg = "            {}: builder.{}.map {{ {}(builder: $0) }}".format(
+						p.name, p.name, p.original_type_name())
+				args.append(arg)
+			content += ",\n".join(args)
+			content += "\n        )\n    }\n\n"
+			content += "    init() {\n"
+			content += "        self.init(builder: {}Builder())\n".format(self.name)
+			content += "    }\n}\n\n"
+			return content
+
+		def __str__(self):
+			return "".join([self.model(), self.builder()])
+
+	def __init__(self, model_name, json_text):
+		self.model_name = model_name
+		self.json_text = json_text
+
+	def create_files(self):
+		try:
+			dictionary = json.loads(self.json_text, object_pairs_hook=OrderedDict)
+			models = []
+			self.extract_model(self.model_name, dictionary, models)
+			output = "import ObjectMapper\nimport Then\n\n"
+			output += "".join([model.__str__() for model in models])
+			pasteboard_write(output)
+			print("Text has been copied to clipboard.")
+		except:
+			print("Invalid json string in clipboard.")
+
+
+	def extract_model(self, name, dictionary, models):
+		properties = []
+		for key in dictionary.keys():
+			var_name = snake_to_camel(key)
+			value = dictionary[key]
+			type_name = type(value).__name__
+			if type_name == "OrderedDict":
+				var_type = var_name.title() + "?"
+				extract_model(var_name.title(), value, models)
+			elif type_name == "list":
+				singular_var_name = plural_to_singular(var_name)
+				var_type = "[{}]?".format(singular_var_name.title())
+				if len(value) > 0:
+					self.extract_model(singular_var_name.title(), value[0], models)
+				else:
+					var_type = "[Any]?"
+			else:
+				var_type = JSON.JSON_TO_SWIFT_TYPES[type_name]
+				if var_type == "String":
+					if re.match(JSON.DATE_REGEX, value):
+						var_type = "Date"
+				if var_type == "Any?":
+					if var_name.endswith("Url") \
+						or "name" in var_name.lower() \
+						or "email" in var_name.lower() \
+						or var_name.endswith("Key") \
+						or var_name.endswith("Token"):
+						var_type = "String?"
+					elif "time" in var_name.lower() \
+						or "date" in var_name.lower() \
+						or var_name.endswith("At") \
+						or "birthday" in var_name.lower():
+						var_type = "Date?"
+					elif var_name.endswith("Id"):
+						var_type = "Int?"
+			property = JSON.Property(key, var_name, var_type)
+			properties.append(property)
+		model = JSON.Model(name, properties)
+		models.append(model)
+
 
 #=================== Main ===================
 
@@ -892,87 +1073,49 @@ class FileHeaderCommand(object):
 
 
 class TemplateCommmand(object):
-	def __init__(self, args):
+	def __init__(self, template_name, scene_name, options):
 		super(TemplateCommmand, self).__init__()
-		self.args = args
+		self.template_name = template_name
+		self.scene_name = scene_name
+		self.options = options
 
 	def create_files(self):
-		if len(self.args) >= 2:
-			try:
-				with open(FILE_HEADER) as f:
-					content = f.readlines()
-					info = [x.strip() for x in content]
-					project = info[0]
-					developer = info[1]
-					company = info[2]
-			except:
-				project, developer, company = FileHeaderCommand().update_file_header()
-			now = datetime.now()
-			date = "{}/{}/{}".format(now.month, now.day, now.strftime("%y"))
-			template_name = self.args[0]
-			scene_name = self.args[1]
-			options = self.args[2:]
-			if template_name == Template.TemplateType.BASE:
-				template = Template.BaseTemplate(scene_name, project, developer, company, date)
-				template.create_files()
-				print("Finish!")
-			elif template_name == Template.TemplateType.LIST:
-				model_text = pasteboard_read()
-				# try:
-				model = self._parse_model(model_text)
-				template = Template.ListTemplate(model, options, scene_name, project, developer, company, date)
-				template.create_files()
-				print("Finish!")
-				# except:
-				# 	print('Invalid model text in clipboard.')
-			else:
-				print("Invalid params.")
+		try:
+			with open(FILE_HEADER) as f:
+				content = f.readlines()
+				info = [x.strip() for x in content]
+				project = info[0]
+				developer = info[1]
+				company = info[2]
+		except:
+			project, developer, company = FileHeaderCommand().update_file_header()
+		now = datetime.now()
+		date = "{}/{}/{}".format(now.month, now.day, now.strftime("%y"))
+		if self.template_name == Template.TemplateType.BASE:
+			template = Template.BaseTemplate(self.scene_name, project, developer, company, date)
+			template.create_files()
+			print("Finish!")
+		elif self.template_name == Template.TemplateType.LIST:
+			model_text = pasteboard_read()
+			# try:
+			model = Template()._parse_model(model_text)
+			template = Template.ListTemplate(model, self.options, self.scene_name, project, developer, company, date)
+			template.create_files()
+			print("Finish!")
+			# except:
+			# 	print('Invalid model text in clipboard.')
 		else:
-			print("Invalid params.")
-		
-
-	def _parse_model(self, model_text):
-		model_regex = re.compile("(?:struct|class) (\w+) {([^}]+)")
-		match = model_regex.search(model_text)
-		model_name = match.group(1)
-		property_block = match.group(2)
-		property_regex = re.compile("(?:let|var) (\w+): (.*)")
-		properties = [Template.Property(p.group()) for p in property_regex.finditer(property_block)]
-		return Template.Model(model_name, properties)
+			print("Invalid template name.")
 
 
 class JSONCommand(object):
-	def __init__(self, json):
+	def __init__(self, model_name, json_text):
 		super(JSONCommand, self).__init__()
-		self.json = json
+		self.model_name = model_name
+		self.json_text = json_text
 
 	def create_files(self):
-		print(self.json)
-
-
-#=================== JSON ===================
-
-class JSON(object):
-	JSON_TO_SWIFT_TYPES = { 
-		"int": "Int",
-		"bool": "Bool",
-		"unicode": "String",
-		"float": "Double",
-		"NoneType": "Any?"
-	}
-
-	SWIFT_TYPES_DEFAULT_VALUES = {
-		"Int": "0",
-		"Bool": "false",
-		"String": '""',
-		"Double": "0.0",
-		"Date": "Date()"
-	}
-
-	SWIFT_TYPES = { "Int", "Bool", "String", "Double", "Date", "Any" }
-
-	JSON_DATE_REGEX = r"(\d{4})[-/](\d{2})[-/](\d{2})"
-
+		JSON(self.model_name, self.json_text).create_files()
 
 
 #=================== Main ===================
@@ -987,10 +1130,20 @@ def execute(args):
 	elif command == Commmands.HEADER:
 		FileHeaderCommand().update_file_header()
 	elif command == Commmands.TEMPLATE:
-		TemplateCommmand(args[1:]).create_files()
+		if len(args) >= 3:
+			template_name = args[1]
+			scene_name = args[2]
+			options = args[3:]
+			TemplateCommmand(template_name, scene_name, options).create_files()
+		else:
+			print("Invalid params.")
 	elif command == Commmands.JSON:
-		json = pasteboard_read()
-		JSONCommand(json).create_files()
+		if len(args) >= 2:
+			model_name = args[1]
+			json = pasteboard_read()
+			JSONCommand(model_name, json).create_files()
+		else:
+			print("Missing model name.")
 	else:
 		print("'{}' is not a valid command. See 'python it.py help'.".format(command))
 
