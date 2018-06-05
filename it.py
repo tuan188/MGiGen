@@ -123,7 +123,6 @@ class Template(object):
 			self._make_dirs()
 			self._create_view_model()
 			self._create_navigator()
-			self._create_use_case_type()
 			self._create_use_case()
 			self._create_view_controller()
 			self._create_view_model_tests()
@@ -172,18 +171,11 @@ class Template(object):
 			file_path = "{}/{}.swift".format(self.name, class_name)
 			self._create_file(file_path, file_name, content)
 
-		def _create_use_case_type(self):
-			class_name = self.name + "UseCaseType"
-			content = self._file_header(class_name)
-			content += "protocol {0} {{\n\n}}\n\n".format(class_name)
-			file_name = class_name + ".swift"
-			file_path = "{}/{}.swift".format(self.name, class_name)
-			self._create_file(file_path, file_name, content)
-
 		def _create_use_case(self):
 			class_name = self.name + "UseCase"
 			protocol_name = class_name + "Type"
 			content = self._file_header(class_name)
+			content += "protocol {0} {{\n\n}}\n\n".format(protocol_name)
 			content += "struct {}: {} {{\n\n}}\n".format(class_name, protocol_name)
 			file_name = class_name + ".swift"
 			file_path = "{}/{}.swift".format(self.name, class_name)
@@ -310,7 +302,6 @@ class Template(object):
 			self._make_dirs()
 			self._create_view_model()
 			self._create_navigator()
-			self._create_use_case_type()
 			self._create_use_case()
 			self._create_view_controller()
 			self._create_table_view_cell()
@@ -337,9 +328,12 @@ class Template(object):
 			content += "        let refreshing: Driver<Bool>\n"
 			content += "        let loadingMore: Driver<Bool>\n"
 			content += "        let fetchItems: Driver<Void>\n"
-			content += "        let {}List: Driver<[{}]>\n".format(self.model_variable, self.model_name)
+			content += "        let {}List: Driver<[{}Model]>\n".format(self.model_variable, self.model_name)
 			content += "        let selected{}: Driver<Void>\n".format(self.model_name)
 			content += "        let isEmptyData: Driver<Bool>\n"
+			content += "    }\n\n"
+			content += "    struct {}Model {{\n".format(self.model_name)
+			content += "        let {}: {}\n".format(self.model_variable, self.model_name)
 			content += "    }\n\n"
 			content += "    let navigator: {}NavigatorType\n".format(self.name)
 			content += "    let useCase: {}UseCaseType\n\n".format(self.name)
@@ -353,7 +347,7 @@ class Template(object):
 			content += "            loadMoreItems: useCase.loadMore{}List)\n".format(self.model_name)
 			content += "        let (page, fetchItems, loadError, loading, refreshing, loadingMore) = loadMoreOutput\n\n"
 			content += "        let {}List = page\n".format(self.model_variable)
-			content += "            .map { $0.items.map { $0 } }\n"
+			content += "            .map {{ $0.items.map {{ {}Model({}: $0) }} }}\n".format(self.model_name, self.model_variable)
 			content += "            .asDriverOnErrorJustComplete()\n\n"
 			content += "        let selected{} = input.select{}Trigger\n".format(self.model_name, self.model_name)
 			content += "            .withLatestFrom({}List) {{\n".format(self.model_variable)
@@ -363,7 +357,7 @@ class Template(object):
 			content += "                return {}List[indexPath.row]\n".format(self.model_variable)
 			content += "            }\n"
 			content += "            .do(onNext: {{ {} in\n".format(self.model_variable)
-			content += "                self.navigator.to{}Detail({}: {})\n".format(self.model_name, self.model_variable, self.model_variable)
+			content += "                self.navigator.to{}Detail({}: {}.{})\n".format(self.model_name, self.model_variable, self.model_variable, self.model_variable)
 			content += "            })\n"
 			content += "            .mapToVoid()\n\n"
 			content += "        let isEmptyData = Driver.combineLatest({}List, loading)\n".format(self.model_variable)
@@ -385,22 +379,14 @@ class Template(object):
 			file_path = "{}/{}.swift".format(self.name, class_name)
 			self._create_file(file_path, file_name, content)
 
-		def _create_use_case_type(self):
-			class_name = self.name + "UseCaseType"
-			content = self._file_header(class_name)
-			content += "protocol {0} {{\n".format(class_name)
-			content += "    func get{}List() -> Observable<PagingInfo<{}>>\n".format(self.model_name, self.model_name)
-			content += "    func loadMore{}List(page: Int) -> Observable<PagingInfo<{}>>\n".format(self.model_name, self.model_name)
-			content += "}\n\n"
-
-			file_name = class_name + ".swift"
-			file_path = "{}/{}.swift".format(self.name, class_name)
-			self._create_file(file_path, file_name, content)
-
 		def _create_use_case(self):
 			class_name = self.name + "UseCase"
 			protocol_name = class_name + "Type"
 			content = self._file_header(class_name)
+			content += "protocol {0} {{\n".format(protocol_name)
+			content += "    func get{}List() -> Observable<PagingInfo<{}>>\n".format(self.model_name, self.model_name)
+			content += "    func loadMore{}List(page: Int) -> Observable<PagingInfo<{}>>\n".format(self.model_name, self.model_name)
+			content += "}\n\n"
 			content += "struct {}: {} {{\n".format(class_name, protocol_name)
 			content += "    func get{}List() -> Observable<PagingInfo<{}>> {{\n".format(self.model_name, self.model_name)
 			content += "        return loadMore{}List(page: 1)\n".format(self.model_name)
@@ -423,12 +409,11 @@ class Template(object):
 			content += "}\n\n"
 			content += "struct {}: {} {{\n".format(class_name, protocol_name)
 			content += "    unowned let navigationController: UINavigationController\n"
-			content += "    let useCaseProvider: UseCaseProviderType\n\n"
 			content += "    func to{}() {{\n".format(self.name)
-			content += "//        let vc = {}ViewController.instantiate()\n".format(self.name)
-			content += "//        let vm = {}ViewModel(navigator: self, useCase: useCaseProvider.make{}UseCase())\n".format(self.name, self.name)
-			content += "//        vc.bindViewModel(to: vm)\n"
-			content += "//        navigationController.pushViewController(vc, animated: true)\n"
+			content += "        let vc = {}ViewController.instantiate()\n".format(self.name)
+			content += "        let vm = {}ViewModel(navigator: self, useCase: {}UseCase())\n".format(self.name, self.name)
+			content += "        vc.bindViewModel(to: vm)\n"
+			content += "        navigationController.pushViewController(vc, animated: true)\n"
 			content += "    }\n\n"
 			content += "    func to{}Detail({}: {}) {{\n\n".format(self.model_name, self.model_variable, self.model_name)
 			content += "    }\n"
@@ -454,12 +439,7 @@ class Template(object):
 			content += "            $0.estimatedRowHeight = 550\n"
 			content += "            $0.rowHeight = UITableViewAutomaticDimension\n"
 			content += "            $0.register(cellType: {}Cell.self)\n".format(self.model_name)
-			content += "            $0.fixContentInset()\n"
 			content += "        }\n"
-			content += "    }\n\n"
-			content += "    override func viewDidLayoutSubviews() {\n"
-			content += "        super.viewDidLayoutSubviews()\n"
-			content += "        tableView.fixFooterFrame()\n"
 			content += "    }\n\n"
 			content += "    deinit {\n"
 			content += "        logDeinit()\n"
@@ -478,7 +458,7 @@ class Template(object):
 			content += "                    for: IndexPath(row: index, section: 0),\n"
 			content += "                    cellType: {}Cell.self)\n".format(self.model_name)
 			content += "                    .then {\n"
-			content += "                        $0.{} = {}\n".format(self.model_variable, self.model_variable)
+			content += "                        $0.configView(with: product)\n".format(self.model_variable)
 			content += "                    }\n"
 			content += "            }\n"
 			content += "            .disposed(by: rx.disposeBag)\n"
@@ -531,9 +511,16 @@ class Template(object):
 					else:
 						content += "    @IBOutlet weak var {}Label: UILabel!\n".format(p.name)
 			content += "\n"
-			content += "    var {}: {}? {{\n".format(self.model_variable, self.model_name)
-			content += "        didSet {\n"
-			content += "            guard let {} = {} else {{ return }}\n".format(self.model_variable, self.model_variable)
+			content += "    override func awakeFromNib() {\n"
+			content += "        super.awakeFromNib()\n"
+			content += "    }\n\n"
+			content += "    override func prepareForReuse() {\n"
+			content += "        super.prepareForReuse()\n"
+			content += "        configView(with: nil)\n"
+			content += "    }\n\n"
+			content += "    func configView(with model: {}ViewModel.{}Model?) {{\n".format(self.name, self.model_name)
+			content += "        if let model = model {\n\n"
+			content += "        } else {\n"
 			for p in model.properties:
 				if p.name != "id":
 					lowered_name = p.name.lower()
@@ -542,19 +529,6 @@ class Template(object):
 					else:
 						content += '            {}Label.text = ""\n'.format(p.name)
 			content += "        }\n"
-			content += "    }\n\n"
-			content += "    override func awakeFromNib() {\n"
-			content += "        super.awakeFromNib()\n"
-			content += "    }\n\n"
-			content += "    override func prepareForReuse() {\n"
-			content += "        super.prepareForReuse()\n"
-			for p in model.properties:
-				if p.name != "id":
-					lowered_name = p.name.lower()
-					if "image" in lowered_name or "url" in lowered_name:
-						content += "        {}ImageView.image = nil\n".format(p.name)
-					else:
-						content += '        {}Label.text = ""\n'.format(p.name)
 			content += "    }\n"
 			content += "}\n\n"
 			file_name = class_name + ".swift"
@@ -809,11 +783,11 @@ class Template(object):
 			self._create_file(file_path, file_name, content)
 
 		def _create_table_view_cell_tests(self):
-			class_name = self.name + "{}CellTests".format(self.model_name)
+			class_name = "{}CellTests".format(self.model_name)
 			content = self._file_header(class_name)
 			content += "import XCTest\n"
 			content += "@testable import {}\n\n".format(self.project)
-			content += "final class {}CellTests: XCTestCase {{\n".format(self.model_name)
+			content += "final class {}: XCTestCase {{\n".format(class_name)
 			content += "    var cell: {}Cell!\n\n".format(self.model_name)
 			content += "    override func setUp() {\n"
 			content += "        super.setUp()\n"

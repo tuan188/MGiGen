@@ -53,7 +53,7 @@ def create_ut(str):
     content += "    private var input: {}ViewModel.Input!\n".format(view_model)
     content += "    private var output: {}ViewModel.Output!\n".format(view_model)
     for p in input_properties:
-        content += "    private var {} = PublishSubject<{}>()\n".format(p.name, p.type_name)
+        content += "    private let {} = PublishSubject<{}>()\n".format(p.name, p.type_name)
     content += "\n"
     content += "    override func setUp() {\n"
     content += "        super.setUp()\n"
