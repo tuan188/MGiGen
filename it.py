@@ -199,6 +199,7 @@ class Template(object):
 			content += "    }\n\n}\n\n"
 			content += "// MARK: - StoryboardSceneBased\n"
 			content += "extension {}ViewController: StoryboardSceneBased {{\n".format(self.name)
+			content += "    // TODO: - Update storyboard\n"
 			content += "    static var sceneStoryboard = UIStoryboard()\n"
 			content += "}\n"
 			file_name = class_name + ".swift"
@@ -288,14 +289,9 @@ class Template(object):
 			super(Template.ListTemplate, self).__init__(name, project, developer, company, date)
 			self.model = model
 			self.options = options
-
-		@property
-		def model_name(self):
-			return self.model.name
-
-		@property
-		def model_variable(self):
-			return camel_case(self.model_name)	
+			self.is_sectioned_list = "--section" in options
+			self.model_name = self.model.name
+			self.model_variable = camel_case(self.model_name)
 
 		def create_files(self):
 			print(" ")
@@ -328,13 +324,21 @@ class Template(object):
 			content += "        let refreshing: Driver<Bool>\n"
 			content += "        let loadingMore: Driver<Bool>\n"
 			content += "        let fetchItems: Driver<Void>\n"
-			content += "        let {}List: Driver<[{}Model]>\n".format(self.model_variable, self.model_name)
+			if self.is_sectioned_list:
+				content += "        let {}Sections: Driver<[{}Section]>\n".format(self.model_variable, self.model_name)
+			else:
+				content += "        let {}List: Driver<[{}Model]>\n".format(self.model_variable, self.model_name)
 			content += "        let selected{}: Driver<Void>\n".format(self.model_name)
 			content += "        let isEmptyData: Driver<Bool>\n"
 			content += "    }\n\n"
 			content += "    struct {}Model {{\n".format(self.model_name)
 			content += "        let {}: {}\n".format(self.model_variable, self.model_name)
 			content += "    }\n\n"
+			if self.is_sectioned_list:
+				content += "    struct {}Section {{\n".format(self.model_name)
+				content += "        let header: String\n"
+				content += "        let {}List: [{}Model]\n".format(self.model_variable, self.model_name)
+				content += "    }\n\n"
 			content += "    let navigator: {}NavigatorType\n".format(self.name)
 			content += "    let useCase: {}UseCaseType\n\n".format(self.name)
 			content += "    func transform(_ input: Input) -> Output {\n"
@@ -346,21 +350,39 @@ class Template(object):
 			content += "            loadMoreTrigger: input.loadMoreTrigger,\n"
 			content += "            loadMoreItems: useCase.loadMore{}List)\n".format(self.model_name)
 			content += "        let (page, fetchItems, loadError, loading, refreshing, loadingMore) = loadMoreOutput\n\n"
-			content += "        let {}List = page\n".format(self.model_variable)
-			content += "            .map {{ $0.items.map {{ {}Model({}: $0) }} }}\n".format(self.model_name, self.model_variable)
-			content += "            .asDriverOnErrorJustComplete()\n\n"
+			if self.is_sectioned_list:
+				content += "        let {}Sections = page\n".format(self.model_variable)
+				content += "            .map {{ $0.items.map {{ {}Model({}: $0) }} }}\n".format(self.model_name, self.model_variable)
+				content += '            .map {{ [{}Section(header: "Section1", {}List: $0)] }}\n'.format(self.model_name, self.model_variable)
+				content += "            .asDriverOnErrorJustComplete()\n"
+			else:
+				content += "        let {}List = page\n".format(self.model_variable)
+				content += "            .map {{ $0.items.map {{ {}Model({}: $0) }} }}\n".format(self.model_name, self.model_variable)
+				content += "            .asDriverOnErrorJustComplete()\n\n"
 			content += "        let selected{} = input.select{}Trigger\n".format(self.model_name, self.model_name)
-			content += "            .withLatestFrom({}List) {{\n".format(self.model_variable)
-			content += "                return ($0, $1)\n"
-			content += "            }\n"
-			content += "            .map {{ indexPath, {}List in\n".format(self.model_variable)
-			content += "                return {}List[indexPath.row]\n".format(self.model_variable)
-			content += "            }\n"
+			if self.is_sectioned_list:
+				content += "            .withLatestFrom({}Sections) {{\n".format(self.model_variable)
+				content += "                return ($0, $1)\n"
+				content += "            }\n"
+				content += "            .map {{ params -> {}Model in\n".format(self.model_name)
+				content += "                let (indexPath, {}Sections) = params\n".format(self.model_variable)
+				content += "                return {}Sections[indexPath.section].{}List[indexPath.row]\n".format(self.model_variable, self.model_variable)
+				content += "            }\n"
+			else:
+				content += "            .withLatestFrom({}List) {{\n".format(self.model_variable)
+				content += "                return ($0, $1)\n"
+				content += "            }\n"
+				content += "            .map {{ indexPath, {}List in\n".format(self.model_variable)
+				content += "                return {}List[indexPath.row]\n".format(self.model_variable)
+				content += "            }\n"
 			content += "            .do(onNext: {{ {} in\n".format(self.model_variable)
 			content += "                self.navigator.to{}Detail({}: {}.{})\n".format(self.model_name, self.model_variable, self.model_variable, self.model_variable)
 			content += "            })\n"
 			content += "            .mapToVoid()\n\n"
-			content += "        let isEmptyData = Driver.combineLatest({}List, loading)\n".format(self.model_variable)
+			if self.is_sectioned_list:
+				content += "        let isEmptyData = Driver.combineLatest({}Sections, loading)\n".format(self.model_variable)
+			else:
+				content += "        let isEmptyData = Driver.combineLatest({}List, loading)\n".format(self.model_variable)
 			content += "            .filter { !$0.1 }\n"
 			content += "            .map { $0.0.isEmpty }\n\n"
 			content += "        return Output(\n"
@@ -369,7 +391,10 @@ class Template(object):
 			content += "            refreshing: refreshing,\n"
 			content += "            loadingMore: loadingMore,\n"
 			content += "            fetchItems: fetchItems,\n"
-			content += "            {}List: {}List,\n".format(self.model_variable, self.model_variable)
+			if self.is_sectioned_list:
+				content += "            {}Sections: {}Sections,\n".format(self.model_variable, self.model_variable)
+			else:
+				content += "            {}List: {}List,\n".format(self.model_variable, self.model_variable)
 			content += "            selected{}: selected{},\n".format(self.model_name, self.model_name)
 			content += "            isEmptyData: isEmptyData\n"
 			content += "        )\n"
@@ -408,7 +433,7 @@ class Template(object):
 			content += "    func to{}Detail({}: {})\n".format(self.model_name, self.model_variable, self.model_name)
 			content += "}\n\n"
 			content += "struct {}: {} {{\n".format(class_name, protocol_name)
-			content += "    unowned let navigationController: UINavigationController\n"
+			content += "    unowned let navigationController: UINavigationController\n\n"
 			content += "    func to{}() {{\n".format(self.name)
 			content += "        let vc = {}ViewController.instantiate()\n".format(self.name)
 			content += "        let vm = {}ViewModel(navigator: self, useCase: {}UseCase())\n".format(self.name, self.name)
@@ -426,9 +451,14 @@ class Template(object):
 			class_name = self.name + "ViewController"
 			content = self._file_header(class_name)
 			content += "import UIKit\nimport Reusable\n\n"
+			if self.is_sectioned_list:
+				content += "import RxDataSources\n"
 			content += "final class {}: UIViewController, BindableType {{\n".format(class_name)
 			content += "    @IBOutlet weak var tableView: LoadMoreTableView!\n"
 			content += "    var viewModel: {}ViewModel!\n\n".format(self.name)
+			if self.is_sectioned_list:
+				content += "    fileprivate typealias {}SectionModel = SectionModel<String, {}ViewModel.{}Model>\n".format(self.model_name, self.name, self.model_name)
+				content += "    fileprivate var dataSource: RxTableViewSectionedReloadDataSource<{}SectionModel>!\n".format(self.model_name)
 			content += "    override func viewDidLoad() {\n"
 			content += "        super.viewDidLoad()\n"
 			content += "        configView()\n"
@@ -452,16 +482,35 @@ class Template(object):
 			content += "            select{}Trigger: tableView.rx.itemSelected.asDriver()\n".format(self.model_name)
 			content += "        )\n"
 			content += "        let output = viewModel.transform(input)\n"
-			content += "        output.{}List\n".format(self.model_variable)
-			content += "            .drive(tableView.rx.items) {{ tableView, index, {} in\n".format(self.model_variable)
-			content += "                return tableView.dequeueReusableCell(\n"
-			content += "                    for: IndexPath(row: index, section: 0),\n"
-			content += "                    cellType: {}Cell.self)\n".format(self.model_name)
-			content += "                    .then {\n"
-			content += "                        $0.configView(with: product)\n".format(self.model_variable)
-			content += "                    }\n"
-			content += "            }\n"
-			content += "            .disposed(by: rx.disposeBag)\n"
+			if self.is_sectioned_list:
+				content += "        dataSource = RxTableViewSectionedReloadDataSource<{}SectionModel>(\n".format(self.model_name)
+				content += "            configureCell: {{ (_, tableView, indexPath, {}) -> UITableViewCell in\n".format(self.model_variable)
+				content += "                return tableView.dequeueReusableCell(for: indexPath, cellType: {}Cell.self).then {{\n".format(self.model_name)
+				content += "                    $0.configView(with: {})\n".format(self.model_variable)
+				content += "                }\n"
+				content += "            },\n"
+				content += "            titleForHeaderInSection: { dataSource, section in\n"
+				content += "                return dataSource.sectionModels[section].model\n"
+				content += "            })\n"
+				content += "        output.{}Sections\n".format(self.model_variable)
+				content += "            .map {\n"
+				content += "                $0.map { section in\n"
+				content += "                    {}SectionModel(model: section.header, items: section.{}List)\n".format(self.model_name, self.model_variable)
+				content += "                }\n"
+				content += "            }\n"
+				content += "            .drive(tableView.rx.items(dataSource: dataSource))\n"
+				content += "            .disposed(by: rx.disposeBag)\n"
+			else:
+				content += "        output.{}List\n".format(self.model_variable)
+				content += "            .drive(tableView.rx.items) {{ tableView, index, {} in\n".format(self.model_variable)
+				content += "                return tableView.dequeueReusableCell(\n"
+				content += "                    for: IndexPath(row: index, section: 0),\n"
+				content += "                    cellType: {}Cell.self)\n".format(self.model_name)
+				content += "                    .then {\n"
+				content += "                        $0.configView(with: {})\n".format(self.model_variable)
+				content += "                    }\n"
+				content += "            }\n"
+				content += "            .disposed(by: rx.disposeBag)\n"
 			content += "        output.error\n"
 			content += "            .drive(rx.error)\n"
 			content += "            .disposed(by: rx.disposeBag)\n"
@@ -492,6 +541,7 @@ class Template(object):
 			content += "}\n\n"
 			content += "// MARK: - StoryboardSceneBased\n"
 			content += "extension {}ViewController: StoryboardSceneBased {{\n".format(self.name)
+			content += "    // TODO: - Update storyboard\n"
 			content += "    static var sceneStoryboard = UIStoryboard()\n}\n"
 			file_name = class_name + ".swift"
 			file_path = "{}/{}.swift".format(self.name, class_name)
@@ -537,6 +587,7 @@ class Template(object):
 
 		def _create_view_model_tests(self):
 			class_name = self.name + "ViewModelTests"
+			list_name = ("{}Sections" if self.is_sectioned_list else "{}List").format(self.model_variable)
 			content = self._file_header(class_name)
 			content += "@testable import {}\n".format(self.project)
 			content += "import XCTest\nimport RxSwift\nimport RxBlocking\n\n"
@@ -547,10 +598,10 @@ class Template(object):
 			content += "    private var disposeBag: DisposeBag!\n"
 			content += "    private var input: {}ViewModel.Input!\n".format(self.name)
 			content += "    private var output: {}ViewModel.Output!\n".format(self.name)
-			content += "    private var loadTrigger = PublishSubject<Void>()\n"
-			content += "    private var reloadTrigger = PublishSubject<Void>()\n"
-			content += "    private var loadMoreTrigger = PublishSubject<Void>()\n"
-			content += "    private var select{}Trigger = PublishSubject<IndexPath>()\n\n".format(self.model_name)
+			content += "    private let loadTrigger = PublishSubject<Void>()\n"
+			content += "    private let reloadTrigger = PublishSubject<Void>()\n"
+			content += "    private let loadMoreTrigger = PublishSubject<Void>()\n"
+			content += "    private let select{}Trigger = PublishSubject<IndexPath>()\n\n".format(self.model_name)
 			content += "    override func setUp() {\n"
 			content += "        super.setUp()\n"
 			content += "        navigator = {}NavigatorMock()\n".format(self.name)
@@ -569,18 +620,21 @@ class Template(object):
 			content += "        output.refreshing.drive().disposed(by: disposeBag)\n"
 			content += "        output.loadingMore.drive().disposed(by: disposeBag)\n"
 			content += "        output.fetchItems.drive().disposed(by: disposeBag)\n"
-			content += "        output.{}List.drive().disposed(by: disposeBag)\n".format(self.model_variable)
+			content += "        output.{}.drive().disposed(by: disposeBag)\n".format(list_name)
 			content += "        output.selected{}.drive().disposed(by: disposeBag)\n".format(self.model_name)
 			content += "        output.isEmptyData.drive().disposed(by: disposeBag)\n"
 			content += "    }\n\n"
 			content += "    func test_loadTriggerInvoked_get{}List() {{\n".format(self.model_name)
 			content += "        // act\n"
 			content += "        loadTrigger.onNext(())\n"
-			content += "        let {}List = try? output.{}List.toBlocking(timeout: 1).first()\n".format(self.model_variable, self.model_variable)
+			content += "        let {} = try? output.{}.toBlocking(timeout: 1).first()\n".format(list_name, list_name)
 			content += "        \n"
 			content += "        // assert\n"
 			content += "        XCTAssert(useCase.get{}List_Called)\n".format(self.model_name)
-			content += "        XCTAssertEqual({}List??.count, 1)\n".format(self.model_variable)
+			if self.is_sectioned_list:
+				content += "        XCTAssertEqual({}??[0].{}List.count, 1)\n".format(list_name, self.model_variable)
+			else:
+				content += "        XCTAssertEqual({}??.count, 1)\n".format(list_name)
 			content += "    }\n\n"
 			content += "    func test_loadTriggerInvoked_get{}List_failedShowError() {{\n".format(self.model_name)
 			content += "        // arrange\n"
@@ -597,10 +651,13 @@ class Template(object):
 			content += "    func test_reloadTriggerInvoked_get{}List() {{\n".format(self.model_name)
 			content += "        // act\n"
 			content += "        reloadTrigger.onNext(())\n"
-			content += "        let {}List = try? output.{}List.toBlocking(timeout: 1).first()\n\n".format(self.model_variable, self.model_variable)
+			content += "        let {} = try? output.{}.toBlocking(timeout: 1).first()\n\n".format(list_name, list_name)
 			content += "        // assert\n"
 			content += "        XCTAssert(useCase.get{}List_Called)\n".format(self.model_name)
-			content += "        XCTAssertEqual({}List??.count, 1)\n".format(self.model_variable)
+			if self.is_sectioned_list:
+				content += "        XCTAssertEqual({}??[0].{}List.count, 1)\n".format(list_name, self.model_variable)
+			else:
+				content += "        XCTAssertEqual({}??.count, 1)\n".format(list_name)
 			content += "    }\n\n"
 			content += "    func test_reloadTriggerInvoked_get{}List_failedShowError() {{\n".format(self.model_name)
 			content += "        // arrange\n"
@@ -640,10 +697,13 @@ class Template(object):
 			content += "        // act\n"
 			content += "        loadTrigger.onNext(())\n"
 			content += "        loadMoreTrigger.onNext(())\n"
-			content += "        let {}List = try? output.{}List.toBlocking(timeout: 1).first()\n\n".format(self.model_variable, self.model_variable)
+			content += "        let {} = try? output.{}.toBlocking(timeout: 1).first()\n\n".format(list_name, list_name)
 			content += "        // assert\n"
 			content += "        XCTAssert(useCase.loadMore{}List_Called)\n".format(self.model_name)
-			content += "        XCTAssertEqual({}List??.count, 2)\n".format(self.model_variable)
+			if self.is_sectioned_list:
+				content += "        XCTAssertEqual({}??[0].{}List.count, 2)\n".format(list_name, self.model_variable)
+			else:
+				content += "        XCTAssertEqual({}??.count, 2)\n".format(list_name)
 			content += "    }\n\n"
 			content += "    func test_loadMoreTriggerInvoked_loadMore{}List_failedShowError() {{\n".format(self.model_name)
 			content += "        // arrange\n"
@@ -713,9 +773,7 @@ class Template(object):
 			content += "    var get{}List_Called = false\n".format(self.model_name)
 			content += "    var get{}List_ReturnValue: Observable<PagingInfo<{}>> = {{\n".format(self.model_name, self.model_name)
 			content += "        let items = [\n"
-			content += "            {}(builder: {}Builder().then {{\n".format(self.model_name, self.model_name)
-			content += "                $0.id = 1\n"
-			content += "            })\n"
+			content += "            {}().with {{ $0.id = 1 }}\n".format(self.model_name)
 			content += "        ]\n"
 			content += "        let page = PagingInfo<{}>(page: 1, items: OrderedSet(sequence: items))\n".format(self.model_name)
 			content += "        return Observable.just(page)\n"
@@ -728,14 +786,11 @@ class Template(object):
 			content += "    var loadMore{}List_Called = false\n".format(self.model_name)
 			content += "    var loadMore{}List_ReturnValue: Observable<PagingInfo<{}>> = {{\n".format(self.model_name, self.model_name)
 			content += "        let items = [\n"
-			content += "            {}(builder: {}Builder().then {{\n".format(self.model_name, self.model_name)
-			content += "                $0.id = 2\n"
-			content += "            })\n"
+			content += "            {}().with {{ $0.id = 2 }}\n".format(self.model_name)
 			content += "        ]\n"
 			content += "        let page = PagingInfo<{}>(page: 2, items: OrderedSet(sequence: items))\n".format(self.model_name)
 			content += "        return Observable.just(page)\n"
 			content += "    }()\n"
-
 			content += "    func loadMore{}List(page: Int) -> Observable<PagingInfo<{}>> {{\n".format(self.model_name, self.model_name)
 			content += "        loadMore{}List_Called = true\n".format(self.model_name)
 			content += "        return loadMore{}List_ReturnValue\n".format(self.model_name)
@@ -1024,9 +1079,9 @@ class HelpCommand(object):
 		
 	def show_help(self):
 		help = "iTools commands:\n"
-		help += "   " + "{0: <10}".format("help") + "Show help\n"
-		help += "   " + "{0: <10}".format("header") + "Update file header info\n"
-		help += "   " + "{0: <10}".format("scene") + "Generate files for Clean Architecture\n"
+		help += format("   help", "<15") + "Show help\n"
+		help += format("   header", "<15") + "Update file header info\n"
+		help += format("   scene", "<15") + "Generate files for Clean Architecture\n"
 		help += "\n"
 		help += "Get help on a command: python it.py help [command]\n"
 		print(help)
