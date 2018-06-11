@@ -223,14 +223,6 @@ class Template(object):
 			content += "        viewModel = {}ViewModel(navigator: navigator, useCase: useCase)\n".format(self.name)
 			content += "        disposeBag = DisposeBag()\n"
 			content += "    }\n\n"
-			content += "    func test_triggerInvoked_() {\n"
-			content += "        // arrange\n"
-			content += "        let input = {}ViewModel.Input()\n".format(self.name)
-			content += "        let output = viewModel.transform(input)\n\n"
-			content += "        // act\n\n"
-			content += "        // assert\n"
-			content += "        XCTAssert(true)\n"
-			content += "    }\n"
 			content += "}\n"
 			file_name = class_name + ".swift"
 			file_path = "{}/Test/{}.swift".format(self.name, class_name)
