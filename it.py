@@ -68,19 +68,27 @@ class Template(object):
 			property_regex = re.compile("(?:let|var) (\w+): (.*)")
 			mo = property_regex.search(property)
 			self.name = mo.group(1)
+			self.name_title = self.name.title()
 			self.type = Template.PropertyType(mo.group(2))
 
+		@property
+		def is_url(self):
+			lowered_name = self.name.lower()
+			if lowered_name.endswith("id"):
+				return False
+			return "image" in lowered_name or "url" in lowered_name
+		
 
 	class PropertyType(object):
-		def __init__(self, type):
+		def __init__(self, name):
 			super(Template.PropertyType, self).__init__()
-			self.type = type
+			self.name = name
 
 		def is_optional(self):
-			return self.type.endswith("?")
+			return self.name.endswith("?")
 
 		def is_array(self):
-			return self.type.endswith(("]", "]?"))
+			return self.name.endswith(("]", "]?"))
 
 	class TemplateType:
 		BASE = "-base"
@@ -547,8 +555,7 @@ class Template(object):
 			content += "final class {}Cell: UITableViewCell, NibReusable {{\n".format(self.model_name)
 			for p in model.properties:
 				if p.name != "id":
-					lowered_name = p.name.lower()
-					if "image" in lowered_name or "url" in lowered_name:
+					if p.is_url:
 						content += "    @IBOutlet weak var {}ImageView: UIImageView!\n".format(p.name)
 					else:
 						content += "    @IBOutlet weak var {}Label: UILabel!\n".format(p.name)
@@ -565,8 +572,7 @@ class Template(object):
 			content += "        } else {\n"
 			for p in model.properties:
 				if p.name != "id":
-					lowered_name = p.name.lower()
-					if "image" in lowered_name or "url" in lowered_name:
+					if p.is_url:
 						content += "            {}ImageView.image = nil\n".format(p.name)
 					else:
 						content += '            {}Label.text = ""\n'.format(p.name)
@@ -844,8 +850,7 @@ class Template(object):
 			content += "//        XCTAssertNotNil(cell)\n"
 			for p in self.model.properties:
 				if p.name != "id":
-					lowered_name = p.name.lower()
-					if "image" in lowered_name or "url" in lowered_name:
+					if p.is_url:
 						content += "//        XCTAssertNotNil(cell.{}ImageView)\n".format(p.name)
 					else:
 						content += "//        XCTAssertNotNil(cell.{}Label)\n".format(p.name)
@@ -854,6 +859,280 @@ class Template(object):
 			file_name = class_name + ".swift"
 			file_path = "{}/Test/{}.swift".format(self.name, class_name)
 			self._create_file(file_path, file_name, content)
+
+
+	#=================== DetailTemplate ===================
+
+
+	class DetailTemplate(BaseTemplate):
+		def __init__(self, model, options, name, project, developer, company, date):
+			super(Template.DetailTemplate, self).__init__(name, project, developer, company, date)
+			self.model = model
+			self.options = options
+			self.model_name = self.model.name
+			self.model_variable = camel_case(self.model_name)
+
+		def create_files(self):
+			print(" ")
+			self._make_dirs()
+			self._create_view_model()
+			self._create_navigator()
+			self._create_use_case()
+			self._create_view_controller()
+			self._create_cells()
+			self._create_view_model_tests()
+			self._create_use_case_mock()
+			self._create_navigator_mock()
+			self._create_view_controller_tests()
+			self._create_cells_tests()
+			print(" ")
+
+		def _create_view_model(self):
+			class_name = self.name + "ViewModel"
+			content = self._file_header(class_name)
+			content += "struct {0}: ViewModelType {{\n\n".format(class_name)
+			content += "    struct Input {\n"
+			content += "        let loadTrigger: Driver<Void>\n"
+			content += "    }\n\n"
+			content += "    struct Output {\n"
+			content += "        let cells: Driver<[CellType]>\n"
+			content += "    }\n\n"
+			content += "    enum CellType {\n"
+			for p in self.model.properties:
+				if p.name != "id":
+					content += "        case {}({})\n".format(p.name, p.type.name)
+			content += "    }\n\n"
+			content += "    let navigator: {}NavigatorType\n".format(self.name)
+			content += "    let useCase: {}UseCaseType\n".format(self.name)
+			content += "    let {}: {}\n\n".format(self.model_variable, self.model_name)
+			content += "    func transform(_ input: Input) -> Output {\n"
+			content += "        let {} = input.loadTrigger\n".format(self.model_variable)
+			content += "            .map {{ self.{} }}\n".format(self.model_variable)
+			content += "        let cells = {}\n".format(self.model_variable)
+			content += "            .map {{ {} -> [CellType] in\n".format(self.model_variable)
+			content += "                var cells = [CellType]()\n"
+			for p in self.model.properties:
+				if p.name != "id":
+					content += "                cells.append(CellType.{}({}.{}))\n".format(p.name, self.model_variable, p.name)
+			content += "                return cells\n"
+			content += "            }\n"
+			content += "        return Output(cells: cells)\n"
+			content += "    }\n"
+			content += "}\n"
+			file_name = class_name + ".swift"
+			file_path = "{}/{}.swift".format(self.name, class_name)
+			self._create_file(file_path, file_name, content)
+
+		def _create_navigator(self):
+			class_name = self.name + "Navigator"
+			protocol_name = class_name + "Type"
+			content = self._file_header(class_name)
+			content += "protocol {}NavigatorType {{\n".format(self.name)
+			content += "    func to{}({}: {})\n".format(self.name, self.model_variable, self.model_name)
+			content += "}\n\n"
+			content += "struct {}Navigator: {}NavigatorType {{\n".format(self.name, self.name)
+			content += "    unowned let navigationController: UINavigationController\n"
+			content += "    func to{}({}: {}) {{\n".format(self.name, self.model_variable, self.model_name)
+			content += "        let useCase = {}UseCase()\n".format(self.name)
+			content += "        let vm = {}ViewModel(navigator: self, useCase: useCase, {}: {})\n".format(self.name, self.model_variable, self.model_variable)
+			content += "        let vc = {}ViewController.instantiate()\n".format(self.name)
+			content += "        vc.bindViewModel(to: vm)\n"
+			content += "        navigationController.pushViewController(vc, animated: true)\n"
+			content += "    }\n"
+			content += "}\n"
+			file_name = class_name + ".swift"
+			file_path = "{}/{}.swift".format(self.name, class_name)
+			self._create_file(file_path, file_name, content)
+
+		def _create_use_case(self):
+			class_name = self.name + "UseCase"
+			protocol_name = class_name + "Type"
+			content = self._file_header(class_name)
+			content += "protocol {0} {{\n\n}}\n\n".format(protocol_name)
+			content += "struct {}: {} {{\n\n}}\n".format(class_name, protocol_name)
+			file_name = class_name + ".swift"
+			file_path = "{}/{}.swift".format(self.name, class_name)
+			self._create_file(file_path, file_name, content)
+
+		def _create_view_controller(self):
+			class_name = self.name + "ViewController"
+			content = self._file_header(class_name)
+			content += "import UIKit\nimport Reusable\n\n"
+			content += "final class {}: UIViewController, BindableType {{\n\n".format(class_name)
+			content += "    @IBOutlet weak var tableView: UITableView!\n"
+			content += "    var viewModel: {}ViewModel!\n\n".format(self.name)
+			content += "    override func viewDidLoad() {\n"
+			content += "        super.viewDidLoad()\n"
+			content += "        configView()\n"
+			content += "    }\n\n"
+			content += "    private func configView() {\n"
+			content += "        tableView.do {\n"
+			content += "            $0.estimatedRowHeight = 550\n"
+			content += "            $0.rowHeight = UITableViewAutomaticDimension\n"
+			for p in self.model.properties:
+				if p.name != "id":
+					content += "            $0.register(cellType: {}{}Cell.self)\n".format(self.model_name, p.name_title)
+			content += "        }\n"
+			content += "    }\n"
+			content += "    deinit {\n"
+			content += "        logDeinit()\n"
+			content += "    }\n\n"
+			content += "    func bindViewModel() {\n"
+			content += "        let input = {}ViewModel.Input(loadTrigger: Driver.just(()))\n".format(self.name)
+			content += "        let output = viewModel.transform(input)\n"
+			content += "        output.cells\n"
+			content += "            .drive(tableView.rx.items) { tableView, index, cellType in\n"
+			content += "                let indexPath = IndexPath(row: index, section: 0)\n"
+			content += "                switch cellType {\n"
+			for p in self.model.properties:
+				if p.name != "id":
+					content += "                case let .{}({}):\n".format(p.name, p.name)
+					content += "                    return tableView.dequeueReusableCell(\n"
+					content += "                        for: indexPath,\n"
+					content += "                        cellType: {}{}Cell.self)\n".format(self.model_name, p.name_title)
+			content += "                }\n"
+			content += "            }\n"
+			content += "            .disposed(by: rx.disposeBag)\n"
+			content += "    }\n\n}\n\n"
+			content += "// MARK: - StoryboardSceneBased\n"
+			content += "extension {}ViewController: StoryboardSceneBased {{\n".format(self.name)
+			content += "    // TODO: - Update storyboard\n"
+			content += "    static var sceneStoryboard = UIStoryboard()\n"
+			content += "}\n"
+			file_name = class_name + ".swift"
+			file_path = "{}/{}.swift".format(self.name, class_name)
+			self._create_file(file_path, file_name, content)
+
+		def _create_cells(self):
+			for p in self.model.properties:
+				if p.name != "id":
+					self._create_cell(p)
+
+		def _create_cell(self, property):
+			class_name = "{}{}Cell".format(self.model_name, property.name_title)
+			content = self._file_header(class_name)
+			content += "import UIKit\nimport Reusable\n\n"
+			content += "final class {}{}Cell: UITableViewCell, NibReusable {{\n".format(self.model_name, property.name_title)
+			if property.is_url:
+				content += "    @IBOutlet weak var {}ImageView: UIImageView!\n".format(property.name)
+			else:
+				content += "    @IBOutlet weak var {}Label: UILabel!\n".format(property.name)
+			content += "}\n"
+			file_name = class_name + ".swift"
+			file_path = "{}/{}.swift".format(self.name, class_name)
+			self._create_file(file_path, file_name, content)
+
+		def _create_view_model_tests(self):
+			class_name = self.name + "ViewModelTests"
+			content = self._file_header(class_name)
+			content += "@testable import {}\n".format(self.project)
+			content += "import XCTest\nimport RxSwift\nimport RxBlocking\n\n"
+			content += "final class {}ViewModelTests: XCTestCase {{\n\n".format(self.name)
+			content += "    private var viewModel: {}ViewModel!\n".format(self.name)
+			content += "    private var navigator: {}NavigatorMock!\n".format(self.name)
+			content += "    private var useCase: {}UseCaseMock!\n".format(self.name)
+			content += "    private var disposeBag: DisposeBag!\n"
+			content += "    private var input: {}ViewModel.Input!\n".format(self.name)
+			content += "    private var output: {}ViewModel.Output!\n".format(self.name)
+			content += "    private let loadTrigger = PublishSubject<Void>()\n\n"
+			content += "    override func setUp() {\n"
+			content += "        super.setUp()\n"
+			content += "        navigator = {}NavigatorMock()\n".format(self.name)
+			content += "        useCase = {}UseCaseMock()\n".format(self.name)
+			content += "        viewModel = {}ViewModel(navigator: navigator,\n".format(self.name)
+			content += "                                           useCase: useCase,\n"
+			content += "                                           {}: {}())\n".format(self.model_variable, self.model_name)
+			content += "        disposeBag = DisposeBag()\n"
+			content += "        input = {}ViewModel.Input(\n".format(self.name)
+			content += "            loadTrigger: loadTrigger.asDriverOnErrorJustComplete()\n"
+			content += "        )\n"
+			content += "        output = viewModel.transform(input)\n"
+			content += "        output.cells.drive().disposed(by: disposeBag)\n"
+			content += "    }\n\n"
+			content += "    func test_loadTriggerInvoked_createCells() {\n"
+			content += "        // act\n"
+			content += "        loadTrigger.onNext(())\n"
+			content += "        let cells = try? output.cells.toBlocking(timeout: 1).first()\n\n"
+			content += "        // assert\n"
+			content += "        XCTAssertNotEqual(cells??.count, 0)\n"
+			content += "    }\n\n"
+			content += "}\n"
+			file_name = class_name + ".swift"
+			file_path = "{}/Test/{}.swift".format(self.name, class_name)
+			self._create_file(file_path, file_name, content)
+
+		def _create_use_case_mock(self):
+			class_name = self.name + "UseCaseMock"
+			content = self._file_header(class_name)
+			content += "@testable import {}\n".format(self.project)
+			content += "import RxSwift\n\n"
+			content += "final class {0}: {1}UseCaseType {{\n\n}}\n".format(class_name, self.name)
+			file_name = class_name + ".swift"
+			file_path = "{}/Test/{}.swift".format(self.name, class_name)
+			self._create_file(file_path, file_name, content)
+
+		def _create_navigator_mock(self):
+			class_name = self.name + "NavigatorMock"
+			content = self._file_header(class_name)
+			content += "@testable import {}\n\n".format(self.project)
+			content += "final class {}NavigatorMock: {}NavigatorType {{\n".format(self.name, self.name)
+			content += "    func to{}({}: {}) {{\n\n".format(self.name, self.model_variable, self.model_name)
+			content += "    }\n"
+			content += "}\n"
+			file_name = class_name + ".swift"
+			file_path = "{}/Test/{}.swift".format(self.name, class_name)
+			self._create_file(file_path, file_name, content)
+
+		def _create_view_controller_tests(self):
+			class_name = self.name + "ViewControllerTests"
+			content = self._file_header(class_name)
+			content += "@testable import {}\n".format(self.project)
+			content += "import XCTest\nimport Reusable\n\n"
+			content += "final class {0}: XCTestCase {{\n\n".format(class_name)
+			content += "    private var viewController: {}ViewController!\n\n".format(self.name)
+			content += "    override func setUp() {\n"
+			content += "        super.setUp()\n"
+			content += "        viewController = {}ViewController.instantiate()\n".format(self.name)
+			content += "    }\n\n"
+			content += "    func test_ibOutlets() {\n"
+			content += "        _ = viewController.view\n"
+			content += "        XCTAssertNotNil(viewController.tableView)\n"
+			content += "    }\n"
+			content += "}\n"
+			file_name = class_name + ".swift"
+			file_path = "{}/Test/{}.swift".format(self.name, class_name)
+			self._create_file(file_path, file_name, content)
+
+		def _create_cells_tests(self):
+			class_name = "{}CellsTests".format(self.name)
+			content = self._file_header(class_name)
+			content += "@testable import {}\n".format(self.project)
+			content += "import XCTest\n\n"
+			content += "final class {0}: XCTestCase {{\n\n".format(class_name)
+			for p in self.model.properties:
+				if p.name != "id":
+					content += "    private var {}Cell: {}{}Cell!\n".format(p.name, self.model_name, p.name_title)
+			content += "\n"
+			content += "    override func setUp() {\n"
+			content += "        super.setUp()\n"
+			for p in self.model.properties:
+				if p.name != "id":
+					content += "        {}Cell = {}{}Cell.loadFromNib()\n".format(p.name, self.model_name, p.name_title)
+			content += "    }\n\n"
+			content += "    func test_iboutlets() {\n"
+			for p in self.model.properties:
+				if p.name != "id":
+					content += "        XCTAssertNotNil({}Cell.{}Label)\n".format(p.name, p.name)
+			content += "    }\n"
+			content += "}\n"
+			file_name = class_name + ".swift"
+			file_path = "{}/Test/{}.swift".format(self.name, class_name)
+			self._create_file(file_path, file_name, content)
+
+		def _create_file(self, file_path, file_name, content):
+			with open(file_path, "w") as f:
+				f.write(content)
+				print("        new file:   {}".format(file_path))
 
 #=================== JSON ===================
 
@@ -1031,28 +1310,6 @@ class JSON(object):
 		model = JSON.Model(name, properties)
 		models.append(model)
 
-
-#=================== Main ===================
-
-	
-# model_text = """
-# struct Conversation {
-# 	let id: Int
-# 	let name: String
-# 	let profileImageURLString: String?
-# 	let firstLogin: Bool
-# 	let birthday: Date
-# 	let jskStatus: [Bool]?
-# }
-# """
-
-# model = parse_model(model_text)
-
-# args = [TemplateType.LIST]
-# options = args[1:]
-# scene = ListTemplate(model, options, "Messages", "iTool", "Tuan Truong", "Framgia", "2018-05-20")
-# scene.create_files()
-
 #=================== Commands ===================
 
 class Commmands:
@@ -1118,9 +1375,18 @@ class TemplateCommmand(object):
 			print("Finish!")
 		elif self.template_name == Template.TemplateType.LIST:
 			model_text = pasteboard_read()
+			try:
+				model = Template()._parse_model(model_text)
+				template = Template.ListTemplate(model, self.options, self.scene_name, project, developer, company, date)
+				template.create_files()
+				print("Finish!")
+			except:
+				print('Invalid model text in clipboard.')
+		elif self.template_name == Template.TemplateType.DETAIL:
+			model_text = pasteboard_read()
 			# try:
 			model = Template()._parse_model(model_text)
-			template = Template.ListTemplate(model, self.options, self.scene_name, project, developer, company, date)
+			template = Template.DetailTemplate(model, self.options, self.scene_name, project, developer, company, date)
 			template.create_files()
 			print("Finish!")
 			# except:
