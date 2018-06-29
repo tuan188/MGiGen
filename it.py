@@ -269,7 +269,7 @@ class Template(object):
 			content += "    func test_ibOutlets() {\n"
 			content += "        _ = viewController.view\n"
 			content += "        XCTAssert(true)\n"
-			content += "//      XCTAssertNotNil(viewController.tableView)\n"
+			content += "//        XCTAssertNotNil(viewController.tableView)\n"
 			content += "    }\n"
 			content += "}\n"
 			file_name = class_name + ".swift"
@@ -1318,93 +1318,57 @@ class JSON(object):
 		def model(self):
 			content = "struct {} {{\n".format(self.name)
 			for p in self.properties:
-				content += "    let {}: {}\n".format(p.name, p.type_name)
+				content += "    var {}: {}\n".format(p.name, p.type_name)
 			content += "}\n\n"
-			return content
-
-		def builder(self):
-			content = "final class {}Builder: Then {{\n".format(self.name)
+			content += "extension {} {{\n".format(self.name)
+			content += "    init() {\n"
+			content += "        self.init(\n"
 			for p in self.properties:
 				if p.type_name.endswith("?"):
 					if p.original_type_name() in JSON.SWIFT_TYPES:
-						content += "    var {}: {}\n".format(p.name, p.type_name)
-					else:
-						if not p.is_array():
-							content += "    var {}: {}Builder?\n".format(p.name, p.original_type_name())
-						else:
-							content += "    var {}: [{}Builder]?\n".format(p.name, p.original_type_name())
+						content += "            {}: nil\n".format(p.name)
 				else:
 					if p.type_name in JSON.SWIFT_TYPES_DEFAULT_VALUES:
 						default_value = JSON.SWIFT_TYPES_DEFAULT_VALUES[p.type_name]
 					else:
 						default_value = "{}()".format(p.type_name)
-					content += "    var {}: {} = {}\n".format(p.name, p.type_name, default_value)
-			
-			content += "\n"
-			content += "    init() {\n\n    }\n\n"
-			lower_name = camel_case(self.name)
-			content += "    init({}: {}) {{\n".format(lower_name, self.name)
-			for p in self.properties:
-				if not p.is_user_type():
-					content += "        {} = {}.{}\n".format(p.name, lower_name, p.name)
-				else:
-					if not p.is_array():	
-						content += "        {} = {}.{}.map {{ {}Builder({}: $0) }}\n".format(
-							p.name, lower_name, p.name, p.original_type_name(), to_camel(p.name)) 
-					else:
-						content += "        {} = {}.{}.map {{ $0.map {{ {}Builder({}: $0) }} }}\n".format(
-							p.name, lower_name, p.name, p.original_type_name(), plural_to_singular(to_camel(p.name))) 
-			content += "    }\n}\n\n"
-			# ObjectMapper
-			content += "extension {}Builder: Mappable {{\n".format(self.name)
-			content += "    convenience init?(map: Map) {\n        self.init()\n    }\n\n"
-			content += "    func mapping(map: Map) {\n"
+					content += "            {}: {}\n".format(p.name, default_value)
+			content += "        )\n"
+			content += "    }\n"
+			content += "}\n\n"
+			content += "extension {}: Then, HasID, Hashable {{ }}\n\n".format(self.name)
+			content += "extension {}: Mappable {{\n\n".format(self.name)
+			content += "    init?(map: Map) {\n"
+			content += "        self.init()\n"
+			content += "    }\n\n"
+			content += "    mutating func mapping(map: Map) {\n"
 			for p in self.properties:
 				if not p.original_type_name() == "Date":
 					content += '        {} <- map["{}"]\n'.format(p.name, p.raw_name)
 				else:
 					content += '        {} <- (map["{}"], DateTransform())\n'.format(p.name, p.raw_name)
-			content += "    }\n}\n\n"
-			# Init
-			content += "extension {} {{\n".format(self.name)
-			content += "    init(builder: {}Builder) {{\n".format(self.name)
-			content += "        self.init(\n"
-			args = []
-			for p in self.properties:
-				if not p.is_user_type():
-					arg = "            {}: builder.{}".format(p.name, p.name)
-				elif p.is_array():
-					arg = "            {}: builder.{}.map {{ $0.map {{ {}(builder: $0) }} }}".format(
-						p.name, p.name, p.original_type_name())
-				else:
-					arg = "            {}: builder.{}.map {{ {}(builder: $0) }}".format(
-						p.name, p.name, p.original_type_name())
-				args.append(arg)
-			content += ",\n".join(args)
-			content += "\n        )\n    }\n\n"
-			content += "    init() {\n"
-			content += "        self.init(builder: {}Builder())\n".format(self.name)
-			content += "    }\n}\n\n"
+			content += "    }\n"
+			content += "}\n\n"
 			return content
 
 		def __str__(self):
-			return "".join([self.model(), self.builder()])
+			return self.model()
 
 	def __init__(self, model_name, json_text):
 		self.model_name = model_name
 		self.json_text = json_text
 
-	def create_files(self):
-		try:
-			dictionary = json.loads(self.json_text, object_pairs_hook=OrderedDict)
-			models = []
-			self.extract_model(self.model_name, dictionary, models)
-			output = "import ObjectMapper\nimport Then\n\n"
-			output += "".join([model.__str__() for model in models])
-			pasteboard_write(output)
-			print("Text has been copied to clipboard.")
-		except:
-			print("Invalid json string in clipboard.")
+	def create_models(self):
+		# try:
+		dictionary = json.loads(self.json_text, object_pairs_hook=OrderedDict)
+		models = []
+		self.extract_model(self.model_name, dictionary, models)
+		output = "import ObjectMapper\nimport Then\n\n"
+		output += "".join([model.__str__() for model in models])
+		pasteboard_write(output)
+		print("Text has been copied to clipboard.")
+		# except:
+		# 	print("Invalid json string in clipboard.")
 
 
 	def extract_model(self, name, dictionary, models):
@@ -1415,7 +1379,7 @@ class JSON(object):
 			type_name = type(value).__name__
 			if type_name == "OrderedDict":
 				var_type = var_name.title() + "?"
-				extract_model(var_name.title(), value, models)
+				self.extract_model(var_name.title(), value, models)
 			elif type_name == "list":
 				singular_var_name = plural_to_singular(var_name)
 				var_type = "[{}]?".format(singular_var_name.title())
@@ -1521,16 +1485,16 @@ class TemplateCommmand(object):
 				print('Invalid model text in clipboard.')
 		elif self.template_name == Template.TemplateType.DETAIL:
 			model_text = pasteboard_read()
-			# try:
-			model = Template()._parse_model(model_text)
-			if "--static" in self.options:
-				template = Template.StaticDetailTemplate(model, self.options, self.scene_name, project, developer, company, date)
-			else:
-				template = Template.DetailTemplate(model, self.options, self.scene_name, project, developer, company, date)
-			template.create_files()
-			print("Finish!")
-			# except:
-			# 	print('Invalid model text in clipboard.')
+			try:
+				model = Template()._parse_model(model_text)
+				if "--static" in self.options:
+					template = Template.StaticDetailTemplate(model, self.options, self.scene_name, project, developer, company, date)
+				else:
+					template = Template.DetailTemplate(model, self.options, self.scene_name, project, developer, company, date)
+				template.create_files()
+				print("Finish!")
+			except:
+				print('Invalid model text in clipboard.')
 		else:
 			print("Invalid template name.")
 
@@ -1541,8 +1505,8 @@ class JSONCommand(object):
 		self.model_name = model_name
 		self.json_text = json_text
 
-	def create_files(self):
-		JSON(self.model_name, self.json_text).create_files()
+	def create_models(self):
+		JSON(self.model_name, self.json_text).create_models()
 
 
 #=================== Main ===================
@@ -1568,7 +1532,7 @@ def execute(args):
 		if len(args) >= 2:
 			model_name = args[1]
 			json = pasteboard_read()
-			JSONCommand(model_name, json).create_files()
+			JSONCommand(model_name, json).create_models()
 		else:
 			print("Missing model name.")
 	else:
