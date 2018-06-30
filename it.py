@@ -1336,7 +1336,7 @@ class JSON(object):
 			content += "        )\n"
 			content += "    }\n"
 			content += "}\n\n"
-			content += "extension {}: Then, HasID, Hashable {{ }}\n\n".format(self.name)
+			content += "extension {}: Then {{ }}\n\n".format(self.name)
 			content += "extension {}: Mappable {{\n\n".format(self.name)
 			content += "    init?(map: Map) {\n"
 			content += "        self.init()\n"
@@ -1359,19 +1359,15 @@ class JSON(object):
 		self.json_text = json_text
 
 	def create_models(self):
-		# try:
 		dictionary = json.loads(self.json_text, object_pairs_hook=OrderedDict)
 		models = []
-		self.extract_model(self.model_name, dictionary, models)
+		self._extract_model(self.model_name, dictionary, models)
 		output = "import ObjectMapper\nimport Then\n\n"
 		output += "".join([model.__str__() for model in models])
-		pasteboard_write(output)
-		print("Text has been copied to clipboard.")
-		# except:
-		# 	print("Invalid json string in clipboard.")
+		return output
 
 
-	def extract_model(self, name, dictionary, models):
+	def _extract_model(self, name, dictionary, models):
 		properties = []
 		for key in dictionary.keys():
 			var_name = snake_to_camel(key)
@@ -1379,12 +1375,12 @@ class JSON(object):
 			type_name = type(value).__name__
 			if type_name == "OrderedDict":
 				var_type = var_name.title() + "?"
-				self.extract_model(var_name.title(), value, models)
+				self._extract_model(var_name.title(), value, models)
 			elif type_name == "list":
 				singular_var_name = plural_to_singular(var_name)
 				var_type = "[{}]?".format(singular_var_name.title())
 				if len(value) > 0:
-					self.extract_model(singular_var_name.title(), value[0], models)
+					self._extract_model(singular_var_name.title(), value[0], models)
 				else:
 					var_type = "[Any]?"
 			else:
@@ -1411,7 +1407,7 @@ class JSON(object):
 		model = JSON.Model(name, properties)
 		models.append(model)
 
-#=================== Commands ===================
+#=================== Mock ===================
 
 
 class Mock(object):
@@ -1485,6 +1481,33 @@ class Mock(object):
 		content += "}\n"
 		return content
 
+#=================== Mock ===================
+
+class API(object):
+	def __init__(self, api_name):
+		super(API, self).__init__()
+		self.api_name = api_name
+
+	def create_api(self):
+		name = self.api_name
+		content = "// MARK: - {}\n".format(name)
+		content += "extension API {\n"
+		content += "    func {}(_ input: {}Input) -> Observable<{}Output> {{\n".format(camel_case(name), name, name)
+		content += "        return request(input)\n"
+		content += "    }\n\n"
+		content += "    final class {}Input: APIInput {{\n".format(name)
+		content += "        init() {\n"
+		content += "            super.init(urlString: API.Urls.{},\n".format(camel_case(name))
+		content += "                       parameters: nil,\n"
+		content += "                       requestType: .get,\n"
+		content += "                       requireAccessToken: true)\n"
+		content += "        }\n    }\n\n"
+		content += "    final class {}Output: APIOutput {{\n".format(name)
+		content += "        override func mapping(map: Map) {\n"
+		content += "            super.mapping(map: map)\n"
+		content += "        }\n    }\n}\n"
+		return content
+
 
 #=================== Commands ===================
 
@@ -1506,7 +1529,7 @@ class HelpCommand(object):
 		help = "iTools commands:\n"
 		help += format("   help", "<15") + "Show help\n"
 		help += format("   header", "<15") + "Update file header info\n"
-		help += format("   scene", "<15") + "Generate files for Clean Architecture\n"
+		help += format("   template", "<15") + "Templates\n"
 		help += "\n"
 		help += "Get help on a command: python it.py help [command]\n"
 		print(help)
@@ -1581,7 +1604,12 @@ class JSONCommand(object):
 		self.json_text = json_text
 
 	def create_models(self):
-		JSON(self.model_name, self.json_text).create_models()
+		try:
+			output = JSON(self.model_name, self.json_text).create_models()
+			pasteboard_write(output)
+			print("Text has been copied to clipboard.")
+		except:
+			print("Invalid json string in clipboard.")
 
 
 class MockCommand(object):
@@ -1597,6 +1625,15 @@ class MockCommand(object):
 		except:
 			print("Invalid protocol text in clipboard.")
 
+class APICommand(object):
+	def __init__(self, api_name):
+		super(APICommand, self).__init__()
+		self.api_name = api_name
+
+	def create_api(self):
+		output = API(self.api_name).create_api()
+		pasteboard_write(output)
+		print("Text has been copied to clipboard.")
 
 #=================== Main ===================
 
@@ -1626,6 +1663,12 @@ def execute(args):
 			print("Missing model name.")
 	elif command == Commmands.MOCK:
 		MockCommand().create_mock()
+	elif command == Commmands.API:
+		if len(args) >= 2:
+			api_name = args[1]
+			APICommand(api_name).create_api()
+		else:
+			print("Missing api name.")
 	else:
 		print("'{}' is not a valid command. See 'python it.py help'.".format(command))
 
