@@ -1508,7 +1508,7 @@ class API(object):
 		content += "        }\n    }\n}\n"
 		return content
 
-#=================== Unit Tests ===================
+#=================== ViewModel ===================
 
 class ViewModel(object):
 
@@ -1613,6 +1613,12 @@ class BindViewModel(ViewModel):
 		return content
 		
 
+#=================== Model ===================
+
+
+
+
+
 #=================== Commands ===================
 
 class Commmands:
@@ -1634,7 +1640,13 @@ class HelpCommand(object):
 		help = "iTools commands:\n"
 		help += format("   help", "<15") + "Show help\n"
 		help += format("   header", "<15") + "Update file header info\n"
-		help += format("   template", "<15") + "Templates\n"
+		help += format("   template", "<15") + "Generate template files\n"
+		help += format("   json", "<15") + "Create models from json text\n"
+		help += format("   mock", "<15") + "Create mock from protocol\n"
+		help += format("   api", "<15") + "Create API request\n"
+		help += format("   test", "<15") + "Create Unit Tests from view model\n"
+		help += format("   bind", "<15") + "Create bindViewModel method for view controller from view model\n"
+		help += format("   init", "<15") + "Create init method for model\n"
 		help += "\n"
 		help += "Get help on a command: python it.py help [command]\n"
 		print(help)
