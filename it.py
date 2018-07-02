@@ -1508,6 +1508,81 @@ class API(object):
 		content += "        }\n    }\n}\n"
 		return content
 
+#=================== Unit Tests ===================
+
+class UnitTest(object):
+
+	class Property(object):
+		def __init__(self, name, type_name):
+			super(UnitTest.Property, self).__init__()
+			self.name = name
+			self.type_name = type_name
+
+		def __str__(self):
+			return "let {}: Driver<{}>".format(self.name, self.type_name)
+
+		def builder_property(self):
+			return "var {}: Driver<{}> = Driver.empty()".format(self.name, self.type_name)
+
+	def __init__(self, vm_text):
+		super(UnitTest, self).__init__()
+		self.vm_text = vm_text
+
+	@property
+	def view_model_name(self):
+		regex = re.compile("(?:struct|extension) (\w+)ViewModel")
+		mo = regex.search(self.vm_text)
+		return mo.group(1)
+
+	def create_tests(self):
+		str = self.vm_text
+		view_model = self.view_model_name
+		input_block_regex = re.compile("struct Input {([^}]+)")
+		input_block = input_block_regex.search(str).group(1)
+		input_properties_regex = re.compile("let (\w+): Driver<([^>]+)>")
+		input_properties = [UnitTest.Property(p[0], p[1]) for p in input_properties_regex.findall(input_block)]
+		output_block_regex = re.compile("struct Output {([^}]+)")
+		output_block = output_block_regex.search(str).group(1)
+		output_properties_regex = re.compile("let (\w+): Driver<([^>]+)>")
+		output_properties = [UnitTest.Property(p[0], p[1]) for p in output_properties_regex.findall(output_block)]
+		content = "final class {}ViewModelTests: XCTestCase {{\n\n".format(view_model)
+		content += "    private var viewModel: {}ViewModel!\n".format(view_model)
+		content += "    private var navigator: {}NavigatorMock!\n".format(view_model)
+		content += "    private var useCase: {}UseCaseMock!\n".format(view_model)
+		content += "    private var disposeBag: DisposeBag!\n\n"
+		content += "    private var input: {}ViewModel.Input!\n".format(view_model)
+		content += "    private var output: {}ViewModel.Output!\n".format(view_model)
+		for p in input_properties:
+			content += "    private let {} = PublishSubject<{}>()\n".format(p.name, p.type_name)
+		content += "\n"
+		content += "    override func setUp() {\n"
+		content += "        super.setUp()\n"
+		content += "        navigator = {}NavigatorMock()\n".format(view_model)
+		content += "        useCase = {}UseCaseMock()\n".format(view_model)
+		content += "        viewModel = {}ViewModel(navigator: navigator, useCase: useCase)\n".format(view_model)
+		content += "        disposeBag = DisposeBag()\n\n"
+		content += "        input = {}ViewModel.Input(\n".format(view_model)
+		args = []
+		for p in input_properties:
+			arg = "            {}: {}.asDriverOnErrorJustComplete()".format(p.name, p.name)
+			args.append(arg)
+		content += ",\n".join(args)
+		content += "\n        )\n"
+		content += "        output = viewModel.transform(input)\n"
+		for p in output_properties:
+			content += "        output.{}.drive().disposed(by: disposeBag)\n".format(p.name)
+		content += "    }\n\n"
+		for p in input_properties:
+			content += "    func test_{}Invoked_() {{\n".format(p.name)
+			content += "        // arrange\n\n\n"
+			content += "        // act\n\n\n"
+			content += "        // assert\n"
+			content += "        XCTAssert(true)\n"
+			content += "    }\n\n"
+		content += "}\n"
+		return content
+		
+
 
 #=================== Commands ===================
 
@@ -1518,8 +1593,8 @@ class Commmands:
 	JSON = "json"
 	MOCK = "mock"
 	API = "api"
-	UNITTEST = "test"
-
+	UNIT_TEST = "test"
+	BIND_VIEW_MODEL = "bind"
 
 class HelpCommand(object):
 	def __init__(self):
@@ -1613,17 +1688,18 @@ class JSONCommand(object):
 
 
 class MockCommand(object):
-	def __init__(self):
+	def __init__(self, protocol_text):
 		super(MockCommand, self).__init__()
+		self.protocol_text = protocol_text
 
 	def create_mock(self):
 		try:
-			protocol_text = pasteboard_read()
-			output = Mock(protocol_text).create_mock()
+			output = Mock(self.protocol_text).create_mock()
 			pasteboard_write(output)
 			print("Text has been copied to clipboard.")
 		except:
 			print("Invalid protocol text in clipboard.")
+
 
 class APICommand(object):
 	def __init__(self, api_name):
@@ -1634,6 +1710,22 @@ class APICommand(object):
 		output = API(self.api_name).create_api()
 		pasteboard_write(output)
 		print("Text has been copied to clipboard.")
+
+
+class UnitTestCommand(object):
+	def __init__(self, vm_text):
+		super(UnitTestCommand, self).__init__()
+		self.vm_text = vm_text
+
+	def create_tests(self):
+		try:
+			output = UnitTest(self.vm_text).create_tests()
+			pasteboard_write(output)
+			print("Text has been copied to clipboard.")
+		except:
+			print("Invalid view model text in clipboard.")
+
+		
 
 #=================== Main ===================
 
@@ -1662,13 +1754,17 @@ def execute(args):
 		else:
 			print("Missing model name.")
 	elif command == Commmands.MOCK:
-		MockCommand().create_mock()
+		protocol_text = pasteboard_read()
+		MockCommand(protocol_text).create_mock()
 	elif command == Commmands.API:
 		if len(args) >= 2:
 			api_name = args[1]
 			APICommand(api_name).create_api()
 		else:
 			print("Missing api name.")
+	elif command == Commmands.UNIT_TEST:
+		vm_text = pasteboard_read()
+		UnitTestCommand(vm_text).create_tests()
 	else:
 		print("'{}' is not a valid command. See 'python it.py help'.".format(command))
 
