@@ -1531,12 +1531,9 @@ class ViewModel(object):
 		mo = regex.search(self.vm_text)
 		return mo.group(1)
 
-
-class UnitTest(ViewModel):
-
-	def create_tests(self):
+	@property
+	def properties(self):
 		str = self.vm_text
-		view_model = self.view_model_name
 		input_block_regex = re.compile("struct Input {([^}]+)")
 		input_block = input_block_regex.search(str).group(1)
 		input_properties_regex = re.compile("let (\w+): Driver<([^>]+)>")
@@ -1545,6 +1542,15 @@ class UnitTest(ViewModel):
 		output_block = output_block_regex.search(str).group(1)
 		output_properties_regex = re.compile("let (\w+): Driver<([^>]+)>")
 		output_properties = [ViewModel.Property(p[0], p[1]) for p in output_properties_regex.findall(output_block)]
+		return (input_properties, output_properties)
+	
+
+class UnitTest(ViewModel):
+
+	def create_tests(self):
+		view_model = self.view_model_name
+		input_properties, output_properties = self.properties
+
 		content = "final class {}ViewModelTests: XCTestCase {{\n\n".format(view_model)
 		content += "    private var viewModel: {}ViewModel!\n".format(view_model)
 		content += "    private var navigator: {}NavigatorMock!\n".format(view_model)
@@ -1585,16 +1591,8 @@ class UnitTest(ViewModel):
 class BindViewModel(ViewModel):
 
 	def create_bind_view_model(self):
-		str = self.vm_text
 		view_model = self.view_model_name
-		input_block_regex = re.compile("struct Input {([^}]+)")
-		input_block = input_block_regex.search(str).group(1)
-		input_properties_regex = re.compile("let (\w+): Driver<([^>]+)>")
-		input_properties = [ViewModel.Property(p[0], p[1]) for p in input_properties_regex.findall(input_block)]
-		output_block_regex = re.compile("struct Output {([^}]+)")
-		output_block = output_block_regex.search(str).group(1)
-		output_properties_regex = re.compile("let (\w+): Driver<([^>]+)>")
-		output_properties = [ViewModel.Property(p[0], p[1]) for p in output_properties_regex.findall(output_block)]
+		input_properties, output_properties = self.properties
 
 		content = "    func bindViewModel() {\n"
 		content += "        let input = {}ViewModel.Input(\n".format(view_model)
@@ -1616,7 +1614,16 @@ class BindViewModel(ViewModel):
 #=================== Model ===================
 
 
+class Model(object):
 
+	def __init__(self, model_text):
+		super(Model, self).__init__()
+		self.model_text = model_text
+
+class InitModel(Model):
+
+	def create_init(self):
+		pass
 
 
 #=================== Commands ===================
@@ -1761,7 +1768,7 @@ class UnitTestCommand(object):
 
 	def create_tests(self):
 		try:
-			output = UnitTest(self.vm_text).create_bind_view_model()
+			output = UnitTest(self.vm_text).create_tests()
 			pasteboard_write(output)
 			print("Text has been copied to clipboard.")
 		except:
@@ -1774,12 +1781,12 @@ class BindViewModelCommand(object):
 		self.vm_text = vm_text
 
 	def create_tests(self):
-		# try:
-		output = BindViewModel(self.vm_text).create_bind_view_model()
-		pasteboard_write(output)
-		print("Text has been copied to clipboard.")
-		# except:
-		# 	print("Invalid view model text in clipboard.")		
+		try:
+			output = BindViewModel(self.vm_text).create_bind_view_model()
+			pasteboard_write(output)
+			print("Text has been copied to clipboard.")
+		except:
+			print("Invalid view model text in clipboard.")		
 
 #=================== Main ===================
 
