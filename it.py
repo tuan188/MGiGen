@@ -50,6 +50,25 @@ def plural_to_singular(st):
 
 FILE_HEADER = "file_header.txt"
 
+SWIFT_TYPES_DEFAULT_VALUES = {
+	"Int": "0",
+	"Bool": "false",
+	"String": '""',
+	"Double": "0.0",
+	"Float": "0.0",
+	"Date": "Date()"
+}
+
+SWIFT_TYPES = { 
+	"Int", 
+	"Bool", 
+	"String", 
+	"Double", 
+	"Float"
+	"Date"
+}
+
+
 #=================== BaseTemplate ===================
 
 class Template(object):
@@ -1275,6 +1294,7 @@ class Template(object):
 
 
 class JSON(object):
+
 	JSON_TO_SWIFT_TYPES = { 
 		"int": "Int",
 		"bool": "Bool",
@@ -1282,16 +1302,6 @@ class JSON(object):
 		"float": "Double",
 		"NoneType": "Any?"
 	}
-
-	SWIFT_TYPES_DEFAULT_VALUES = {
-		"Int": "0",
-		"Bool": "false",
-		"String": '""',
-		"Double": "0.0",
-		"Date": "Date()"
-	}
-
-	SWIFT_TYPES = { "Int", "Bool", "String", "Double", "Date", "Any" }
 
 	DATE_REGEX = r"(\d{4})[-/](\d{2})[-/](\d{2})"
 
@@ -1302,7 +1312,7 @@ class JSON(object):
 			self.type_name = type_name
 
 		def is_user_type(self):
-			return self.type_name.endswith("?") and self.original_type_name() not in JSON.SWIFT_TYPES
+			return self.type_name.endswith("?") and self.original_type_name() not in SWIFT_TYPES
 
 		def is_array(self):
 			return self.type_name.startswith("[")
@@ -1325,11 +1335,11 @@ class JSON(object):
 			content += "        self.init(\n"
 			for p in self.properties:
 				if p.type_name.endswith("?"):
-					if p.original_type_name() in JSON.SWIFT_TYPES:
+					if p.original_type_name() in SWIFT_TYPES:
 						content += "            {}: nil\n".format(p.name)
 				else:
-					if p.type_name in JSON.SWIFT_TYPES_DEFAULT_VALUES:
-						default_value = JSON.SWIFT_TYPES_DEFAULT_VALUES[p.type_name]
+					if p.type_name in SWIFT_TYPES_DEFAULT_VALUES:
+						default_value = SWIFT_TYPES_DEFAULT_VALUES[p.type_name]
 					else:
 						default_value = "{}()".format(p.type_name)
 					content += "            {}: {}\n".format(p.name, default_value)
@@ -1412,17 +1422,6 @@ class JSON(object):
 
 class Mock(object):
 
-	DEFAULT_VALUES = {
-		"Int": "0",
-		"Bool": "false",
-		"String": '""',
-		"Double": "0.0",
-		"Float": "0.0",
-		"Date": "Date()"
-	}
-
-	SYSTEM_TYPES = { "Int", "Bool", "String", "Double", "Float", "Date" }
-
 	class Function(object):
 		def __init__(self, origin, name, return_type):
 			super(Mock.Function, self).__init__()
@@ -1466,8 +1465,8 @@ class Mock(object):
 				return_value = "Driver.empty()"
 			elif f.return_type.startswith("Observable"):
 				return_value = "Observable.empty()"
-			elif f.return_type in Mock.SYSTEM_TYPES:
-				return_value = Mock.DEFAULT_VALUES[f.return_type]
+			elif f.return_type in SWIFT_TYPES:
+				return_value = SWIFT_TYPES_DEFAULT_VALUES[f.return_type]
 			else:
 				return_value = "{}()".format(f.return_type)
 			if f.return_type != None:
@@ -1616,19 +1615,65 @@ class BindViewModel(ViewModel):
 
 class Model(object):
 
+	class Property(object):
+		def __init__(self, name, type_name):
+			super(Model.Property, self).__init__()
+			self.name = name
+			self.type_name = type_name
+
+		@property
+		def is_optional(self):
+			return self.type_name.endswith("?")
+
+		@property
+		def is_array(self):
+			return self.type_name.endswith("]")
+
+
 	def __init__(self, model_text):
 		super(Model, self).__init__()
 		self.model_text = model_text
 
+	def name_and_properties(self):
+		str = self.model_text
+		block_regex = re.search("struct (\w+) {([^}]+)", str)
+		model_name = block_regex.group(1)
+		block = block_regex.group(2)
+		properties_regex = re.compile("(let|var) (\w+): (.*)")
+		properties = [Model.Property(p[1], p[2]) for p in properties_regex.findall(block)]
+		return (model_name, properties)
+
+
 class InitModel(Model):
 
 	def create_init(self):
-		pass
+		model_name, properties = self.name_and_properties()
+		content = "extension {} {{\n".format(model_name)
+
+		content += "    init() {\n"
+		content += "        self.init(\n"
+		params = []
+		for p in properties:
+			if p.is_optional:
+				value = "nil"
+			elif p.is_array:
+				value = "[]"
+			elif p.type_name in SWIFT_TYPES:
+				value = SWIFT_TYPES_DEFAULT_VALUES[p.type_name]
+			else:
+				value = "{}()".format(p.type_name)
+			params.append("            {}: {}".format(p.name, value))
+		content += ",\n".join(params)
+		content += "\n"
+		content += "        )\n"
+		content += "    }\n"
+		content += "}"
+		return content
 
 
 #=================== Commands ===================
 
-class Commmands:
+class Commands:
 	HELP = "help"
 	HEADER = "header"
 	TEMPLATE = "template"
@@ -1653,7 +1698,7 @@ class HelpCommand(object):
 		help += format("   api", "<15") + "Create API request\n"
 		help += format("   test", "<15") + "Create Unit Tests from view model\n"
 		help += format("   bind", "<15") + "Create bindViewModel method for view controller from view model\n"
-		help += format("   init", "<15") + "Create init method for model\n"
+		help += format("   init", "<15") + "Create init method for struct model\n"
 		help += "\n"
 		help += "Get help on a command: python it.py help [command]\n"
 		print(help)
@@ -1788,6 +1833,22 @@ class BindViewModelCommand(object):
 		except:
 			print("Invalid view model text in clipboard.")		
 
+
+class InitCommand(object):
+
+	def __init__(self, model_text):
+		super(InitCommand, self).__init__()
+		self.model_text = model_text
+		
+	def create_init(self):
+		try:
+			output = InitModel(self.model_text).create_init()
+			pasteboard_write(output)
+			print("Text has been copied to clipboard.")
+		except:
+			print("Invalid model text in clipboard.")	
+
+
 #=================== Main ===================
 
 
@@ -1795,11 +1856,11 @@ def execute(args):
 	command = args[0]
 	if command == "t":
 		command = "template"
-	if command == Commmands.HELP:
+	if command == Commands.HELP:
 		HelpCommand().show_help()
-	elif command == Commmands.HEADER:
+	elif command == Commands.HEADER:
 		FileHeaderCommand().update_file_header()
-	elif command == Commmands.TEMPLATE:
+	elif command == Commands.TEMPLATE:
 		if len(args) >= 3:
 			template_name = args[1]
 			scene_name = args[2]
@@ -1807,30 +1868,31 @@ def execute(args):
 			TemplateCommmand(template_name, scene_name, options).create_files()
 		else:
 			print("Invalid params.")
-	elif command == Commmands.JSON:
+	elif command == Commands.JSON:
 		if len(args) >= 2:
 			model_name = args[1]
 			json = pasteboard_read()
 			JSONCommand(model_name, json).create_models()
 		else:
 			print("Missing model name.")
-	elif command == Commmands.MOCK:
+	elif command == Commands.MOCK:
 		protocol_text = pasteboard_read()
 		MockCommand(protocol_text).create_mock()
-	elif command == Commmands.API:
+	elif command == Commands.API:
 		if len(args) >= 2:
 			api_name = args[1]
 			APICommand(api_name).create_api()
 		else:
 			print("Missing api name.")
-	elif command == Commmands.UNIT_TEST:
+	elif command == Commands.UNIT_TEST:
 		vm_text = pasteboard_read()
 		UnitTestCommand(vm_text).create_tests()
-	elif command == Commmands.BIND_VIEW_MODEL:
+	elif command == Commands.BIND_VIEW_MODEL:
 		vm_text = pasteboard_read()
 		BindViewModelCommand(vm_text).create_tests()
 	elif command == Commands.INIT:
-		pass
+		model_text = pasteboard_read()
+		InitCommand(model_text).create_init()
 	else:
 		print("'{}' is not a valid command. See 'python it.py help'.".format(command))
 
