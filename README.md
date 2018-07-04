@@ -256,7 +256,7 @@ struct AppViewModel: ViewModelType {
 
 then using command:
 ```
-$ python it.py mock
+$ python it.py test
 Text has been copied to clipboard.
 ```
 
