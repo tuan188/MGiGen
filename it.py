@@ -1825,7 +1825,7 @@ class BindViewModelCommand(object):
 		super(BindViewModelCommand, self).__init__()
 		self.vm_text = vm_text
 
-	def create_tests(self):
+	def create_bind_view_model(self):
 		try:
 			output = BindViewModel(self.vm_text).create_bind_view_model()
 			pasteboard_write(output)
@@ -1889,7 +1889,7 @@ def execute(args):
 		UnitTestCommand(vm_text).create_tests()
 	elif command == Commands.BIND_VIEW_MODEL:
 		vm_text = pasteboard_read()
-		BindViewModelCommand(vm_text).create_tests()
+		BindViewModelCommand(vm_text).create_bind_view_model()
 	elif command == Commands.INIT:
 		model_text = pasteboard_read()
 		InitCommand(model_text).create_init()
@@ -1900,7 +1900,6 @@ if len(sys.argv) > 1:
 	execute(sys.argv[1:])
 else:
 	HelpCommand().show_help()
-
 
 
 
