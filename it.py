@@ -1333,16 +1333,19 @@ class JSON(object):
 			content += "extension {} {{\n".format(self.name)
 			content += "    init() {\n"
 			content += "        self.init(\n"
+			params = []
 			for p in self.properties:
 				if p.type_name.endswith("?"):
 					if p.original_type_name() in SWIFT_TYPES:
-						content += "            {}: nil\n".format(p.name)
+						params.append("            {}: nil".format(p.name))
 				else:
 					if p.type_name in SWIFT_TYPES_DEFAULT_VALUES:
 						default_value = SWIFT_TYPES_DEFAULT_VALUES[p.type_name]
 					else:
 						default_value = "{}()".format(p.type_name)
-					content += "            {}: {}\n".format(p.name, default_value)
+					params.append("            {}: {}".format(p.name, default_value))
+			content += ",\n".join(params)
+			content += "\n"
 			content += "        )\n"
 			content += "    }\n"
 			content += "}\n\n"
