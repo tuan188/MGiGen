@@ -309,6 +309,7 @@ class Template(object):
 			self.model = model
 			self.options = options
 			self.is_sectioned_list = "--section" in options
+			self.is_collection = "--collection" in options
 			self.model_name = self.model.name
 			self.model_variable = camel_case(self.model_name)
 
@@ -468,27 +469,60 @@ class Template(object):
 
 		def _create_view_controller(self):
 			class_name = self.name + "ViewController"
+			if self.is_collection:
+				control_view = "collectionView"
+				data_source = "RxCollectionViewSectionedReloadDataSource"
+				cell_type = "UICollectionViewCell"
+			else:
+				control_view = "tableView"
+				data_source = "RxTableViewSectionedReloadDataSource"
+				cell_type = "UITableViewCell"
 			content = self._file_header(class_name)
 			content += "import UIKit\nimport Reusable\n\n"
 			if self.is_sectioned_list:
 				content += "import RxDataSources\n"
 			content += "final class {}: UIViewController, BindableType {{\n".format(class_name)
-			content += "    @IBOutlet weak var tableView: LoadMoreTableView!\n"
+			if self.is_collection:
+				content += "    @IBOutlet weak var collectionView: LoadMoreCollectionView!\n"
+			else:
+				content += "    @IBOutlet weak var tableView: LoadMoreTableView!\n"
 			content += "    var viewModel: {}ViewModel!\n\n".format(self.name)
 			if self.is_sectioned_list:
 				content += "    fileprivate typealias {}SectionModel = SectionModel<String, {}ViewModel.{}Model>\n".format(self.model_name, self.name, self.model_name)
-				content += "    fileprivate var dataSource: RxTableViewSectionedReloadDataSource<{}SectionModel>!\n".format(self.model_name)
+				content += "    fileprivate var dataSource: {}<{}SectionModel>!\n".format(data_source, self.model_name)
+			if self.is_collection:
+				content += "    fileprivate struct Options {\n"
+				content += "        var itemSpacing: CGFloat = 8\n"
+				content += "        var lineSpacing: CGFloat = 8\n"
+				content += "        var itemsPerRow: Int = 2\n"
+				content += "        var sectionInsets: UIEdgeInsets = UIEdgeInsets(\n"
+				content += "            top: 10.0,\n"
+				content += "            left: 10.0,\n"
+				content += "            bottom: 10.0,\n"
+				content += "            right: 10.0\n"
+				content += "        )\n"
+				content += "    }\n\n"
+				content += "    private var options = Options()\n"
+			content += "\n"
 			content += "    override func viewDidLoad() {\n"
 			content += "        super.viewDidLoad()\n"
 			content += "        configView()\n"
 			content += "    }\n\n"
 			content += "    private func configView() {\n"
-			content += "        tableView.do {\n"
-			content += "            $0.loadMoreDelegate = self\n"
-			content += "            $0.estimatedRowHeight = 550\n"
-			content += "            $0.rowHeight = UITableViewAutomaticDimension\n"
-			content += "            $0.register(cellType: {}Cell.self)\n".format(self.model_name)
-			content += "        }\n"
+			if self.is_collection:
+				content += "        collectionView.do {\n"
+				content += "            $0.register(cellType: {}Cell.self)\n".format(self.model_name)
+				content += "            $0.alwaysBounceVertical = true\n"
+				content += "        }\n"
+				content += "        collectionView.rx\n"
+				content += "            .setDelegate(self)\n"
+				content += "            .disposed(by: rx.disposeBag)\n"
+			else:
+				content += "        tableView.do {\n"
+				content += "            $0.estimatedRowHeight = 550\n"
+				content += "            $0.rowHeight = UITableViewAutomaticDimension\n"
+				content += "            $0.register(cellType: {}Cell.self)\n".format(self.model_name)
+				content += "        }\n"
 			content += "    }\n\n"
 			content += "    deinit {\n"
 			content += "        logDeinit()\n"
@@ -496,15 +530,15 @@ class Template(object):
 			content += "    func bindViewModel() {\n"
 			content += "        let input = {}ViewModel.Input(\n".format(self.name)
 			content += "            loadTrigger: Driver.just(()),\n"
-			content += "            reloadTrigger: tableView.refreshTrigger,\n"
-			content += "            loadMoreTrigger: tableView.loadMoreTrigger,\n"
-			content += "            select{}Trigger: tableView.rx.itemSelected.asDriver()\n".format(self.model_name)
+			content += "            reloadTrigger: {}.refreshTrigger,\n".format(control_view)
+			content += "            loadMoreTrigger: {}.loadMoreTrigger,\n".format(control_view)
+			content += "            select{}Trigger: {}.rx.itemSelected.asDriver()\n".format(self.model_name, control_view)
 			content += "        )\n"
 			content += "        let output = viewModel.transform(input)\n"
 			if self.is_sectioned_list:
-				content += "        dataSource = RxTableViewSectionedReloadDataSource<{}SectionModel>(\n".format(self.model_name)
-				content += "            configureCell: {{ (_, tableView, indexPath, {}) -> UITableViewCell in\n".format(self.model_variable)
-				content += "                return tableView.dequeueReusableCell(for: indexPath, cellType: {}Cell.self).then {{\n".format(self.model_name)
+				content += "        dataSource = {}<{}SectionModel>(\n".format(data_source, self.model_name)
+				content += "            configureCell: {{ (_, {}, indexPath, {}) -> {} in\n".format(control_view, self.model_variable, cell_type)
+				content += "                return {}.dequeueReusableCell(for: indexPath, cellType: {}Cell.self).then {{\n".format(control_view, self.model_name)
 				content += "                    $0.configView(with: {})\n".format(self.model_variable)
 				content += "                }\n"
 				content += "            },\n"
@@ -517,12 +551,12 @@ class Template(object):
 				content += "                    {}SectionModel(model: section.header, items: section.{}List)\n".format(self.model_name, self.model_variable)
 				content += "                }\n"
 				content += "            }\n"
-				content += "            .drive(tableView.rx.items(dataSource: dataSource))\n"
+				content += "            .drive({}.rx.items(dataSource: dataSource))\n".format(control_view)
 				content += "            .disposed(by: rx.disposeBag)\n"
 			else:
 				content += "        output.{}List\n".format(self.model_variable)
-				content += "            .drive(tableView.rx.items) {{ tableView, index, {} in\n".format(self.model_variable)
-				content += "                return tableView.dequeueReusableCell(\n"
+				content += "            .drive({}.rx.items) {{ {}, index, {} in\n".format(control_view, control_view, self.model_variable)
+				content += "                return {}.dequeueReusableCell(\n".format(control_view)
 				content += "                    for: IndexPath(row: index, section: 0),\n"
 				content += "                    cellType: {}Cell.self)\n".format(self.model_name)
 				content += "                    .then {\n"
@@ -537,10 +571,10 @@ class Template(object):
 			content += "            .drive(rx.isLoading)\n"
 			content += "            .disposed(by: rx.disposeBag)\n"
 			content += "        output.refreshing\n"
-			content += "            .drive(tableView.refreshing)\n"
+			content += "            .drive({}.refreshing)\n".format(control_view)
 			content += "            .disposed(by: rx.disposeBag)\n"
 			content += "        output.loadingMore\n"
-			content += "            .drive(tableView.loadingMore)\n"
+			content += "            .drive({}.loadingMore)\n".format(control_view)
 			content += "            .disposed(by: rx.disposeBag)\n"
 			content += "        output.fetchItems\n"
 			content += "            .drive()\n"
@@ -552,12 +586,44 @@ class Template(object):
 			content += "            .drive()\n"
 			content += "            .disposed(by: rx.disposeBag)\n"
 			content += "    }\n\n}\n\n"
-			content += "// MARK: - UITableViewDelegate\n"
-			content += "extension {}ViewController: UITableViewDelegate {{\n".format(self.name)
-			content += "    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {\n"
-			content += "        tableView.deselectRow(at: indexPath, animated: true)\n"
-			content += "    }\n"
-			content += "}\n\n"
+			if self.is_collection:
+				content += "// MARK: - UICollectionViewDelegate\n"
+				content += "extension RepoCollectionViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {\n\n"
+				content += "    func collectionView(_ collectionView: UICollectionView,\n"
+				content += "                        layout collectionViewLayout: UICollectionViewLayout,\n"
+				content += "                        sizeForItemAt indexPath: IndexPath) -> CGSize {\n"
+				content += "        let screenSize = UIScreen.main.bounds\n"
+				content += "        let paddingSpace = options.sectionInsets.left\n"
+				content += "            + options.sectionInsets.right\n"
+				content += "            + CGFloat(options.itemsPerRow - 1) * options.itemSpacing\n"
+				content += "        let availableWidth = screenSize.width - paddingSpace\n"
+				content += "        let widthPerItem = availableWidth / CGFloat(options.itemsPerRow)\n"
+				content += "        let heightPerItem = widthPerItem\n"
+				content += "        return CGSize(width: widthPerItem, height: heightPerItem)\n"
+				content += "    }\n\n"
+				content += "    func collectionView(_ collectionView: UICollectionView,\n"
+				content += "                        layout collectionViewLayout: UICollectionViewLayout,\n"
+				content += "                        insetForSectionAt section: Int) -> UIEdgeInsets {\n"
+				content += "        return options.sectionInsets\n"
+				content += "    }\n\n"
+				content += "    func collectionView(_ collectionView: UICollectionView,\n"
+				content += "                        layout collectionViewLayout: UICollectionViewLayout,\n"
+				content += "                        minimumLineSpacingForSectionAt section: Int) -> CGFloat {\n"
+				content += "        return options.lineSpacing\n"
+				content += "    }\n\n"
+				content += "    func collectionView(_ collectionView: UICollectionView,\n"
+				content += "                        layout collectionViewLayout: UICollectionViewLayout,\n"
+				content += "                        minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {\n"
+				content += "        return options.itemSpacing\n"
+				content += "    }\n"
+				content += "}\n"
+			else:
+				content += "// MARK: - UITableViewDelegate\n"
+				content += "extension {}ViewController: UITableViewDelegate {{\n".format(self.name)
+				content += "    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {\n"
+				content += "        tableView.deselectRow(at: indexPath, animated: true)\n"
+				content += "    }\n"
+				content += "}\n\n"
 			content += "// MARK: - StoryboardSceneBased\n"
 			content += "extension {}ViewController: StoryboardSceneBased {{\n".format(self.name)
 			content += "    // TODO: - Update storyboard\n"
@@ -571,7 +637,10 @@ class Template(object):
 			class_name = self.model_name + "Cell"
 			content = self._file_header(class_name)
 			content += "import UIKit\n\n"
-			content += "final class {}Cell: UITableViewCell, NibReusable {{\n".format(self.model_name)
+			if self.is_collection:
+				content += "final class {}Cell: UIColletionViewCell, NibReusable {{\n".format(self.model_name)
+			else:
+				content += "final class {}Cell: UITableViewCell, NibReusable {{\n".format(self.model_name)
 			for p in model.properties:
 				if p.name != "id":
 					if p.is_url:
@@ -848,7 +917,10 @@ class Template(object):
 			content += "//        viewController = {}ViewController.instantiate()\n	}}\n\n".format(self.name)
 			content += "    func test_ibOutlets() {\n"
 			content += "//        _ = viewController.view\n"
-			content += "//        XCTAssertNotNil(viewController.tableView)\n"
+			if self.is_collection:
+				content += "//        XCTAssertNotNil(viewController.collectionView)\n"
+			else:
+				content += "//        XCTAssertNotNil(viewController.tableView)\n"
 			content += "    }\n}\n"
 			file_name = class_name + ".swift"
 			file_path = "{}/Test/{}.swift".format(self.name, class_name)
