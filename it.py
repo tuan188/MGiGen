@@ -21,8 +21,7 @@ def pasteboard_write(output):
 	process.communicate(output.encode('utf-8'))
 
 def camel_case(st):
-	output = ''.join(x for x in st.title() if x.isalpha())
-	return output[0].lower() + output[1:]
+	return st[0].lower() + st[1:]
 
 def snake_to_camel(st):
     components = st.split('_')
