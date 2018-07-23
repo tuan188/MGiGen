@@ -151,6 +151,7 @@ class Template(object):
 			self._create_navigator()
 			self._create_use_case()
 			self._create_view_controller()
+			self._create_assembler()
 			self._create_view_model_tests()
 			self._create_use_case_mock()
 			self._create_navigator_mock()
@@ -164,12 +165,11 @@ class Template(object):
 				os.makedirs(main_directory)
 			except:
 				pass
-			else:
-				test_directory = os.path.join(main_directory, "Test")
-				try:
-					os.makedirs(test_directory)
-				except:
-					pass
+			test_directory = os.path.join(main_directory, "Test")
+			try:
+				os.makedirs(test_directory)
+			except:
+				pass
 
 		def _create_view_model(self):
 			class_name = self.name + "ViewModel"
@@ -192,7 +192,10 @@ class Template(object):
 			protocol_name = class_name + "Type"
 			content = self._file_header(class_name)
 			content += "protocol {0} {{\n\n}}\n\n".format(protocol_name)
-			content += "struct {}: {} {{\n\n}}\n".format(class_name, protocol_name)
+			content += "struct {}: {} {{\n".format(class_name, protocol_name)
+			content += "    unowned let assembler: Assembler\n"
+			content += "    unowned let navigationController: UINavigationController\n"
+			content += "}\n"
 			file_name = class_name + ".swift"
 			file_path = "{}/{}.swift".format(self.name, class_name)
 			self._create_file(file_path, file_name, content)
@@ -227,6 +230,41 @@ class Template(object):
 			content += "extension {}ViewController: StoryboardSceneBased {{\n".format(self.name)
 			content += "    // TODO: - Update storyboard\n"
 			content += "    static var sceneStoryboard = UIStoryboard()\n"
+			content += "}\n"
+			file_name = class_name + ".swift"
+			file_path = "{}/{}.swift".format(self.name, class_name)
+			self._create_file(file_path, file_name, content)
+
+		def _create_assembler(self):
+			class_name = self.name + "Assembler"
+			content = self._file_header(class_name)
+			content += "import UIKit\n\n"
+			content += "protocol {}Assembler {{\n".format(self.name)
+			content += "    func resolve(navigationController: UINavigationController) -> {}ViewController\n".format(self.name)
+			content += "    func resolve(navigationController: UINavigationController) -> {}ViewModel\n".format(self.name)
+			content += "    func resolve(navigationController: UINavigationController) -> {}NavigatorType\n".format(self.name)
+			content += "    func resolve() -> {}UseCaseType\n".format(self.name)
+			content += "}\n\n"
+			content += "extension {}Assembler {{\n".format(self.name)
+			content += "    func resolve(navigationController: UINavigationController) -> {}ViewController {{\n".format(self.name)
+			content += "        let vc = {}ViewController.instantiate()\n".format(self.name)
+			content += "        let vm: {}ViewModel = resolve(navigationController: navigationController)\n".format(self.name)
+			content += "        vc.bindViewModel(to: vm)\n"
+			content += "        return vc\n"
+			content += "    }\n\n"
+			content += "    func resolve(navigationController: UINavigationController) -> {}ViewModel {{\n".format(self.name)
+			content += "        return {}ViewModel(\n".format(self.name)
+			content += "            navigator: resolve(navigationController: navigationController),\n"
+			content += "            useCase: resolve())\n"
+			content += "    }\n"
+			content += "}\n\n"
+			content += "extension {}Assembler where Self: DefaultAssembler {{\n".format(self.name)
+			content += "    func resolve(navigationController: UINavigationController) -> {}NavigatorType {{\n".format(self.name)
+			content += "        return {}Navigator(assembler: self, navigationController: navigationController)\n".format(self.name)
+			content += "    }\n\n"
+			content += "    func resolve() -> {}UseCaseType {{\n".format(self.name)
+			content += "        return {}UseCase()\n".format(self.name)
+			content += "    }\n"
 			content += "}\n"
 			file_name = class_name + ".swift"
 			file_path = "{}/{}.swift".format(self.name, class_name)
@@ -1421,7 +1459,7 @@ class JSON(object):
 			content += "    }\n"
 			content += "}\n\n"
 			content += "extension {}: Then {{ }}\n\n".format(self.name)
-			content += "extension {}: Mappable {{\n\n".format(self.name)
+			content += "extension {}: Mappable {{\n".format(self.name)
 			content += "    init?(map: Map) {\n"
 			content += "        self.init()\n"
 			content += "    }\n\n"
@@ -1432,7 +1470,7 @@ class JSON(object):
 				else:
 					content += '        {} <- (map["{}"], DateTransform())\n'.format(p.name, p.raw_name)
 			content += "    }\n"
-			content += "}\n\n"
+			content += "}\n"
 			return content
 
 		def __str__(self):
@@ -1527,7 +1565,7 @@ class Mock(object):
 		(protocol_name, class_name) = self._get_protocol_name(str)
 		func_regex = re.compile("func (\w+)\(.*\)( -> (.*))?")
 		funcs = [Mock.Function(f.group(), f.group(1), f.group(3)) for f in func_regex.finditer(str)]
-		content = "final class {}Mock: {} {{\n\n".format(class_name, protocol_name)
+		content = "final class {}Mock: {} {{\n".format(class_name, protocol_name)
 		for f in funcs:
 			content += "    // MARK: - {}\n".format(f.name)
 			content += "    var {}_Called = false\n".format(f.name)
@@ -1545,7 +1583,6 @@ class Mock(object):
 				return_value = "{}()".format(f.return_type)
 			if f.return_type != None:
 				content += "    var {}_ReturnValue: {} = {}\n".format(f.name, f.return_type, return_value)
-			content += "\n"
 			content += "    {} {{\n".format(f.origin)
 			content += "        {}_Called = true\n".format(f.name)
 			if f.return_type != None:
@@ -1554,7 +1591,7 @@ class Mock(object):
 		content += "}\n"
 		return content
 
-#=================== Mock ===================
+#=================== API ===================
 
 class API(object):
 	def __init__(self, api_name):
@@ -1565,9 +1602,6 @@ class API(object):
 		name = self.api_name
 		content = "// MARK: - {}\n".format(name)
 		content += "extension API {\n"
-		content += "    func {}(_ input: {}Input) -> Observable<{}Output> {{\n".format(camel_case(name), name, name)
-		content += "        return request(input)\n"
-		content += "    }\n\n"
 		content += "    final class {}Input: APIInput {{\n".format(name)
 		content += "        init() {\n"
 		content += "            super.init(urlString: API.Urls.{},\n".format(camel_case(name))
@@ -1623,12 +1657,11 @@ class UnitTest(ViewModel):
 	def create_tests(self):
 		view_model = self.view_model_name
 		input_properties, output_properties = self.properties
-
-		content = "final class {}ViewModelTests: XCTestCase {{\n\n".format(view_model)
+		content = "final class {}ViewModelTests: XCTestCase {{\n".format(view_model)
 		content += "    private var viewModel: {}ViewModel!\n".format(view_model)
 		content += "    private var navigator: {}NavigatorMock!\n".format(view_model)
 		content += "    private var useCase: {}UseCaseMock!\n".format(view_model)
-		content += "    private var disposeBag: DisposeBag!\n\n"
+		content += "    private var disposeBag: DisposeBag!\n"
 		content += "    private var input: {}ViewModel.Input!\n".format(view_model)
 		content += "    private var output: {}ViewModel.Output!\n".format(view_model)
 		for p in input_properties:
