@@ -1,7 +1,7 @@
 # coding=utf-8
 # Created by Tuan Truong on 2018-05-24.
 # © 2018 Framgia.
-# v1.0.0
+# v1.1.0
 
 import sys
 import os
@@ -174,7 +174,7 @@ class Template(object):
 		def _create_view_model(self):
 			class_name = self.name + "ViewModel"
 			content = self._file_header(class_name)
-			content += "struct {0}: ViewModelType {{\n\n".format(class_name)
+			content += "struct {0}: ViewModelType {{\n".format(class_name)
 			content += "    struct Input {\n\n    }\n\n"
 			content += "    struct Output {\n\n    }\n\n"
 			content += "    let navigator: {}NavigatorType\n".format(self.name)
@@ -214,7 +214,7 @@ class Template(object):
 			class_name = self.name + "ViewController"
 			content = self._file_header(class_name)
 			content += "import UIKit\nimport Reusable\n\n"
-			content += "final class {}: UIViewController, BindableType {{\n\n".format(class_name)
+			content += "final class {}: UIViewController, BindableType {{\n".format(class_name)
 			content += "    var viewModel: {}ViewModel!\n\n".format(self.name)
 			content += "    override func viewDidLoad() {\n"
 			content += "        super.viewDidLoad()\n"
@@ -225,10 +225,9 @@ class Template(object):
 			content += "    func bindViewModel() {\n"
 			content += "        let input = {}ViewModel.Input()\n".format(self.name)
 			content += "        let output = viewModel.transform(input)\n"
-			content += "    }\n\n}\n\n"
+			content += "    }\n}\n\n"
 			content += "// MARK: - StoryboardSceneBased\n"
 			content += "extension {}ViewController: StoryboardSceneBased {{\n".format(self.name)
-			content += "    // TODO: - Update storyboard\n"
 			content += "    static var sceneStoryboard = UIStoryboard()\n"
 			content += "}\n"
 			file_name = class_name + ".swift"
@@ -275,7 +274,7 @@ class Template(object):
 			content = self._file_header(class_name)
 			content += "@testable import {}\n".format(self.project)
 			content += "import XCTest\nimport RxSwift\nimport RxBlocking\n\n"
-			content += "final class {0}: XCTestCase {{\n\n".format(class_name)
+			content += "final class {0}: XCTestCase {{\n".format(class_name)
 			content += "    private var viewModel: {}ViewModel!\n".format(self.name)
 			content += "    private var navigator: {}NavigatorMock!\n".format(self.name)
 			content += "    private var useCase: {}UseCaseMock!\n".format(self.name)
@@ -286,7 +285,7 @@ class Template(object):
 			content += "        useCase = {}UseCaseMock()\n".format(self.name)
 			content += "        viewModel = {}ViewModel(navigator: navigator, useCase: useCase)\n".format(self.name)
 			content += "        disposeBag = DisposeBag()\n"
-			content += "    }\n\n"
+			content += "    }\n"
 			content += "}\n"
 			file_name = class_name + ".swift"
 			file_path = "{}/Test/{}.swift".format(self.name, class_name)
@@ -316,7 +315,7 @@ class Template(object):
 			content = self._file_header(class_name)
 			content += "@testable import {}\n".format(self.project)
 			content += "import XCTest\nimport Reusable\n\n"
-			content += "final class {0}: XCTestCase {{\n\n".format(class_name)
+			content += "final class {0}: XCTestCase {{\n".format(class_name)
 			content += "    var viewController: {}ViewController!\n\n".format(self.name)
 			content += "    override func setUp() {\n"
 			content += "        super.setUp()\n"
@@ -336,6 +335,8 @@ class Template(object):
 			with open(file_path, "w") as f:
 				f.write(content)
 				print("        new file:   {}".format(file_path))
+
+
 
 	#=================== ListTemplate ===================
 
@@ -358,6 +359,7 @@ class Template(object):
 			self._create_use_case()
 			self._create_view_controller()
 			self._create_table_view_cell()
+			self._create_assembler()
 			self._create_view_model_tests()
 			self._create_use_case_mock()
 			self._create_navigator_mock()
@@ -437,10 +439,9 @@ class Template(object):
 			content += "            })\n"
 			content += "            .mapToVoid()\n\n"
 			if self.is_sectioned_list:
-				content += "        let isEmptyData = Driver.combineLatest({}Sections, loading)\n".format(self.model_variable)
+				content += "        let isEmptyData = Driver.combineLatest({}Sections, fetchItems)\n".format(self.model_variable)
 			else:
-				content += "        let isEmptyData = Driver.combineLatest({}List, loading)\n".format(self.model_variable)
-			content += "            .filter { !$0.1 }\n"
+				content += "        let isEmptyData = Driver.combineLatest({}List, fetchItems)\n".format(self.model_variable)
 			content += "            .map { $0.0.isEmpty }\n\n"
 			content += "        return Output(\n"
 			content += "            error: loadError,\n"
@@ -476,7 +477,7 @@ class Template(object):
 			content += "    func loadMore{}List(page: Int) -> Observable<PagingInfo<{}>> {{\n".format(self.model_name, self.model_name)
 			content += "        return Observable.empty()\n"
 			content += "    }\n"
-			content += "}\n\n"
+			content += "}\n"
 			file_name = class_name + ".swift"
 			file_path = "{}/{}.swift".format(self.name, class_name)
 			self._create_file(file_path, file_name, content)
@@ -486,17 +487,11 @@ class Template(object):
 			protocol_name = class_name + "Type"
 			content = self._file_header(class_name)
 			content += "protocol {0} {{\n".format(protocol_name)
-			content += "    func to{}()\n".format(self.name)
 			content += "    func to{}Detail({}: {})\n".format(self.model_name, self.model_variable, self.model_name)
 			content += "}\n\n"
 			content += "struct {}: {} {{\n".format(class_name, protocol_name)
+			content += "    unowned let assembler: Assembler\n"
 			content += "    unowned let navigationController: UINavigationController\n\n"
-			content += "    func to{}() {{\n".format(self.name)
-			content += "        let vc = {}ViewController.instantiate()\n".format(self.name)
-			content += "        let vm = {}ViewModel(navigator: self, useCase: {}UseCase())\n".format(self.name, self.name)
-			content += "        vc.bindViewModel(to: vm)\n"
-			content += "        navigationController.pushViewController(vc, animated: true)\n"
-			content += "    }\n\n"
 			content += "    func to{}Detail({}: {}) {{\n\n".format(self.model_name, self.model_variable, self.model_name)
 			content += "    }\n"
 			content += "}\n\n"
@@ -520,13 +515,13 @@ class Template(object):
 				content += "import RxDataSources\n"
 			content += "final class {}: UIViewController, BindableType {{\n".format(class_name)
 			if self.is_collection:
-				content += "    @IBOutlet weak var collectionView: LoadMoreCollectionView!\n"
+				content += "    @IBOutlet weak var collectionView: LoadMoreCollectionView!\n\n"
 			else:
-				content += "    @IBOutlet weak var tableView: LoadMoreTableView!\n"
+				content += "    @IBOutlet weak var tableView: LoadMoreTableView!\n\n"
 			content += "    var viewModel: {}ViewModel!\n\n".format(self.name)
 			if self.is_sectioned_list:
 				content += "    fileprivate typealias {}SectionModel = SectionModel<String, {}ViewModel.{}Model>\n".format(self.model_name, self.name, self.model_name)
-				content += "    fileprivate var dataSource: {}<{}SectionModel>!\n".format(data_source, self.model_name)
+				content += "    fileprivate var dataSource: {}<{}SectionModel>!\n\n".format(data_source, self.model_name)
 			if self.is_collection:
 				content += "    fileprivate struct Options {\n"
 				content += "        var itemSpacing: CGFloat = 8\n"
@@ -539,8 +534,7 @@ class Template(object):
 				content += "            right: 10.0\n"
 				content += "        )\n"
 				content += "    }\n\n"
-				content += "    private var options = Options()\n"
-			content += "\n"
+				content += "    private var options = Options()\n\n"
 			content += "    override func viewDidLoad() {\n"
 			content += "        super.viewDidLoad()\n"
 			content += "        configView()\n"
@@ -560,6 +554,9 @@ class Template(object):
 				content += "            $0.rowHeight = UITableViewAutomaticDimension\n"
 				content += "            $0.register(cellType: {}Cell.self)\n".format(self.model_name)
 				content += "        }\n"
+				content += "        tableView.rx\n"
+				content += "            .setDelegate(self)\n"
+				content += "            .disposed(by: rx.disposeBag)\n"
 			content += "    }\n\n"
 			content += "    deinit {\n"
 			content += "        logDeinit()\n"
@@ -579,9 +576,14 @@ class Template(object):
 				content += "                    $0.configView(with: {})\n".format(self.model_variable)
 				content += "                }\n"
 				content += "            },\n"
-				content += "            titleForHeaderInSection: { dataSource, section in\n"
-				content += "                return dataSource.sectionModels[section].model\n"
-				content += "            })\n"
+				if self.is_collection:
+					content += "            configureSupplementaryView: { dataSource, collectionView, kind, indexPath in\n"
+					content += "                return UICollectionReusableView()\n"
+					content += "            })\n"
+				else:
+					content += "            titleForHeaderInSection: { dataSource, section in\n"
+					content += "                return dataSource.sectionModels[section].model\n"
+					content += "            })\n"
 				content += "        output.{}Sections\n".format(self.model_variable)
 				content += "            .map {\n"
 				content += "                $0.map { section in\n"
@@ -625,7 +627,7 @@ class Template(object):
 			content += "    }\n\n}\n\n"
 			if self.is_collection:
 				content += "// MARK: - UICollectionViewDelegate\n"
-				content += "extension RepoCollectionViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {\n\n"
+				content += "extension {}ViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {{\n\n".format(self.name)
 				content += "    func collectionView(_ collectionView: UICollectionView,\n"
 				content += "                        layout collectionViewLayout: UICollectionViewLayout,\n"
 				content += "                        sizeForItemAt indexPath: IndexPath) -> CGSize {\n"
@@ -663,7 +665,6 @@ class Template(object):
 				content += "}\n\n"
 			content += "// MARK: - StoryboardSceneBased\n"
 			content += "extension {}ViewController: StoryboardSceneBased {{\n".format(self.name)
-			content += "    // TODO: - Update storyboard\n"
 			content += "    static var sceneStoryboard = UIStoryboard()\n}\n"
 			file_name = class_name + ".swift"
 			file_path = "{}/{}.swift".format(self.name, class_name)
@@ -687,10 +688,6 @@ class Template(object):
 			content += "\n"
 			content += "    override func awakeFromNib() {\n"
 			content += "        super.awakeFromNib()\n"
-			content += "    }\n\n"
-			content += "    override func prepareForReuse() {\n"
-			content += "        super.prepareForReuse()\n"
-			content += "        configView(with: nil)\n"
 			content += "    }\n\n"
 			content += "    func configView(with model: {}ViewModel.{}Model?) {{\n".format(self.name, self.model_name)
 			content += "        if let model = model {\n\n"
@@ -747,7 +744,7 @@ class Template(object):
 			content += "        output.selected{}.drive().disposed(by: disposeBag)\n".format(self.model_name)
 			content += "        output.isEmptyData.drive().disposed(by: disposeBag)\n"
 			content += "    }\n\n"
-			content += "    func test_loadTriggerInvoked_get{}List() {{\n".format(self.model_name)
+			content += "    func test_loadTrigger_get{}List() {{\n".format(self.model_name)
 			content += "        // act\n"
 			content += "        loadTrigger.onNext(())\n"
 			content += "        let {} = try? output.{}.toBlocking(timeout: 1).first()\n".format(list_name, list_name)
@@ -759,7 +756,7 @@ class Template(object):
 			else:
 				content += "        XCTAssertEqual({}??.count, 1)\n".format(list_name)
 			content += "    }\n\n"
-			content += "    func test_loadTriggerInvoked_get{}List_failedShowError() {{\n".format(self.model_name)
+			content += "    func test_loadTrigger_get{}List_failedShowError() {{\n".format(self.model_name)
 			content += "        // arrange\n"
 			content += "        let get{}List_ReturnValue = PublishSubject<PagingInfo<{}>>()\n".format(self.model_name, self.model_name)
 			content += "        useCase.get{}List_ReturnValue = get{}List_ReturnValue\n\n".format(self.model_name, self.model_name)
@@ -771,7 +768,7 @@ class Template(object):
 			content += "        XCTAssert(useCase.get{}List_Called)\n".format(self.model_name)
 			content += "        XCTAssert(error is TestError)\n"
 			content += "    }\n\n"
-			content += "    func test_reloadTriggerInvoked_get{}List() {{\n".format(self.model_name)
+			content += "    func test_reloadTrigger_get{}List() {{\n".format(self.model_name)
 			content += "        // act\n"
 			content += "        reloadTrigger.onNext(())\n"
 			content += "        let {} = try? output.{}.toBlocking(timeout: 1).first()\n\n".format(list_name, list_name)
@@ -782,7 +779,7 @@ class Template(object):
 			else:
 				content += "        XCTAssertEqual({}??.count, 1)\n".format(list_name)
 			content += "    }\n\n"
-			content += "    func test_reloadTriggerInvoked_get{}List_failedShowError() {{\n".format(self.model_name)
+			content += "    func test_reloadTrigger_get{}List_failedShowError() {{\n".format(self.model_name)
 			content += "        // arrange\n"
 			content += "        let get{}List_ReturnValue = PublishSubject<PagingInfo<{}>>()\n".format(self.model_name, self.model_name)
 			content += "        useCase.get{}List_ReturnValue = get{}List_ReturnValue\n\n".format(self.model_name, self.model_name)
@@ -794,7 +791,7 @@ class Template(object):
 			content += "        XCTAssert(useCase.get{}List_Called)\n".format(self.model_name)
 			content += "        XCTAssert(error is TestError)\n"
 			content += "    }\n\n"
-			content += "    func test_reloadTriggerInvoked_notGet{}ListIfStillLoading() {{\n".format(self.model_name)
+			content += "    func test_reloadTrigger_notGet{}ListIfStillLoading() {{\n".format(self.model_name)
 			content += "        // arrange\n"
 			content += "        let get{}List_ReturnValue = PublishSubject<PagingInfo<{}>>()\n".format(self.model_name, self.model_name)
 			content += "        useCase.get{}List_ReturnValue = get{}List_ReturnValue\n\n".format(self.model_name, self.model_name)
@@ -805,7 +802,7 @@ class Template(object):
 			content += "        // assert\n"
 			content += "        XCTAssertFalse(useCase.get{}List_Called)\n".format(self.model_name)
 			content += "    }\n\n"
-			content += "    func test_reloadTriggerInvoked_notGet{}ListIfStillReloading() {{\n".format(self.model_name)
+			content += "    func test_reloadTrigger_notGet{}ListIfStillReloading() {{\n".format(self.model_name)
 			content += "        // arrange\n"
 			content += "        let get{}List_ReturnValue = PublishSubject<PagingInfo<{}>>()\n".format(self.model_name, self.model_name)
 			content += "        useCase.get{}List_ReturnValue = get{}List_ReturnValue\n\n".format(self.model_name, self.model_name)
@@ -816,7 +813,7 @@ class Template(object):
 			content += "        // assert\n"
 			content += "        XCTAssertFalse(useCase.get{}List_Called)\n".format(self.model_name)
 			content += "    }\n\n"
-			content += "    func test_loadMoreTriggerInvoked_loadMore{}List() {{\n".format(self.model_name)
+			content += "    func test_loadMoreTrigger_loadMore{}List() {{\n".format(self.model_name)
 			content += "        // act\n"
 			content += "        loadTrigger.onNext(())\n"
 			content += "        loadMoreTrigger.onNext(())\n"
@@ -828,7 +825,7 @@ class Template(object):
 			else:
 				content += "        XCTAssertEqual({}??.count, 2)\n".format(list_name)
 			content += "    }\n\n"
-			content += "    func test_loadMoreTriggerInvoked_loadMore{}List_failedShowError() {{\n".format(self.model_name)
+			content += "    func test_loadMoreTrigger_loadMore{}List_failedShowError() {{\n".format(self.model_name)
 			content += "        // arrange\n"
 			content += "        let loadMore{}List_ReturnValue = PublishSubject<PagingInfo<{}>>()\n".format(self.model_name, self.model_name)
 			content += "        useCase.loadMore{}List_ReturnValue = loadMore{}List_ReturnValue\n\n".format(self.model_name, self.model_name)
@@ -841,7 +838,7 @@ class Template(object):
 			content += "        XCTAssert(useCase.loadMore{}List_Called)\n".format(self.model_name)
 			content += "        XCTAssert(error is TestError)\n"
 			content += "    }\n\n"
-			content += "    func test_loadMoreTriggerInvoked_notLoadMore{}ListIfStillLoading() {{\n".format(self.model_name)
+			content += "    func test_loadMoreTrigger_notLoadMore{}ListIfStillLoading() {{\n".format(self.model_name)
 			content += "        // arrange\n"
 			content += "        let get{}List_ReturnValue = PublishSubject<PagingInfo<{}>>()\n".format(self.model_name, self.model_name)
 			content += "        useCase.get{}List_ReturnValue = get{}List_ReturnValue\n\n".format(self.model_name, self.model_name)
@@ -852,7 +849,7 @@ class Template(object):
 			content += "        // assert\n"
 			content += "        XCTAssertFalse(useCase.loadMore{}List_Called)\n".format(self.model_name)
 			content += "    }\n\n"
-			content += "    func test_loadMoreTriggerInvoked_notLoadMore{}ListIfStillReloading() {{\n".format(self.model_name)
+			content += "    func test_loadMoreTrigger_notLoadMore{}ListIfStillReloading() {{\n".format(self.model_name)
 			content += "        // arrange\n"
 			content += "        let get{}List_ReturnValue = PublishSubject<PagingInfo<{}>>()\n".format(self.model_name, self.model_name)
 			content += "        useCase.get{}List_ReturnValue = get{}List_ReturnValue\n\n".format(self.model_name, self.model_name)
@@ -863,7 +860,7 @@ class Template(object):
 			content += "        // assert\n"
 			content += "        XCTAssertFalse(useCase.loadMore{}List_Called)\n".format(self.model_name)
 			content += "    }\n\n"
-			content += "    func test_loadMoreTriggerInvoked_notLoadMoreDocumentTypesStillLoadingMore() {\n"
+			content += "    func test_loadMoreTrigger_notLoadMoreDocumentTypesStillLoadingMore() {\n"
 			content += "        // arrange\n"
 			content += "        let loadMore{}List_ReturnValue = PublishSubject<PagingInfo<{}>>()\n".format(self.model_name, self.model_name)
 			content += "        useCase.loadMore{}List_ReturnValue = loadMore{}List_ReturnValue\n\n".format(self.model_name, self.model_name)
@@ -874,7 +871,7 @@ class Template(object):
 			content += "        // assert\n"
 			content += "        XCTAssertFalse(useCase.loadMore{}List_Called)\n".format(self.model_name)
 			content += "    }\n\n"
-			content += "    func test_select{}TriggerInvoked_to{}Detail() {{\n".format(self.model_name, self.model_name)
+			content += "    func test_select{}Trigger_to{}Detail() {{\n".format(self.model_name, self.model_name)
 			content += "        // act\n"
 			content += "        loadTrigger.onNext(())\n"
 			content += "        select{}Trigger.onNext(IndexPath(row: 0, section: 0))\n\n".format(self.model_name)
@@ -891,7 +888,7 @@ class Template(object):
 			content = self._file_header(class_name)
 			content += "@testable import {}\n".format(self.project)
 			content += "import RxSwift\n\n"
-			content += "final class {0}: {1}UseCaseType {{\n\n".format(class_name, self.name)
+			content += "final class {0}: {1}UseCaseType {{\n".format(class_name, self.name)
 			content += "    // MARK: - get{}List\n".format(self.model_name)
 			content += "    var get{}List_Called = false\n".format(self.model_name)
 			content += "    var get{}List_ReturnValue: Observable<PagingInfo<{}>> = {{\n".format(self.model_name, self.model_name)
@@ -927,7 +924,7 @@ class Template(object):
 			class_name = self.name + "NavigatorMock"
 			content = self._file_header(class_name)
 			content += "@testable import {}\n\n".format(self.project)
-			content += "final class {0}: {1}NavigatorType {{\n\n".format(class_name, self.name)
+			content += "final class {0}: {1}NavigatorType {{\n".format(class_name, self.name)
 			content += "    // MARK: - to{}\n".format(self.name)
 			content += "    var to{}_Called = false\n".format(self.name)
 			content += "    func to{}() {{\n".format(self.name)
@@ -948,7 +945,7 @@ class Template(object):
 			content = self._file_header(class_name)
 			content += "@testable import {}\n".format(self.project)
 			content += "import XCTest\nimport Reusable\n\n"
-			content += "final class {0}: XCTestCase {{\n\n".format(class_name)
+			content += "final class {0}: XCTestCase {{\n".format(class_name)
 			content += "    private var viewController: {}ViewController!\n\n".format(self.name)
 			content += "    override func setUp() {\n		super.setUp()\n"
 			content += "//        viewController = {}ViewController.instantiate()\n	}}\n\n".format(self.name)
@@ -1114,7 +1111,6 @@ class Template(object):
 			content += "    }\n\n}\n\n"
 			content += "// MARK: - StoryboardSceneBased\n"
 			content += "extension {}ViewController: StoryboardSceneBased {{\n".format(self.name)
-			content += "    // TODO: - Update storyboard\n"
 			content += "    static var sceneStoryboard = UIStoryboard()\n"
 			content += "}\n"
 			file_name = class_name + ".swift"
@@ -1323,7 +1319,6 @@ class Template(object):
 			content += "}\n"
 			content += "// MARK: - StoryboardSceneBased\n"
 			content += "extension {}ViewController: StoryboardSceneBased {{\n".format(self.name)
-			content += "    // TODO: - Update storyboard\n"
 			content += "    static var sceneStoryboard = UIStoryboard()\n"
 			content += "}\n"
 			file_name = class_name + ".swift"
@@ -1599,7 +1594,7 @@ class API(object):
 		self.api_name = api_name
 
 	def create_api(self):
-		name = self.api_name
+		name = self.api_name.title()
 		content = "// MARK: - {}\n".format(name)
 		content += "extension API {\n"
 		content += "    final class {}Input: APIInput {{\n".format(name)
@@ -1685,7 +1680,7 @@ class UnitTest(ViewModel):
 			content += "        output.{}.drive().disposed(by: disposeBag)\n".format(p.name)
 		content += "    }\n\n"
 		for p in input_properties:
-			content += "    func test_{}Invoked_() {{\n".format(p.name)
+			content += "    func test_{}_() {{\n".format(p.name)
 			content += "        // arrange\n\n\n"
 			content += "        // act\n\n\n"
 			content += "        // assert\n"
