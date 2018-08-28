@@ -439,9 +439,10 @@ class Template(object):
 			content += "            })\n"
 			content += "            .mapToVoid()\n\n"
 			if self.is_sectioned_list:
-				content += "        let isEmptyData = Driver.combineLatest({}Sections, fetchItems)\n".format(self.model_variable)
+				content += "        let isEmptyData = Driver.combineLatest({}Sections, fetchItems, loading)\n".format(self.model_variable)
 			else:
-				content += "        let isEmptyData = Driver.combineLatest({}List, fetchItems)\n".format(self.model_variable)
+				content += "        let isEmptyData = Driver.combineLatest({}List, fetchItems, loading)\n".format(self.model_variable)
+			content += "            .filter { !$0.2 }\n"
 			content += "            .map { $0.0.isEmpty }\n\n"
 			content += "        return Output(\n"
 			content += "            error: loadError,\n"
