@@ -1,7 +1,7 @@
 # coding=utf-8
 # Created by Tuan Truong on 2018-08-28.
 # © 2018 Framgia.
-# v1.1.1
+# v1.1.2
 
 import sys
 import os
@@ -1441,8 +1441,9 @@ class JSON(object):
 			params = []
 			for p in self.properties:
 				if p.type_name.endswith("?"):
-					if p.original_type_name() in SWIFT_TYPES:
-						params.append("            {}: nil".format(p.name))
+					params.append("            {}: nil".format(p.name))
+				elif p.type_name.endswith("]"):
+					params.append("            {}: []".format(p.name))
 				else:
 					if p.type_name in SWIFT_TYPES_DEFAULT_VALUES:
 						default_value = SWIFT_TYPES_DEFAULT_VALUES[p.type_name]
@@ -1466,7 +1467,7 @@ class JSON(object):
 				else:
 					content += '        {} <- (map["{}"], DateTransform())\n'.format(p.name, p.raw_name)
 			content += "    }\n"
-			content += "}\n"
+			content += "}\n\n"
 			return content
 
 		def __str__(self):
@@ -1496,11 +1497,11 @@ class JSON(object):
 				self._extract_model(var_name.title(), value, models)
 			elif type_name == "list":
 				singular_var_name = plural_to_singular(var_name)
-				var_type = "[{}]?".format(singular_var_name.title())
+				var_type = "[{}]".format(singular_var_name.title())
 				if len(value) > 0:
 					self._extract_model(singular_var_name.title(), value[0], models)
 				else:
-					var_type = "[Any]?"
+					var_type = "[Any]"
 			else:
 				var_type = JSON.JSON_TO_SWIFT_TYPES[type_name]
 				if var_type == "String":
@@ -1596,11 +1597,15 @@ class API(object):
 
 	def create_api(self):
 		name = self.api_name
+		var_name = camel_case(name)
 		content = "// MARK: - {}\n".format(name)
 		content += "extension API {\n"
+		content += "    func {}(_ input: {}Input) -> Observable<{}Output> {{\n".format(var_name, name, name)
+		content += "        return request(input)\n"
+		content += "    }\n\n"
 		content += "    final class {}Input: APIInput {{\n".format(name)
 		content += "        init() {\n"
-		content += "            super.init(urlString: API.Urls.{},\n".format(camel_case(name))
+		content += "            super.init(urlString: API.Urls.{},\n".format(var_name)
 		content += "                       parameters: nil,\n"
 		content += "                       requestType: .get,\n"
 		content += "                       requireAccessToken: true)\n"
@@ -1876,12 +1881,12 @@ class JSONCommand(object):
 		self.json_text = json_text
 
 	def create_models(self):
-		try:
-			output = JSON(self.model_name, self.json_text).create_models()
-			pasteboard_write(output)
-			print("Text has been copied to clipboard.")
-		except:
-			print("Invalid json string in clipboard.")
+		# try:
+		output = JSON(self.model_name, self.json_text).create_models()
+		pasteboard_write(output)
+		print("Text has been copied to clipboard.")
+		# except:
+		# 	print("Invalid json string in clipboard.")
 
 
 class MockCommand(object):
