@@ -1595,7 +1595,7 @@ class API(object):
 		self.api_name = api_name
 
 	def create_api(self):
-		name = self.api_name.title()
+		name = self.api_name
 		content = "// MARK: - {}\n".format(name)
 		content += "extension API {\n"
 		content += "    final class {}Input: APIInput {{\n".format(name)
