@@ -1,7 +1,7 @@
-# coding=utf-8
+# -*- coding: utf-8 -*-
 # Created by Tuan Truong on 2018-08-28.
 # © 2018 Framgia.
-# v1.1.2
+# v2.0.0
 
 import sys
 import os
@@ -10,6 +10,7 @@ import subprocess
 import re
 from collections import OrderedDict
 import json
+from jinja2 import Environment, PackageLoader
 
 #=================== Helpers ===================
 
@@ -130,19 +131,36 @@ class Template(object):
 			self.developer = developer
 			self.company = company
 			self.date = date
+			self.env = Environment(
+				loader=PackageLoader('templates', 'base')
+			)
+
+		def __create_file(self, class_name, content):
+			file_name = class_name + ".swift"
+			file_path = "{}/{}.swift".format(self.name, class_name)
+			self._create_file(file_path, file_name, content)
+
+		def __create_test_file(self, class_name, content):
+			file_name = class_name + ".swift"
+			file_path = "{}/Test/{}.swift".format(self.name, class_name)
+			self._create_file(file_path, file_name, content)
+
+		def _create_file(self, file_path, file_name, content):
+			with open(file_path, "w") as f:
+				f.write(content.encode('utf8'))
+				print("        new file:   {}".format(file_path))
 
 		def _file_header(self, class_name):
-			file_name = class_name + ".swift"
-			header = "//\n"
-			header += "// {}\n".format(file_name)
-			header += "// {}\n".format(self.project)
-			header += "//\n"
-			header += "// Created by {} on {}.\n".format(self.developer, self.date)
-			now = datetime.now()
-			header += "// Copyright © {} {}. All rights reserved.\n".format(now.year, self.company)
-			header += "//\n"
-			header += "\n"
-			return header
+			template = self.env.get_template("header.swift")
+			header = template.render(
+				class_name=class_name,
+				project=self.project,
+				developer=self.developer,
+				created_date=self.date,
+				copyright_year=datetime.now().year,
+				company=self.company
+			)
+			return header + "\n\n"
 
 		def create_files(self):
 			print(" ")
@@ -173,168 +191,88 @@ class Template(object):
 
 		def _create_view_model(self):
 			class_name = self.name + "ViewModel"
+			template = self.env.get_template("ViewModel.swift")
 			content = self._file_header(class_name)
-			content += "struct {0}: ViewModelType {{\n".format(class_name)
-			content += "    struct Input {\n\n    }\n\n"
-			content += "    struct Output {\n\n    }\n\n"
-			content += "    let navigator: {}NavigatorType\n".format(self.name)
-			content += "    let useCase: {}UseCaseType\n\n".format(self.name)
-			content += "    func transform(_ input: Input) -> Output {\n"
-			content += "        return Output()\n"
-			content += "    }\n"
-			content += "}\n"
-			file_name = class_name + ".swift"
-			file_path = "{}/{}.swift".format(self.name, class_name)
-			self._create_file(file_path, file_name, content)
+			content += template.render(
+				name=self.name
+			)
+			self.__create_file(class_name, content)
 
 		def _create_navigator(self):
 			class_name = self.name + "Navigator"
-			protocol_name = class_name + "Type"
+			template = self.env.get_template("Navigator.swift")
 			content = self._file_header(class_name)
-			content += "protocol {0} {{\n\n}}\n\n".format(protocol_name)
-			content += "struct {}: {} {{\n".format(class_name, protocol_name)
-			content += "    unowned let assembler: Assembler\n"
-			content += "    unowned let navigationController: UINavigationController\n"
-			content += "}\n"
-			file_name = class_name + ".swift"
-			file_path = "{}/{}.swift".format(self.name, class_name)
-			self._create_file(file_path, file_name, content)
+			content += template.render(
+				name=self.name
+			)
+			self.__create_file(class_name, content)
 
 		def _create_use_case(self):
 			class_name = self.name + "UseCase"
-			protocol_name = class_name + "Type"
+			template = self.env.get_template("UseCase.swift")
 			content = self._file_header(class_name)
-			content += "protocol {0} {{\n\n}}\n\n".format(protocol_name)
-			content += "struct {}: {} {{\n\n}}\n".format(class_name, protocol_name)
-			file_name = class_name + ".swift"
-			file_path = "{}/{}.swift".format(self.name, class_name)
-			self._create_file(file_path, file_name, content)
+			content += template.render(
+				name=self.name
+			)
+			self.__create_file(class_name, content)
 
 		def _create_view_controller(self):
 			class_name = self.name + "ViewController"
+			template = self.env.get_template("ViewController.swift")
 			content = self._file_header(class_name)
-			content += "import UIKit\nimport Reusable\n\n"
-			content += "final class {}: UIViewController, BindableType {{\n".format(class_name)
-			content += "    var viewModel: {}ViewModel!\n\n".format(self.name)
-			content += "    override func viewDidLoad() {\n"
-			content += "        super.viewDidLoad()\n"
-			content += "    }\n\n"
-			content += "    deinit {\n"
-			content += "        logDeinit()\n"
-			content += "    }\n\n"
-			content += "    func bindViewModel() {\n"
-			content += "        let input = {}ViewModel.Input()\n".format(self.name)
-			content += "        let output = viewModel.transform(input)\n"
-			content += "    }\n}\n\n"
-			content += "// MARK: - StoryboardSceneBased\n"
-			content += "extension {}ViewController: StoryboardSceneBased {{\n".format(self.name)
-			content += "    static var sceneStoryboard = UIStoryboard()\n"
-			content += "}\n"
-			file_name = class_name + ".swift"
-			file_path = "{}/{}.swift".format(self.name, class_name)
-			self._create_file(file_path, file_name, content)
+			content += template.render(
+				name=self.name
+			)
+			self.__create_file(class_name, content)
 
 		def _create_assembler(self):
 			class_name = self.name + "Assembler"
+			template = self.env.get_template("Assembler.swift")
 			content = self._file_header(class_name)
-			content += "import UIKit\n\n"
-			content += "protocol {}Assembler {{\n".format(self.name)
-			content += "    func resolve(navigationController: UINavigationController) -> {}ViewController\n".format(self.name)
-			content += "    func resolve(navigationController: UINavigationController) -> {}ViewModel\n".format(self.name)
-			content += "    func resolve(navigationController: UINavigationController) -> {}NavigatorType\n".format(self.name)
-			content += "    func resolve() -> {}UseCaseType\n".format(self.name)
-			content += "}\n\n"
-			content += "extension {}Assembler {{\n".format(self.name)
-			content += "    func resolve(navigationController: UINavigationController) -> {}ViewController {{\n".format(self.name)
-			content += "        let vc = {}ViewController.instantiate()\n".format(self.name)
-			content += "        let vm: {}ViewModel = resolve(navigationController: navigationController)\n".format(self.name)
-			content += "        vc.bindViewModel(to: vm)\n"
-			content += "        return vc\n"
-			content += "    }\n\n"
-			content += "    func resolve(navigationController: UINavigationController) -> {}ViewModel {{\n".format(self.name)
-			content += "        return {}ViewModel(\n".format(self.name)
-			content += "            navigator: resolve(navigationController: navigationController),\n"
-			content += "            useCase: resolve())\n"
-			content += "    }\n"
-			content += "}\n\n"
-			content += "extension {}Assembler where Self: DefaultAssembler {{\n".format(self.name)
-			content += "    func resolve(navigationController: UINavigationController) -> {}NavigatorType {{\n".format(self.name)
-			content += "        return {}Navigator(assembler: self, navigationController: navigationController)\n".format(self.name)
-			content += "    }\n\n"
-			content += "    func resolve() -> {}UseCaseType {{\n".format(self.name)
-			content += "        return {}UseCase()\n".format(self.name)
-			content += "    }\n"
-			content += "}\n"
-			file_name = class_name + ".swift"
-			file_path = "{}/{}.swift".format(self.name, class_name)
-			self._create_file(file_path, file_name, content)
+			content += template.render(
+				name=self.name
+			)
+			self.__create_file(class_name, content)
 
 		def _create_view_model_tests(self):
 			class_name = self.name + "ViewModelTests"
+			template = self.env.get_template("ViewModelTests.swift")
 			content = self._file_header(class_name)
-			content += "@testable import {}\n".format(self.project)
-			content += "import XCTest\nimport RxSwift\nimport RxBlocking\n\n"
-			content += "final class {0}: XCTestCase {{\n".format(class_name)
-			content += "    private var viewModel: {}ViewModel!\n".format(self.name)
-			content += "    private var navigator: {}NavigatorMock!\n".format(self.name)
-			content += "    private var useCase: {}UseCaseMock!\n".format(self.name)
-			content += "    private var disposeBag: DisposeBag!\n\n"
-			content += "    override func setUp() {\n"
-			content += "        super.setUp()\n"
-			content += "        navigator = {}NavigatorMock()\n".format(self.name)
-			content += "        useCase = {}UseCaseMock()\n".format(self.name)
-			content += "        viewModel = {}ViewModel(navigator: navigator, useCase: useCase)\n".format(self.name)
-			content += "        disposeBag = DisposeBag()\n"
-			content += "    }\n"
-			content += "}\n"
-			file_name = class_name + ".swift"
-			file_path = "{}/Test/{}.swift".format(self.name, class_name)
-			self._create_file(file_path, file_name, content)
+			content += template.render(
+				name=self.name,
+				project=self.project
+			)
+			self.__create_test_file(class_name, content)
 
 		def _create_use_case_mock(self):
 			class_name = self.name + "UseCaseMock"
+			template = self.env.get_template("UseCaseMock.swift")
 			content = self._file_header(class_name)
-			content += "@testable import {}\n".format(self.project)
-			content += "import RxSwift\n\n"
-			content += "final class {0}: {1}UseCaseType {{\n\n}}\n".format(class_name, self.name)
-			file_name = class_name + ".swift"
-			file_path = "{}/Test/{}.swift".format(self.name, class_name)
-			self._create_file(file_path, file_name, content)
+			content += template.render(
+				name=self.name,
+				project=self.project
+			)
+			self.__create_test_file(class_name, content)
 
 		def _create_navigator_mock(self):
 			class_name = self.name + "NavigatorMock"
+			template = self.env.get_template("NavigatorMock.swift")
 			content = self._file_header(class_name)
-			content += "@testable import {}\n\n".format(self.project)
-			content += "final class {0}: {1}NavigatorType {{\n\n}}\n".format(class_name, self.name)
-			file_name = class_name + ".swift"
-			file_path = "{}/Test/{}.swift".format(self.name, class_name)
-			self._create_file(file_path, file_name, content)
+			content += template.render(
+				name=self.name,
+				project=self.project
+			)
+			self.__create_test_file(class_name, content)
 
 		def _create_view_controller_tests(self):
 			class_name = self.name + "ViewControllerTests"
+			template = self.env.get_template("ViewControllerTests.swift")
 			content = self._file_header(class_name)
-			content += "@testable import {}\n".format(self.project)
-			content += "import XCTest\nimport Reusable\n\n"
-			content += "final class {0}: XCTestCase {{\n".format(class_name)
-			content += "    var viewController: {}ViewController!\n\n".format(self.name)
-			content += "    override func setUp() {\n"
-			content += "        super.setUp()\n"
-			content += "        viewController = {}ViewController.instantiate()\n".format(self.name)
-			content += "    }\n\n"
-			content += "    func test_ibOutlets() {\n"
-			content += "        _ = viewController.view\n"
-			content += "        XCTAssert(true)\n"
-			content += "//        XCTAssertNotNil(viewController.tableView)\n"
-			content += "    }\n"
-			content += "}\n"
-			file_name = class_name + ".swift"
-			file_path = "{}/Test/{}.swift".format(self.name, class_name)
-			self._create_file(file_path, file_name, content)
-
-		def _create_file(self, file_path, file_name, content):
-			with open(file_path, "w") as f:
-				f.write(content)
-				print("        new file:   {}".format(file_path))
+			content += template.render(
+				name=self.name,
+				project=self.project
+			)
+			self.__create_test_file(class_name, content)
 
 
 
