@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 # Created by Tuan Truong on 2018-08-28.
 # © 2018 Framgia.
-# v2.0.0
+# v1.0.0
 
 import sys
 import os
 from datetime import datetime
 import subprocess
 import re
-from collections import OrderedDict
-import json
 from jinja2 import Environment, PackageLoader
 
 #=================== Helpers ===================
@@ -17,57 +15,12 @@ from jinja2 import Environment, PackageLoader
 def pasteboard_read():
 	return subprocess.check_output('pbpaste', env={'LANG': 'en_US.UTF-8'}).decode('utf-8')
 
-def pasteboard_write(output):
-	process = subprocess.Popen('pbcopy', env={'LANG': 'en_US.UTF-8'}, stdin=subprocess.PIPE)
-	process.communicate(output.encode('utf-8'))
-
 def camel_case(st):
 	return st[0].lower() + st[1:]
-
-def snake_to_camel(st):
-    components = st.split('_')
-    return components[0] + "".join(x.title() for x in components[1:])
-
-def plural_to_singular(st):
-	if st.endswith("ies"):
-		if len(st) > 3:
-			if st[-4] not in "aeiou":
-				return st[0:-3] + "y"
-	elif st.endswith("es"):
-		if st[-3] in "sxo":
-			return st[0:-2]
-		elif st[-4:-2] == "ch" or st[-4:-2] == "sh":
-			return st[0:-2]
-		else:
-			return st[0:-1]
-	elif st.endswith("s"):
-		if len(st) > 3:
-			return st[:-1]
-	return st
-
 
 #=================== Constants ===================
 
 FILE_HEADER = "file_header.txt"
-
-SWIFT_TYPES_DEFAULT_VALUES = {
-	"Int": "0",
-	"Bool": "false",
-	"String": '""',
-	"Double": "0.0",
-	"Float": "0.0",
-	"Date": "Date()"
-}
-
-SWIFT_TYPES = { 
-	"Int", 
-	"Bool", 
-	"String", 
-	"Double", 
-	"Float"
-	"Date"
-}
-
 
 #=================== BaseTemplate ===================
 
@@ -114,7 +67,7 @@ class Template(object):
 		LIST = "-list"
 		DETAIL = "-detail"
 
-	def _parse_model(self, model_text):
+	def parse_model(self, model_text):
 		model_regex = re.compile("(?:struct|class) (\w+) {((.|\n)*)}")
 		match = model_regex.search(model_text)
 		model_name = match.group(1)
@@ -301,6 +254,7 @@ class Template(object):
 			print(" ")
 			self._make_dirs()
 			self._create_view_model()
+			self._create_item_view_model()
 			self._create_navigator()
 			self._create_use_case()
 			self._create_view_controller()
@@ -316,12 +270,27 @@ class Template(object):
 
 		def _create_view_model(self):
 			class_name = self.name + "ViewModel"
-			template = self.env.get_template("ViewModel.swift")
+			if self.is_sectioned_list:
+				template_name = "SectionedViewModel.swift"
+			else:
+				template_name = "ViewModel.swift"
+			template = self.env.get_template(template_name)
 			content = self._file_header(class_name)
 			content += template.render(
 				name=self.name,
 				model_name=self.model_name,
 				model_variable=self.model_variable
+			)
+			self._create_file(class_name, content)
+
+		def _create_item_view_model(self):
+			class_name = self.model_name + "ViewModel"
+			template = self.env.get_template("ItemViewModel.swift")
+			content = self._file_header(class_name)
+			content += template.render(
+				model_name=self.model_name,
+				model_variable=self.model_variable,
+				properties=self.model.properties
 			)
 			self._create_file(class_name, content)
 
@@ -348,7 +317,16 @@ class Template(object):
 
 		def _create_view_controller(self):
 			class_name = self.name + "ViewController"
-			template_file = "TableViewController.swift"
+			if self.is_sectioned_list:
+				if self.is_collection:
+					template_file = "SectionedCollectionViewController.swift"
+				else:
+					template_file = "SectionedTableViewController.swift"
+			else:
+				if self.is_collection:
+					template_file = "CollectionViewController.swift"
+				else:
+					template_file = "TableViewController.swift"
 			template = self.env.get_template(template_file)
 			content = self._file_header(class_name)
 			content += template.render(
@@ -359,297 +337,84 @@ class Template(object):
 			self._create_file(class_name, content)
 
 		def _create_table_view_cell(self):
-			model = self.model
 			class_name = self.model_name + "Cell"
-			template_file = "TableViewCell.swift"
+			if self.is_collection:
+				template_file = "CollectionViewCell.swift"
+			else:
+				template_file = "TableViewCell.swift"
 			template = self.env.get_template(template_file)
 			content = self._file_header(class_name)
 			content += template.render(
 				model_name=self.model_name,
 				model_variable=self.model_variable,
-				properties=model.properties
+				properties=self.model.properties
 			)
 			self._create_file(class_name, content)
 
 		def _create_view_model_tests(self):
 			class_name = self.name + "ViewModelTests"
-			list_name = ("{}Sections" if self.is_sectioned_list else "{}List").format(self.model_variable)
+			if self.is_sectioned_list:
+				template_name = "SectionedViewModelTests.swift"
+			else:
+				template_name = "ViewModelTests.swift"
+			template = self.env.get_template(template_name)
 			content = self._file_header(class_name)
-			content += "@testable import {}\n".format(self.project)
-			content += "import XCTest\nimport RxSwift\nimport RxBlocking\n\n"
-			content += "final class {}: XCTestCase {{\n".format(class_name)
-			content += "    private var viewModel: {}ViewModel!\n".format(self.name)
-			content += "    private var navigator: {}NavigatorMock!\n".format(self.name)
-			content += "    private var useCase: {}UseCaseMock!\n".format(self.name)
-			content += "    private var disposeBag: DisposeBag!\n"
-			content += "    private var input: {}ViewModel.Input!\n".format(self.name)
-			content += "    private var output: {}ViewModel.Output!\n".format(self.name)
-			content += "    private let loadTrigger = PublishSubject<Void>()\n"
-			content += "    private let reloadTrigger = PublishSubject<Void>()\n"
-			content += "    private let loadMoreTrigger = PublishSubject<Void>()\n"
-			content += "    private let select{}Trigger = PublishSubject<IndexPath>()\n\n".format(self.model_name)
-			content += "    override func setUp() {\n"
-			content += "        super.setUp()\n"
-			content += "        navigator = {}NavigatorMock()\n".format(self.name)
-			content += "        useCase = {}UseCaseMock()\n".format(self.name)
-			content += "        viewModel = {}ViewModel(navigator: navigator, useCase: useCase)\n".format(self.name)
-			content += "        disposeBag = DisposeBag()\n"
-			content += "        input = {}ViewModel.Input(\n".format(self.name)
-			content += "            loadTrigger: loadTrigger.asDriverOnErrorJustComplete(),\n"
-			content += "            reloadTrigger: reloadTrigger.asDriverOnErrorJustComplete(),\n"
-			content += "            loadMoreTrigger: loadMoreTrigger.asDriverOnErrorJustComplete(),\n"
-			content += "            select{}Trigger: select{}Trigger.asDriverOnErrorJustComplete()\n".format(self.model_name, self.model_name)
-			content += "        )\n"
-			content += "        output = viewModel.transform(input)\n"
-			content += "        output.error.drive().disposed(by: disposeBag)\n"
-			content += "        output.loading.drive().disposed(by: disposeBag)\n"
-			content += "        output.refreshing.drive().disposed(by: disposeBag)\n"
-			content += "        output.loadingMore.drive().disposed(by: disposeBag)\n"
-			content += "        output.fetchItems.drive().disposed(by: disposeBag)\n"
-			content += "        output.{}.drive().disposed(by: disposeBag)\n".format(list_name)
-			content += "        output.selected{}.drive().disposed(by: disposeBag)\n".format(self.model_name)
-			content += "        output.isEmptyData.drive().disposed(by: disposeBag)\n"
-			content += "    }\n\n"
-			content += "    func test_loadTrigger_get{}List() {{\n".format(self.model_name)
-			content += "        // act\n"
-			content += "        loadTrigger.onNext(())\n"
-			content += "        let {} = try? output.{}.toBlocking(timeout: 1).first()\n".format(list_name, list_name)
-			content += "        \n"
-			content += "        // assert\n"
-			content += "        XCTAssert(useCase.get{}List_Called)\n".format(self.model_name)
-			if self.is_sectioned_list:
-				content += "        XCTAssertEqual({}??[0].{}List.count, 1)\n".format(list_name, self.model_variable)
-			else:
-				content += "        XCTAssertEqual({}??.count, 1)\n".format(list_name)
-			content += "    }\n\n"
-			content += "    func test_loadTrigger_get{}List_failedShowError() {{\n".format(self.model_name)
-			content += "        // arrange\n"
-			content += "        let get{}List_ReturnValue = PublishSubject<PagingInfo<{}>>()\n".format(self.model_name, self.model_name)
-			content += "        useCase.get{}List_ReturnValue = get{}List_ReturnValue\n\n".format(self.model_name, self.model_name)
-			content += "        // act\n"
-			content += "        loadTrigger.onNext(())\n"
-			content += "        get{}List_ReturnValue.onError(TestError())\n".format(self.model_name)
-			content += "        let error = try? output.error.toBlocking(timeout: 1).first()\n\n"
-			content += "        // assert\n"
-			content += "        XCTAssert(useCase.get{}List_Called)\n".format(self.model_name)
-			content += "        XCTAssert(error is TestError)\n"
-			content += "    }\n\n"
-			content += "    func test_reloadTrigger_get{}List() {{\n".format(self.model_name)
-			content += "        // act\n"
-			content += "        reloadTrigger.onNext(())\n"
-			content += "        let {} = try? output.{}.toBlocking(timeout: 1).first()\n\n".format(list_name, list_name)
-			content += "        // assert\n"
-			content += "        XCTAssert(useCase.get{}List_Called)\n".format(self.model_name)
-			if self.is_sectioned_list:
-				content += "        XCTAssertEqual({}??[0].{}List.count, 1)\n".format(list_name, self.model_variable)
-			else:
-				content += "        XCTAssertEqual({}??.count, 1)\n".format(list_name)
-			content += "    }\n\n"
-			content += "    func test_reloadTrigger_get{}List_failedShowError() {{\n".format(self.model_name)
-			content += "        // arrange\n"
-			content += "        let get{}List_ReturnValue = PublishSubject<PagingInfo<{}>>()\n".format(self.model_name, self.model_name)
-			content += "        useCase.get{}List_ReturnValue = get{}List_ReturnValue\n\n".format(self.model_name, self.model_name)
-			content += "        // act\n"
-			content += "        reloadTrigger.onNext(())\n"
-			content += "        get{}List_ReturnValue.onError(TestError())\n".format(self.model_name)
-			content += "        let error = try? output.error.toBlocking(timeout: 1).first()\n\n"
-			content += "        // assert\n"
-			content += "        XCTAssert(useCase.get{}List_Called)\n".format(self.model_name)
-			content += "        XCTAssert(error is TestError)\n"
-			content += "    }\n\n"
-			content += "    func test_reloadTrigger_notGet{}ListIfStillLoading() {{\n".format(self.model_name)
-			content += "        // arrange\n"
-			content += "        let get{}List_ReturnValue = PublishSubject<PagingInfo<{}>>()\n".format(self.model_name, self.model_name)
-			content += "        useCase.get{}List_ReturnValue = get{}List_ReturnValue\n\n".format(self.model_name, self.model_name)
-			content += "        // act\n"
-			content += "        loadTrigger.onNext(())\n"
-			content += "        useCase.get{}List_Called = false\n".format(self.model_name)
-			content += "        reloadTrigger.onNext(())\n\n"
-			content += "        // assert\n"
-			content += "        XCTAssertFalse(useCase.get{}List_Called)\n".format(self.model_name)
-			content += "    }\n\n"
-			content += "    func test_reloadTrigger_notGet{}ListIfStillReloading() {{\n".format(self.model_name)
-			content += "        // arrange\n"
-			content += "        let get{}List_ReturnValue = PublishSubject<PagingInfo<{}>>()\n".format(self.model_name, self.model_name)
-			content += "        useCase.get{}List_ReturnValue = get{}List_ReturnValue\n\n".format(self.model_name, self.model_name)
-			content += "        // act\n"
-			content += "        reloadTrigger.onNext(())\n"
-			content += "        useCase.get{}List_Called = false\n".format(self.model_name)
-			content += "        reloadTrigger.onNext(())\n\n"
-			content += "        // assert\n"
-			content += "        XCTAssertFalse(useCase.get{}List_Called)\n".format(self.model_name)
-			content += "    }\n\n"
-			content += "    func test_loadMoreTrigger_loadMore{}List() {{\n".format(self.model_name)
-			content += "        // act\n"
-			content += "        loadTrigger.onNext(())\n"
-			content += "        loadMoreTrigger.onNext(())\n"
-			content += "        let {} = try? output.{}.toBlocking(timeout: 1).first()\n\n".format(list_name, list_name)
-			content += "        // assert\n"
-			content += "        XCTAssert(useCase.loadMore{}List_Called)\n".format(self.model_name)
-			if self.is_sectioned_list:
-				content += "        XCTAssertEqual({}??[0].{}List.count, 2)\n".format(list_name, self.model_variable)
-			else:
-				content += "        XCTAssertEqual({}??.count, 2)\n".format(list_name)
-			content += "    }\n\n"
-			content += "    func test_loadMoreTrigger_loadMore{}List_failedShowError() {{\n".format(self.model_name)
-			content += "        // arrange\n"
-			content += "        let loadMore{}List_ReturnValue = PublishSubject<PagingInfo<{}>>()\n".format(self.model_name, self.model_name)
-			content += "        useCase.loadMore{}List_ReturnValue = loadMore{}List_ReturnValue\n\n".format(self.model_name, self.model_name)
-			content += "        // act\n"
-			content += "        loadTrigger.onNext(())\n"
-			content += "        loadMoreTrigger.onNext(())\n"
-			content += "        loadMore{}List_ReturnValue.onError(TestError())\n".format(self.model_name)
-			content += "        let error = try? output.error.toBlocking(timeout: 1).first()\n\n"
-			content += "        // assert\n"
-			content += "        XCTAssert(useCase.loadMore{}List_Called)\n".format(self.model_name)
-			content += "        XCTAssert(error is TestError)\n"
-			content += "    }\n\n"
-			content += "    func test_loadMoreTrigger_notLoadMore{}ListIfStillLoading() {{\n".format(self.model_name)
-			content += "        // arrange\n"
-			content += "        let get{}List_ReturnValue = PublishSubject<PagingInfo<{}>>()\n".format(self.model_name, self.model_name)
-			content += "        useCase.get{}List_ReturnValue = get{}List_ReturnValue\n\n".format(self.model_name, self.model_name)
-			content += "        // act\n"
-			content += "        loadTrigger.onNext(())\n"
-			content += "        useCase.get{}List_Called = false\n".format(self.model_name)
-			content += "        loadMoreTrigger.onNext(())\n\n"
-			content += "        // assert\n"
-			content += "        XCTAssertFalse(useCase.loadMore{}List_Called)\n".format(self.model_name)
-			content += "    }\n\n"
-			content += "    func test_loadMoreTrigger_notLoadMore{}ListIfStillReloading() {{\n".format(self.model_name)
-			content += "        // arrange\n"
-			content += "        let get{}List_ReturnValue = PublishSubject<PagingInfo<{}>>()\n".format(self.model_name, self.model_name)
-			content += "        useCase.get{}List_ReturnValue = get{}List_ReturnValue\n\n".format(self.model_name, self.model_name)
-			content += "        // act\n"
-			content += "        reloadTrigger.onNext(())\n"
-			content += "        useCase.get{}List_Called = false\n".format(self.model_name)
-			content += "        loadMoreTrigger.onNext(())\n"
-			content += "        // assert\n"
-			content += "        XCTAssertFalse(useCase.loadMore{}List_Called)\n".format(self.model_name)
-			content += "    }\n\n"
-			content += "    func test_loadMoreTrigger_notLoadMoreDocumentTypesStillLoadingMore() {\n"
-			content += "        // arrange\n"
-			content += "        let loadMore{}List_ReturnValue = PublishSubject<PagingInfo<{}>>()\n".format(self.model_name, self.model_name)
-			content += "        useCase.loadMore{}List_ReturnValue = loadMore{}List_ReturnValue\n\n".format(self.model_name, self.model_name)
-			content += "        // act\n"
-			content += "        loadMoreTrigger.onNext(())\n"
-			content += "        useCase.loadMore{}List_Called = false\n".format(self.model_name)
-			content += "        loadMoreTrigger.onNext(())\n\n"
-			content += "        // assert\n"
-			content += "        XCTAssertFalse(useCase.loadMore{}List_Called)\n".format(self.model_name)
-			content += "    }\n\n"
-			content += "    func test_select{}Trigger_to{}Detail() {{\n".format(self.model_name, self.model_name)
-			content += "        // act\n"
-			content += "        loadTrigger.onNext(())\n"
-			content += "        select{}Trigger.onNext(IndexPath(row: 0, section: 0))\n\n".format(self.model_name)
-			content += "        // assert\n"
-			content += "        XCTAssert(navigator.to{}Detail_Called)\n".format(self.model_name)
-			content += "    }\n"
-			content += "}\n\n"
-			file_name = class_name + ".swift"
-			file_path = "{}/Test/{}.swift".format(self.name, class_name)
-			self._BaseTemplate__create_file(file_path, file_name, content)
+			content += template.render(
+				project=self.project,
+				name=self.name,
+				model_name=self.model_name,
+				model_variable=self.model_variable
+			)
+			self._create_test_file(class_name, content)
 
 		def _create_use_case_mock(self):
 			class_name = self.name + "UseCaseMock"
+			template = self.env.get_template("UseCaseMock.swift")
 			content = self._file_header(class_name)
-			content += "@testable import {}\n".format(self.project)
-			content += "import RxSwift\n\n"
-			content += "final class {0}: {1}UseCaseType {{\n".format(class_name, self.name)
-			content += "    // MARK: - get{}List\n".format(self.model_name)
-			content += "    var get{}List_Called = false\n".format(self.model_name)
-			content += "    var get{}List_ReturnValue: Observable<PagingInfo<{}>> = {{\n".format(self.model_name, self.model_name)
-			content += "        let items = [\n"
-			content += "            {}().with {{ $0.id = 1 }}\n".format(self.model_name)
-			content += "        ]\n"
-			content += "        let page = PagingInfo<{}>(page: 1, items: OrderedSet(sequence: items))\n".format(self.model_name)
-			content += "        return Observable.just(page)\n"
-			content += "    }()\n"
-			content += "    func get{}List() -> Observable<PagingInfo<{}>> {{\n".format(self.model_name, self.model_name)
-			content += "        get{}List_Called = true\n".format(self.model_name)
-			content += "        return get{}List_ReturnValue\n".format(self.model_name)
-			content += "    }\n\n"
-			content += "    // MARK: - loadMore{}List\n".format(self.model_name)
-			content += "    var loadMore{}List_Called = false\n".format(self.model_name)
-			content += "    var loadMore{}List_ReturnValue: Observable<PagingInfo<{}>> = {{\n".format(self.model_name, self.model_name)
-			content += "        let items = [\n"
-			content += "            {}().with {{ $0.id = 2 }}\n".format(self.model_name)
-			content += "        ]\n"
-			content += "        let page = PagingInfo<{}>(page: 2, items: OrderedSet(sequence: items))\n".format(self.model_name)
-			content += "        return Observable.just(page)\n"
-			content += "    }()\n"
-			content += "    func loadMore{}List(page: Int) -> Observable<PagingInfo<{}>> {{\n".format(self.model_name, self.model_name)
-			content += "        loadMore{}List_Called = true\n".format(self.model_name)
-			content += "        return loadMore{}List_ReturnValue\n".format(self.model_name)
-			content += "    }\n"
-			content += "}\n"
-			file_name = class_name + ".swift"
-			file_path = "{}/Test/{}.swift".format(self.name, class_name)
-			self._BaseTemplate__create_file(file_path, file_name, content)
+			content += template.render(
+				project=self.project,
+				name=self.name,
+				model_name=self.model_name
+			)
+			self._create_test_file(class_name, content)
 
 		def _create_navigator_mock(self):
 			class_name = self.name + "NavigatorMock"
+			template = self.env.get_template("NavigatorMock.swift")
 			content = self._file_header(class_name)
-			content += "@testable import {}\n\n".format(self.project)
-			content += "final class {0}: {1}NavigatorType {{\n".format(class_name, self.name)
-			content += "    // MARK: - to{}\n".format(self.name)
-			content += "    var to{}_Called = false\n".format(self.name)
-			content += "    func to{}() {{\n".format(self.name)
-			content += "        to{}_Called = true\n".format(self.name)
-			content += "    }\n\n"
-			content += "    // MARK: - to{}Detail\n".format(self.model_name)
-			content += "    var to{}Detail_Called = false\n".format(self.model_name)
-			content += "    func to{}Detail({}: {}) {{\n".format(self.model_name, self.model_variable, self.model_name)
-			content += "        to{}Detail_Called = true\n".format(self.model_name)
-			content += "    }\n"
-			content += "}\n"
-			file_name = class_name + ".swift"
-			file_path = "{}/Test/{}.swift".format(self.name, class_name)
-			self._BaseTemplate__create_file(file_path, file_name, content)
+			content += template.render(
+				project=self.project,
+				name=self.name,
+				model_name=self.model_name,
+				model_variable=self.model_variable
+			)
+			self._create_test_file(class_name, content)
 
 		def _create_view_controller_tests(self):
 			class_name = self.name + "ViewControllerTests"
-			content = self._file_header(class_name)
-			content += "@testable import {}\n".format(self.project)
-			content += "import XCTest\nimport Reusable\n\n"
-			content += "final class {0}: XCTestCase {{\n".format(class_name)
-			content += "    private var viewController: {}ViewController!\n\n".format(self.name)
-			content += "    override func setUp() {\n		super.setUp()\n"
-			content += "//        viewController = {}ViewController.instantiate()\n	}}\n\n".format(self.name)
-			content += "    func test_ibOutlets() {\n"
-			content += "//        _ = viewController.view\n"
 			if self.is_collection:
-				content += "//        XCTAssertNotNil(viewController.collectionView)\n"
+				template_name = "CollectionViewControllerTests.swift"
 			else:
-				content += "//        XCTAssertNotNil(viewController.tableView)\n"
-			content += "    }\n}\n"
-			file_name = class_name + ".swift"
-			file_path = "{}/Test/{}.swift".format(self.name, class_name)
-			self._BaseTemplate__create_file(file_path, file_name, content)
+				template_name = "TableViewControllerTests.swift"
+			template = self.env.get_template(template_name)
+			content = self._file_header(class_name)
+			content += template.render(
+				project=self.project,
+				name=self.name
+			)
+			self._create_test_file(class_name, content)
 
 		def _create_table_view_cell_tests(self):
 			class_name = "{}CellTests".format(self.model_name)
+			template_name = "TableViewCellTests.swift"
+			template = self.env.get_template(template_name)
 			content = self._file_header(class_name)
-			content += "import XCTest\n"
-			content += "@testable import {}\n\n".format(self.project)
-			content += "final class {}: XCTestCase {{\n".format(class_name)
-			content += "    var cell: {}Cell!\n\n".format(self.model_name)
-			content += "    override func setUp() {\n"
-			content += "        super.setUp()\n"
-			content += "//        cell = {}Cell.loadFromNib()\n".format(self.model_name)
-			content += "    }\n\n"
-			content += "    func test_iboutlets() {\n"
-			content += "//        XCTAssertNotNil(cell)\n"
-			for p in self.model.properties:
-				if p.name != "id":
-					if p.is_url:
-						content += "//        XCTAssertNotNil(cell.{}ImageView)\n".format(p.name)
-					else:
-						content += "//        XCTAssertNotNil(cell.{}Label)\n".format(p.name)
-			content += "    }\n"
-			content += "}\n"
-			file_name = class_name + ".swift"
-			file_path = "{}/Test/{}.swift".format(self.name, class_name)
-			self._BaseTemplate__create_file(file_path, file_name, content)
+			content += template.render(
+				project=self.project,
+				model_name=self.model_name,
+				properties=self.model.properties
+			)
+			self._create_test_file(class_name, content)
 
 
 	#=================== DetailTemplate ===================
@@ -1121,7 +886,7 @@ class TemplateCommmand(object):
 		elif self.template_name == Template.TemplateType.LIST:
 			model_text = pasteboard_read()
 			# try:
-			model = Template()._parse_model(model_text)
+			model = Template().parse_model(model_text)
 			template = Template.ListTemplate(model, self.options, self.scene_name, project, developer, company, date)
 			template.create_files()
 			print("Finish!")
@@ -1130,7 +895,7 @@ class TemplateCommmand(object):
 		elif self.template_name == Template.TemplateType.DETAIL:
 			model_text = pasteboard_read()
 			try:
-				model = Template()._parse_model(model_text)
+				model = Template().parse_model(model_text)
 				if "--static" in self.options:
 					template = Template.StaticDetailTemplate(model, self.options, self.scene_name, project, developer, company, date)
 				else:
