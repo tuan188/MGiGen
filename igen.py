@@ -582,6 +582,7 @@ class Template(object):
 		def create_files(self):
 			print(" ")
 			self._make_dirs()
+			self._create_assembler()
 			self._create_view_model()
 			self._create_navigator()
 			self._create_use_case()
@@ -590,150 +591,53 @@ class Template(object):
 			self._create_use_case_mock()
 			self._create_navigator_mock()
 			self._create_view_controller_tests()
-			self._create_cells_tests()
 			print(" ")
 
 		def _create_view_model(self):
 			class_name = self.name + "ViewModel"
+			template = self.env.get_template("StaticViewModel.swift")
 			content = self._file_header(class_name)
-			content += "struct {}ViewModel: ViewModelType {{\n\n".format(self.name)
-			content += "    struct Input {\n"
-			content += "        let loadTrigger: Driver<Void>\n"
-			content += "    }\n\n"
-			content += "    struct Output {\n"
-			content += "        let name: Driver<String>\n"
-			content += "        let price: Driver<Double>\n"
-			content += "    }\n\n"
-			content += "    let navigator: {}NavigatorType\n".format(self.name)
-			content += "    let useCase: {}UseCaseType\n".format(self.name)
-			content += "    let {}: {}\n\n".format(self.model_variable, self.model_name)
-			content += "    func transform(_ input: Input) -> Output {\n"
-			content += "        let {} = input.loadTrigger\n".format(self.model_variable)
-			content += "            .map {{ self.{} }}\n".format(self.model_variable)
-			for p in self.model.properties:
-				if p.name != "id":
-					content += "        let {} = {}.map {{ $0.{} }}\n".format(p.name, self.model_variable, p.name)
-			outputs = []
-			for p in self.model.properties:
-				if p.name != "id":
-					output = "            {}: {}".format(p.name, p.name)
-					outputs.append(output)
-			content += "        return Output(\n"
-			content += ",\n".join(outputs)
-			content += "\n"
-			content += "        )\n"
-			content += "    }\n"
-			content += "}\n"
-			file_name = class_name + ".swift"
-			file_path = "{}/{}.swift".format(self.name, class_name)
-			self._create_file(file_path, file_name, content)
+			content += template.render(
+				name=self.name,
+				model_name=self.model_name,
+				model_variable=self.model_variable,
+				properties=self.model.properties
+			)
+			self._create_file(class_name, content)
 
 		def _create_view_controller(self):
 			class_name = self.name + "ViewController"
+			template = self.env.get_template("StaticViewController.swift")
 			content = self._file_header(class_name)
-			content += "import UIKit\nimport Reusable\n\n"
-			content += "final class {}ViewController: UITableViewController, BindableType {{\n\n".format(self.name)
-			for p in self.model.properties:
-				if p.name != "id":
-					if p.is_url:
-						content += "    @IBOutlet weak var {}ImageView: UIImageView!\n".format(p.name)
-					else:
-						content += "    @IBOutlet weak var {}Label: UILabel!\n".format(p.name)
-			content += "\n"
-			content += "    var viewModel: {}ViewModel!\n\n".format(self.name)
-			content += "    override func viewDidLoad() {\n"
-			content += "        super.viewDidLoad()\n"
-			content += "    }\n\n"
-			content += "    deinit {\n"
-			content += "        logDeinit()\n"
-			content += "    }\n\n"
-			content += "    func bindViewModel() {\n"
-			content += "        let input = {}ViewModel.Input(\n".format(self.name)
-			content += "            loadTrigger: Driver.just(())\n"
-			content += "        )\n"
-			content += "        let output = viewModel.transform(input)\n"
-			for p in self.model.properties:
-				if p.name != "id":
-					content += "        output.{}\n".format(p.name)
-					content += "            .drive()\n"
-					content += "            .disposed(by: rx.disposeBag)\n"
-			content += "    }\n"
-			content += "}\n"
-			content += "// MARK: - StoryboardSceneBased\n"
-			content += "extension {}ViewController: StoryboardSceneBased {{\n".format(self.name)
-			content += "    static var sceneStoryboard = UIStoryboard()\n"
-			content += "}\n"
-			file_name = class_name + ".swift"
-			file_path = "{}/{}.swift".format(self.name, class_name)
-			self._create_file(file_path, file_name, content)
+			content += template.render(
+				name=self.name,
+				properties=self.model.properties
+			)
+			self._create_file(class_name, content)
 
 		def _create_view_model_tests(self):
 			class_name = self.name + "ViewModelTests"
+			template = self.env.get_template("StaticViewModelTests.swift")
 			content = self._file_header(class_name)
-			content += "@testable import {}\n".format(self.project)
-			content += "import XCTest\nimport RxSwift\nimport RxBlocking\n\n"
-			content += "final class {}ViewModelTests: XCTestCase {{\n\n".format(self.name)
-			content += "    private var viewModel: {}ViewModel!\n".format(self.name)
-			content += "    private var navigator: {}NavigatorMock!\n".format(self.name)
-			content += "    private var useCase: {}UseCaseMock!\n".format(self.name)
-			content += "    private var disposeBag: DisposeBag!\n"
-			content += "    private var input: {}ViewModel.Input!\n".format(self.name)
-			content += "    private var output: {}ViewModel.Output!\n".format(self.name)
-			content += "    private let loadTrigger = PublishSubject<Void>()\n\n"
-			content += "    override func setUp() {\n"
-			content += "        super.setUp()\n"
-			content += "        navigator = {}NavigatorMock()\n".format(self.name)
-			content += "        useCase = {}UseCaseMock()\n".format(self.name)
-			content += "        viewModel = {}ViewModel(navigator: navigator, useCase: useCase, {}: {}())\n".format(self.name, self.model_variable, self.model_name)
-			content += "        disposeBag = DisposeBag()\n"
-			content += "        input = {}ViewModel.Input(\n".format(self.name)
-			content += "            loadTrigger: loadTrigger.asDriverOnErrorJustComplete()\n"
-			content += "        )\n"
-			content += "        output = viewModel.transform(input)\n"
-			for p in self.model.properties:
-				if p.name != "id":
-					content += "        output.{}.drive().disposed(by: disposeBag)\n".format(p.name)
-			content += "    }\n\n"
-			content += "    func test_loadTriggerInvoked_createCells() {\n"
-			content += "        // act\n"
-			content += "        loadTrigger.onNext(())\n"
-			for p in self.model.properties:
-				if p.name != "id":
-					content += "        let {} = try? output.{}.toBlocking(timeout: 1).first()\n".format(p.name, p.name)
-			content += "\n"
-			content += "        // assert\n"
-			content += "        XCTAssert(true)\n"
-			content += "    }\n\n"
-			content += "}\n"
-			file_name = class_name + ".swift"
-			file_path = "{}/Test/{}.swift".format(self.name, class_name)
-			self._create_file(file_path, file_name, content)
+			content += template.render(
+				name=self.name,
+				project=self.project,
+				model_name=self.model_name,
+				model_variable=self.model_variable,
+				properties=self.model.properties
+			)
+			self._create_test_file(class_name, content)
 
 		def _create_view_controller_tests(self):
 			class_name = self.name + "ViewControllerTests"
+			template = self.env.get_template("StaticViewControllerTests.swift")
 			content = self._file_header(class_name)
-			content += "@testable import {}\n".format(self.project)
-			content += "import XCTest\nimport Reusable\n\n"
-			content += "final class {0}: XCTestCase {{\n\n".format(class_name)
-			content += "    private var viewController: {}ViewController!\n\n".format(self.name)
-			content += "    override func setUp() {\n"
-			content += "        super.setUp()\n"
-			content += "        viewController = {}ViewController.instantiate()\n".format(self.name)
-			content += "    }\n\n"
-			content += "    func test_ibOutlets() {\n"
-			content += "        _ = viewController.view\n"
-			content += "        XCTAssertNotNil(viewController.tableView)\n"
-			for p in self.model.properties:
-				if p.name != "id":
-					if p.is_url:
-						content += "        XCTAssertNotNil(viewController.{}ImageView)\n".format(p.name)
-					else:
-						content += "        XCTAssertNotNil(viewController.{}Label)\n".format(p.name)
-			content += "    }\n"
-			content += "}\n"
-			file_name = class_name + ".swift"
-			file_path = "{}/Test/{}.swift".format(self.name, class_name)
-			self._create_file(file_path, file_name, content)
+			content += template.render(
+				name=self.name,
+				project=self.project,
+				properties=self.model.properties
+			)
+			self._create_test_file(class_name, content)
 
 #=================== JSON ===================
 
