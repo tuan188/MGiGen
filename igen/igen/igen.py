@@ -1,6 +1,4 @@
 # coding=utf-8
-# Created by Tuan Truong on 2018-09-30.
-# © 2018 Framgia.
 
 import sys
 import os
