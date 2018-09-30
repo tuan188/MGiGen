@@ -1243,7 +1243,7 @@ def execute(args):
 		model_text = pasteboard_read()
 		InitCommand(model_text).create_init()
 	else:
-		print("'{}' is not a valid command. See 'python it.py help'.".format(command))
+		print("'{}' is not a valid command. See 'igen help'.".format(command))
 
 
 

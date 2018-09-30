@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
 	name = 'igen',
-	version = '1.0.3',
+	version = '1.0.4',
 	author="Tuan Truong",
 	author_email="tuan188@gmail.com",
 	description="Code Generator Tools for iOS",
