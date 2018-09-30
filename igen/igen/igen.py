@@ -135,7 +135,7 @@ class Template(object):
 			self.company = company
 			self.date = date
 			self.env = Environment(
-				loader=PackageLoader('templates', 'base'),
+				loader=PackageLoader('igen_templates', 'base'),
 				trim_blocks=True,
 				lstrip_blocks=True
 			)
@@ -295,7 +295,7 @@ class Template(object):
 			self.model_name = self.model.name
 			self.model_variable = lower_first_letter(self.model_name)
 			self.env = Environment(
-				loader=PackageLoader('templates', 'list'),
+				loader=PackageLoader('igen_templates', 'list'),
 				trim_blocks=True,
 				lstrip_blocks=True
 			)
@@ -478,7 +478,7 @@ class Template(object):
 			self.model_name = self.model.name
 			self.model_variable = lower_first_letter(self.model_name)
 			self.env = Environment(
-				loader=PackageLoader('templates', 'detail'),
+				loader=PackageLoader('igen_templates', 'detail'),
 				trim_blocks=True,
 				lstrip_blocks=True
 			)
@@ -1247,11 +1247,6 @@ def execute(args):
 		InitCommand(model_text).create_init()
 	else:
 		print("'{}' is not a valid command. See 'python it.py help'.".format(command))
-
-if len(sys.argv) > 1:
-	execute(sys.argv[1:])
-else:
-	HelpCommand().show_help()
 
 
 
