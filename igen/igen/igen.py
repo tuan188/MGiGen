@@ -1040,7 +1040,7 @@ class HelpCommand(object):
 		super(HelpCommand, self).__init__()
 		
 	def show_help(self):
-		help = "iTools commands:\n"
+		help = "igen commands:\n"
 		help += format("   help", "<15") + "Show help\n"
 		help += format("   header", "<15") + "Update file header info\n"
 		help += format("   template", "<15") + "Generate template files\n"
@@ -1051,7 +1051,7 @@ class HelpCommand(object):
 		help += format("   bind", "<15") + "Create bindViewModel method for view controller from view model\n"
 		help += format("   init", "<15") + "Create init method for struct model\n"
 		help += "\n"
-		help += "Get help on a command: python it.py help [command]\n"
+		help += "Get help on a command: igen help [command]\n"
 		print(help)
 
 
