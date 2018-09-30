@@ -1108,7 +1108,7 @@ class TemplateCommmand(object):
 				else:
 					template = Template.DetailTemplate(model, self.options, self.scene_name, project, developer, company, date)
 				template.create_files()
-					print("Finish!")
+				print("Finish!")
 			except:
 				print('Invalid model text in clipboard.')
 		else:
