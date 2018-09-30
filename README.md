@@ -1,21 +1,34 @@
 # iOS Tools
 
+## Welcome:
+
+igen is a Code Generator for iOS.
+
+## Installation:
+
+Using pip:
+
+```
+pip install igen
+```
+
 ## 1. Create template:
 
 ### 1.1. Base template:
 
 ```
-$ python it.py template -base <Scene_Name>
+$ igen template -base <Scene_Name>
 ```
 
 For example:
 ```
-$ python it.py template -base Login
+igen t -base Login
  
         new file:   Login/LoginViewModel.swift
         new file:   Login/LoginNavigator.swift
         new file:   Login/LoginUseCase.swift
         new file:   Login/LoginViewController.swift
+        new file:   Login/LoginAssembler.swift
         new file:   Login/Test/LoginViewModelTests.swift
         new file:   Login/Test/LoginUseCaseMock.swift
         new file:   Login/Test/LoginNavigatorMock.swift
@@ -26,18 +39,18 @@ Finish!
 
 ### 1.2. List template:
 
-Copy model text to clipboard then using command:
+Copy model to the pasteboard (clipboard) then use command:
 ```
-$ python it.py template -list <Scene_Name> [--section]
+$ igen template -list <Scene_Name> [--section] [--collection]
 ```
 
 *Option*:
---section: Display list item with header sections.
-
+--section: Display a list of items with header sections.
+--collection: Use UICollectionView instead of UITableView
 
 For example :
 
-Copy json text to clipboard:
+Copy the following text to the pasteboard:
 ```
 struct Product {
     let id: Int
@@ -46,15 +59,17 @@ struct Product {
 }
 ```
 
-then using command:
+then use command:
 ```
- $ python it.py template -list ProductList
-
+ $ igen template -list ProductList
+ 
         new file:   ProductList/ProductListViewModel.swift
+        new file:   ProductList/ProductViewModel.swift
         new file:   ProductList/ProductListNavigator.swift
         new file:   ProductList/ProductListUseCase.swift
         new file:   ProductList/ProductListViewController.swift
         new file:   ProductList/ProductCell.swift
+        new file:   ProductList/ProductListAssembler.swift
         new file:   ProductList/Test/ProductListViewModelTests.swift
         new file:   ProductList/Test/ProductListUseCaseMock.swift
         new file:   ProductList/Test/ProductListNavigatorMock.swift
@@ -66,18 +81,17 @@ Finish!
 
 ### 1.3. Detail template:
 
-Copy model text to clipboard then using command:
+Copy model to the pasteboard then use command:
 ```
-$ python it.py template -detail <Scene_Name> [--static]
+$ igen template -detail <Scene_Name> [--static]
 ```
 
 *Option*:
---static: Display item detail in static UITableView.
-
+--static: Display item detail in a static UITableView.
 
 For example :
 
-Copy json text to clipboard:
+Copy the following text to the pasteboard:
 ```
 struct Product {
     let id: Int
@@ -86,36 +100,38 @@ struct Product {
 }
 ```
 
-then using command:
+then use command:
 ```
- $ python it.py template -detail ProductDetail
+ $ igen template -detail ProductDetail
  
         new file:   ProductDetail/ProductDetailViewModel.swift
         new file:   ProductDetail/ProductDetailNavigator.swift
         new file:   ProductDetail/ProductDetailUseCase.swift
         new file:   ProductDetail/ProductDetailViewController.swift
+        new file:   ProductDetail/ProductIdCell.swift
         new file:   ProductDetail/ProductNameCell.swift
         new file:   ProductDetail/ProductPriceCell.swift
+        new file:   ProductDetail/ProductDetailAssembler.swift
         new file:   ProductDetail/Test/ProductDetailViewModelTests.swift
         new file:   ProductDetail/Test/ProductDetailUseCaseMock.swift
         new file:   ProductDetail/Test/ProductDetailNavigatorMock.swift
         new file:   ProductDetail/Test/ProductDetailViewControllerTests.swift
         new file:   ProductDetail/Test/ProductDetailCellsTests.swift
  
-Finish!
+
 ```
 
 ## 2. Create model from json:
 
-Copy json text to clipboard then using command:
+Copy json to the pasteboard then use command:
 
 ```
-$ python it.py json <Model_Name>
+$ igen json <Model_Name>
 ```
 
 For example :
 
-Copy json text to clipboard:
+Copy the following text to the pasteboard:
 
 ```
 {
@@ -126,13 +142,13 @@ Copy json text to clipboard:
 }
 ```
 
-then using command:
+then use command:
 ```
-$ python it.py json Notice
+$ igen json Notice
 Text has been copied to clipboard.
 ```
 
-Clipboard:
+Content in the pasteboard:
 
 ```
 import ObjectMapper
@@ -148,9 +164,9 @@ struct Notice {
 extension Notice {
     init() {
         self.init(
-            id: 0
-            content: ""
-            isRead: false
+            id: 0,
+            content: "",
+            isRead: false,
             createdAt: Date()
         )
     }
@@ -159,7 +175,6 @@ extension Notice {
 extension Notice: Then { }
 
 extension Notice: Mappable {
-
     init?(map: Map) {
         self.init()
     }
@@ -175,15 +190,15 @@ extension Notice: Mappable {
 
 ## 3. Create mock for protocol:
 
-Copy protocol text to clipboard then using command:
+Copy protocol to the pasteboard then use command:
 
 ```
-$ python it.py mock
+$ igen mock
 ```
 
 For example :
 
-Copy protocol text to clipboard:
+Copy the following text to the pasteboard:
 
 ```
 protocol ProductsNavigatorType {
@@ -195,25 +210,22 @@ protocol ProductsNavigatorType {
 
 then using command:
 ```
-$ python it.py mock
+$ igen mock
 Text has been copied to clipboard.
 ```
 
-Clipboard:
+Content in the pasteboard:
 
 ```
 final class ProductsNavigatorMock: ProductsNavigatorType {
-
     // MARK: - toProducts
     var toProducts_Called = false
-
     func toProducts() {
         toProducts_Called = true
     }
 
     // MARK: - toProductDetail
     var toProductDetail_Called = false
-
     func toProductDetail(product: Product) {
         toProductDetail_Called = true
     }
@@ -221,7 +233,6 @@ final class ProductsNavigatorMock: ProductsNavigatorType {
     // MARK: - toEditProduct
     var toEditProduct_Called = false
     var toEditProduct_ReturnValue: Driver<EditProductDelegate> = Driver.empty()
-
     func toEditProduct(_ product: Product) -> Driver<EditProductDelegate> {
         toEditProduct_Called = true
         return toEditProduct_ReturnValue
@@ -232,15 +243,15 @@ final class ProductsNavigatorMock: ProductsNavigatorType {
 
 ## 4. Create unit tests for view model:
 
-Copy view model text to clipboard then using command:
+Copy view model to the pasteboard then use command:
 
 ```
-$ python it.py test
+$ igen test
 ```
 
 For example :
 
-Copy view model text to clipboard:
+Copy the following text to the pasteboard:
 
 ```
 struct AppViewModel: ViewModelType {
@@ -254,22 +265,20 @@ struct AppViewModel: ViewModelType {
     }
 ```
 
-then using command:
+then use command:
 ```
-$ python it.py test
+$ igen test
 Text has been copied to clipboard.
 ```
 
-Clipboard:
+Content in the pasteboard:
 
 ```
 final class AppViewModelTests: XCTestCase {
-
     private var viewModel: AppViewModel!
     private var navigator: AppNavigatorMock!
     private var useCase: AppUseCaseMock!
     private var disposeBag: DisposeBag!
-
     private var input: AppViewModel.Input!
     private var output: AppViewModel.Output!
     private let loadTrigger = PublishSubject<Void>()
@@ -288,7 +297,7 @@ final class AppViewModelTests: XCTestCase {
         output.toMain.drive().disposed(by: disposeBag)
     }
 
-    func test_loadTriggerInvoked_() {
+    func test_loadTrigger_() {
         // arrange
 
 
@@ -304,15 +313,15 @@ final class AppViewModelTests: XCTestCase {
 
 ## 5. Create init method for model:
 
-Copy model text to clipboard then using command:
+Copy model to the pasteboard then use command:
 
 ```
-$ python it.py init
+$ igen init
 ```
 
 For example :
 
-Copy model text to clipboard:
+Copy the following text to the pasteboard:
 
 ```
 struct Product {
@@ -322,13 +331,13 @@ struct Product {
 }
 ```
 
-then using command:
+then use command:
 ```
-$ python it.py init
+$ igen init
 Text has been copied to clipboard.
 ```
 
-Clipboard:
+Content in the pasteboard:
 
 ```
 extension Product {
