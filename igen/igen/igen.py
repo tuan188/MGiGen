@@ -1101,16 +1101,16 @@ class TemplateCommmand(object):
 				print('Invalid model text in clipboard.')
 		elif self.template_name == Template.TemplateType.DETAIL:
 			model_text = pasteboard_read()
-			# try:
-			model = Template().parse_model(model_text)
-			if "--static" in self.options:
-				template = Template.StaticDetailTemplate(model, self.options, self.scene_name, project, developer, company, date)
-			else:
-				template = Template.DetailTemplate(model, self.options, self.scene_name, project, developer, company, date)
-			template.create_files()
-			# 	print("Finish!")
-			# except:
-			# 	print('Invalid model text in clipboard.')
+			try:
+				model = Template().parse_model(model_text)
+				if "--static" in self.options:
+					template = Template.StaticDetailTemplate(model, self.options, self.scene_name, project, developer, company, date)
+				else:
+					template = Template.DetailTemplate(model, self.options, self.scene_name, project, developer, company, date)
+				template.create_files()
+					print("Finish!")
+			except:
+				print('Invalid model text in clipboard.')
 		else:
 			print("Invalid template name.")
 
