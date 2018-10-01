@@ -5,10 +5,10 @@ with open("README.md", "r") as fh:
 
 setup(
 	name = 'igen',
-	version = '1.0.4',
+	version = '1.0.5',
 	author="Tuan Truong",
 	author_email="tuan188@gmail.com",
-	description="Code Generator Tools for iOS",
+	description="Code Generation Tools for iOS",
 	long_description=long_description,
 	long_description_content_type="text/markdown",
 	url="https://github.com/tuan188/MGiOSTools",
