@@ -1,8 +1,4 @@
-# iOS Tools
-
-## Welcome:
-
-igen is a Code Generator for iOS.
+# igen - Code Generation Tools for iOS
 
 ## Installation:
 
