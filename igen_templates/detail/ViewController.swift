@@ -37,6 +37,7 @@ final class {{name}}ViewController: UIViewController, BindableType {
                         for: indexPath,
                         cellType: {{model_name}}{{property.name_title}}Cell.self)
             {% endfor %}
+                }
             }
             .disposed(by: rx.disposeBag)
     }

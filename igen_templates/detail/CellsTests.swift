@@ -13,7 +13,7 @@ final class {{name}}CellsTests: XCTestCase {
     {% endfor %}
     }
 
-    func test_iboutlets() {
+    func test_ibOutlets() {
     {% for property in properties %}
         XCTAssertNotNil({{property.name}}Cell.{{property.name}}Label)
     {% endfor %}

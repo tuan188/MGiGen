@@ -497,6 +497,17 @@ class Template(object):
 			self._create_cells_tests()
 			print(" ")
 
+		def _create_assembler(self):
+			class_name = self.name + "Assembler"
+			template = self.env.get_template("Assembler.swift")
+			content = self._file_header(class_name)
+			content += template.render(
+				name=self.name,
+				model_name=self.model_name,
+				model_variable=self.model_variable
+			)
+			self._create_file(class_name, content)
+
 		def _create_view_model(self):
 			class_name = self.name + "ViewModel"
 			template = self.env.get_template("ViewModel.swift")

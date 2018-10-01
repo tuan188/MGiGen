@@ -1,5 +1,5 @@
 protocol {{name}}UseCaseType {
-    func get{{model_name}}List() -> Observable<PagingInfo<model_name>>
+    func get{{model_name}}List() -> Observable<PagingInfo<{{model_name}}>>
     func loadMore{{model_name}}List(page: Int) -> Observable<PagingInfo<{{model_name}}>>
 }
 
