@@ -4,28 +4,30 @@
 
 ### Install using pip:
 
+Open Terminal and run:
+
 ```
-pip install igen
+$ pip install igen
 ```
 
 ### Update:
 
 ```
-pip uninstall igen
-pip install igen --no-cache-dir
+$ pip uninstall igen
+$ pip install igen --no-cache-dir
 ```
 
 ### Uninstall:
 
 ```
-pip uninstall igen
+$ pip uninstall igen
 ```
 
 ## How to install pip:
 
 pip is already installed if you are using Python 2 >=2.7.9 or Python 3 >=3.4
 
-First you need to install Homebrew. To install Homebrew, open Terminal or your favorite OSX terminal emulator and run:
+In order to install Python 2, you need to install Homebrew, run the following command in Terminal:
 
 ```
 $ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -37,18 +39,40 @@ Then install Python 2:
 $ brew install python@2
 ```
 
-## 1. Create template:
+## 1. Create Template:
 
-### 1.1. Base template:
+### 1.1. Base Template:
+
+The Base Template contains the necessary files for a scene in the Clean Architecture pattern.
+
+Open Terminal, navigate to the folder you want to save the files and run:
 
 ```
 $ igen template -base <Scene_Name>
 ```
 
+The first time you use the template command, you need to enter project information:
+
+```
+Enter project name: Your Project
+Enter developer name: Your Name
+Enter company name: Your Company
+```
+
+Later, if you want to update the information you can run the command:
+
+```
+$ igen header
+```
+
 For example:
 ```
-igen template -base Login
- 
+$ igen template -base Login
+```
+
+Output:
+
+```
         new file:   Login/LoginViewModel.swift
         new file:   Login/LoginNavigator.swift
         new file:   Login/LoginUseCase.swift
@@ -62,22 +86,26 @@ igen template -base Login
 Finish!
 ```
 
-### 1.2. List template:
+### 1.2. List Template:
 
-Copy model to the pasteboard (clipboard) then use command:
+The List Template shows a list of items in the UITableView or UICollectionView.
+
+Copy the model to the pasteboard (clipboard) then run the command:
+
 ```
 $ igen template -list <Scene_Name> [--section] [--collection]
 ```
 
-*Option*:
+**Option**:
 
---section: Display a list of items with header sections.
+--section: Show a list of items with header sections.
 
 --collection: Use UICollectionView instead of UITableView
 
 For example :
 
 Copy the following text to the pasteboard:
+
 ```
 struct Product {
     let id: Int
@@ -86,10 +114,14 @@ struct Product {
 }
 ```
 
-then use command:
+then run the command:
+
 ```
- $ igen template -list ProductList
- 
+$ igen template -list ProductList
+```
+
+Output:
+```
         new file:   ProductList/ProductListViewModel.swift
         new file:   ProductList/ProductViewModel.swift
         new file:   ProductList/ProductListNavigator.swift
@@ -106,20 +138,24 @@ then use command:
 Finish!
 ```
 
-### 1.3. Detail template:
+### 1.3. Detail Template:
 
-Copy model to the pasteboard then use command:
+The Detail Template shows item details in the UITableView.
+
+Copy the model to the pasteboard then run the command:
+
 ```
 $ igen template -detail <Scene_Name> [--static]
 ```
 
-*Option*:
+**Option**:
 
---static: Display item detail in a static UITableView.
+--static: Display item detail in a static UITableViewController.
 
 For example :
 
 Copy the following text to the pasteboard:
+
 ```
 struct Product {
     let id: Int
@@ -128,10 +164,15 @@ struct Product {
 }
 ```
 
-then use command:
+then run the command:
+
 ```
- $ igen template -detail ProductDetail
+$ igen template -detail ProductDetail
+```
  
+Output:
+
+```
         new file:   ProductDetail/ProductDetailViewModel.swift
         new file:   ProductDetail/ProductDetailNavigator.swift
         new file:   ProductDetail/ProductDetailUseCase.swift
@@ -146,12 +187,12 @@ then use command:
         new file:   ProductDetail/Test/ProductDetailViewControllerTests.swift
         new file:   ProductDetail/Test/ProductDetailCellsTests.swift
  
-
+Finish!
 ```
 
 ## 2. Create model from json:
 
-Copy json to the pasteboard then use command:
+Copy the json to the pasteboard then run the command:
 
 ```
 $ igen json <Model_Name>
@@ -170,9 +211,15 @@ Copy the following text to the pasteboard:
 }
 ```
 
-then use command:
+then run the command:
+
 ```
 $ igen json Notice
+```
+
+Output:
+
+```
 Text has been copied to clipboard.
 ```
 
@@ -218,7 +265,7 @@ extension Notice: Mappable {
 
 ## 3. Create mock for protocol:
 
-Copy protocol to the pasteboard then use command:
+Copy the protocol to the pasteboard then run the command:
 
 ```
 $ igen mock
@@ -236,9 +283,15 @@ protocol ProductsNavigatorType {
 }
 ```
 
-then using command:
+then run the command:
+
 ```
 $ igen mock
+```
+
+Output:
+
+```
 Text has been copied to clipboard.
 ```
 
@@ -271,7 +324,7 @@ final class ProductsNavigatorMock: ProductsNavigatorType {
 
 ## 4. Create unit tests for view model:
 
-Copy view model to the pasteboard then use command:
+Copy the view model to the pasteboard then run the command:
 
 ```
 $ igen test
@@ -293,9 +346,15 @@ struct AppViewModel: ViewModelType {
     }
 ```
 
-then use command:
+then run the command:
+
 ```
 $ igen test
+```
+
+Output:
+
+```
 Text has been copied to clipboard.
 ```
 
@@ -341,7 +400,7 @@ final class AppViewModelTests: XCTestCase {
 
 ## 5. Create init method for model:
 
-Copy model to the pasteboard then use command:
+Copy the model to the pasteboard then run the command:
 
 ```
 $ igen init
@@ -359,9 +418,15 @@ struct Product {
 }
 ```
 
-then use command:
+then run the command:
+
 ```
 $ igen init
+```
+
+Output:
+
+```
 Text has been copied to clipboard.
 ```
 
