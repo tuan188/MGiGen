@@ -16,7 +16,7 @@ Update:
 
 ```
 pip install -U igen
-``
+```
 
 Uninstall:
 
