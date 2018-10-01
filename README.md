@@ -6,19 +6,20 @@ igen is a Code Generator for iOS.
 
 ## Installation:
 
-Using pip:
+### Install using pip:
 
 ```
 pip install igen
 ```
 
-Update:
+### Update:
 
 ```
-pip install -U igen
+pip uninstall igen
+pip install igen --no-cache-dir
 ```
 
-Uninstall:
+### Uninstall:
 
 ```
 pip uninstall igen
