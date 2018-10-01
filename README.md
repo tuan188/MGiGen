@@ -12,6 +12,28 @@ Using pip:
 pip install igen
 ```
 
+Uninstall:
+
+```
+pip uninstall igen
+```
+
+## How to install pip:
+
+pip is already installed if you are using Python 2 >=2.7.9 or Python 3 >=3.4
+
+First you need to install Homebrew. To install Homebrew, open Terminal or your favorite OSX terminal emulator and run:
+
+```
+$ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```
+
+Then install Python 2:
+
+```
+$ brew install python@2
+```
+
 ## 1. Create template:
 
 ### 1.1. Base template:
