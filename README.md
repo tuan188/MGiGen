@@ -74,7 +74,9 @@ $ igen template -list <Scene_Name> [--section] [--collection]
 ```
 
 *Option*:
+
 --section: Display a list of items with header sections.
+
 --collection: Use UICollectionView instead of UITableView
 
 For example :
@@ -116,6 +118,7 @@ $ igen template -detail <Scene_Name> [--static]
 ```
 
 *Option*:
+
 --static: Display item detail in a static UITableView.
 
 For example :
