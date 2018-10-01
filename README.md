@@ -51,7 +51,7 @@ $ igen template -base <Scene_Name>
 
 For example:
 ```
-igen t -base Login
+igen template -base Login
  
         new file:   Login/LoginViewModel.swift
         new file:   Login/LoginNavigator.swift
