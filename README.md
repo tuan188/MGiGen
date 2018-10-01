@@ -12,6 +12,12 @@ Using pip:
 pip install igen
 ```
 
+Update:
+
+```
+pip install -U igen
+``
+
 Uninstall:
 
 ```
