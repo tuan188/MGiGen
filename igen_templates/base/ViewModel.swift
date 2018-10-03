@@ -1,4 +1,4 @@
-struct {{name}}ViewModel: ViewModelType {
+struct {{ name }}ViewModel: ViewModelType {
     struct Input {
 
     }
@@ -7,8 +7,8 @@ struct {{name}}ViewModel: ViewModelType {
 
     }
 
-    let navigator: {{name}}NavigatorType
-    let useCase: {{name}}UseCaseType
+    let navigator: {{ name }}NavigatorType
+    let useCase: {{ name }}UseCaseType
 
     func transform(_ input: Input) -> Output {
         return Output()

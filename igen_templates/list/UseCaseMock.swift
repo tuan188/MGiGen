@@ -1,7 +1,7 @@
 @testable import {{project}}
 import RxSwift
 
-final class {{name}}UseCaseMock: {{name}}UseCaseType {
+final class {{ name }}UseCaseMock: {{ name }}UseCaseType {
     // MARK: - get{{model_name}}List
     var get{{model_name}}List_Called = false
     var get{{model_name}}List_ReturnValue: Observable<PagingInfo<{{model_name}}>> = {

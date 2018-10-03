@@ -1,10 +1,10 @@
 import UIKit
 import Reusable
 
-final class {{name}}ViewController: UIViewController, BindableType {
+final class {{ name }}ViewController: UIViewController, BindableType {
     @IBOutlet weak var tableView: UITableView!
     
-    var viewModel: {{name}}ViewModel!
+    var viewModel: {{ name }}ViewModel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,7 +25,7 @@ final class {{name}}ViewController: UIViewController, BindableType {
     }
 
     func bindViewModel() {
-        let input = {{name}}ViewModel.Input(loadTrigger: Driver.just(()))
+        let input = {{ name }}ViewModel.Input(loadTrigger: Driver.just(()))
         let output = viewModel.transform(input)
         output.cells
             .drive(tableView.rx.items) { tableView, index, cellType in
@@ -44,6 +44,6 @@ final class {{name}}ViewController: UIViewController, BindableType {
 }
 
 // MARK: - StoryboardSceneBased
-extension {{name}}ViewController: StoryboardSceneBased {
+extension {{ name }}ViewController: StoryboardSceneBased {
     static var sceneStoryboard = UIStoryboard()
 }

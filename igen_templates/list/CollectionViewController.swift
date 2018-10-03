@@ -1,10 +1,10 @@
 import UIKit
 import Reusable
 
-final class {{name}}ViewController: UIViewController, BindableType {
+final class {{ name }}ViewController: UIViewController, BindableType {
     @IBOutlet weak var collectionView: LoadMoreCollectionView!
 
-    var viewModel: {{name}}ViewModel!
+    var viewModel: {{ name }}ViewModel!
 
     fileprivate struct Options {
         var itemSpacing: CGFloat = 8
@@ -40,7 +40,7 @@ final class {{name}}ViewController: UIViewController, BindableType {
     }
 
     func bindViewModel() {
-        let input = {{name}}ViewModel.Input(
+        let input = {{ name }}ViewModel.Input(
             loadTrigger: Driver.just(()),
             reloadTrigger: collectionView.refreshTrigger,
             loadMoreTrigger: collectionView.loadMoreTrigger,
@@ -83,7 +83,7 @@ final class {{name}}ViewController: UIViewController, BindableType {
 }
 
 // MARK: - UICollectionViewDelegate
-extension {{name}}ViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+extension {{ name }}ViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -117,6 +117,6 @@ extension {{name}}ViewController: UICollectionViewDelegate, UICollectionViewDele
 }
 
 // MARK: - StoryboardSceneBased
-extension {{name}}ViewController: StoryboardSceneBased {
+extension {{ name }}ViewController: StoryboardSceneBased {
     static var sceneStoryboard = UIStoryboard()
 }

@@ -1,8 +1,8 @@
 import UIKit
 import Reusable
 
-final class {{name}}ViewController: UIViewController, BindableType {
-    var viewModel: {{name}}ViewModel!
+final class {{ name }}ViewController: UIViewController, BindableType {
+    var viewModel: {{ name }}ViewModel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -13,12 +13,12 @@ final class {{name}}ViewController: UIViewController, BindableType {
     }
 
     func bindViewModel() {
-        let input = {{name}}ViewModel.Input()
+        let input = {{ name }}ViewModel.Input()
         let output = viewModel.transform(input)
     }
 }
 
 // MARK: - StoryboardSceneBased
-extension {{name}}ViewController: StoryboardSceneBased {
+extension {{ name }}ViewController: StoryboardSceneBased {
     static var sceneStoryboard = UIStoryboard()
 }

@@ -1,5 +1,5 @@
 @testable import {{project}}
 
-final class {{name}}NavigatorMock: {{name}}NavigatorType {
+final class {{ name }}NavigatorMock: {{ name }}NavigatorType {
 
 }

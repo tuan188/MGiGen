@@ -2,10 +2,10 @@ import UIKit
 import Reusable
 import RxDataSources
 
-final class {{name}}ViewController: UIViewController, BindableType {
+final class {{ name }}ViewController: UIViewController, BindableType {
     @IBOutlet weak var tableView: LoadMoreTableView!
 
-    var viewModel: {{name}}ViewModel!
+    var viewModel: {{ name }}ViewModel!
 
     fileprivate typealias {{model_name}}SectionModel = SectionModel<String, {{model_name}}>
     fileprivate var dataSource: RxTableViewSectionedReloadDataSource<{{model_name}}SectionModel>!
@@ -31,7 +31,7 @@ final class {{name}}ViewController: UIViewController, BindableType {
     }
 
     func bindViewModel() {
-        let input = {{name}}ViewModel.Input(
+        let input = {{ name }}ViewModel.Input(
             loadTrigger: Driver.just(()),
             reloadTrigger: tableView.refreshTrigger,
             loadMoreTrigger: tableView.loadMoreTrigger,
@@ -81,13 +81,13 @@ final class {{name}}ViewController: UIViewController, BindableType {
 }
 
 // MARK: - UITableViewDelegate
-extension {{name}}ViewController: UITableViewDelegate {
+extension {{ name }}ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 
 // MARK: - StoryboardSceneBased
-extension {{name}}ViewController: StoryboardSceneBased {
+extension {{ name }}ViewController: StoryboardSceneBased {
     static var sceneStoryboard = UIStoryboard()
 }

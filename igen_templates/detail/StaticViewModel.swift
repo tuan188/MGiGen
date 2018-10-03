@@ -1,4 +1,4 @@
-struct {{name}}ViewModel: ViewModelType {
+struct {{ name }}ViewModel: ViewModelType {
     struct Input {
         let loadTrigger: Driver<Void>
     }
@@ -9,8 +9,8 @@ struct {{name}}ViewModel: ViewModelType {
     {% endfor %}
     }
 
-    let navigator: {{name}}NavigatorType
-    let useCase: {{name}}UseCaseType
+    let navigator: {{ name }}NavigatorType
+    let useCase: {{ name }}UseCaseType
     let {{model_variable}}: {{model_name}}
 
     func transform(_ input: Input) -> Output {

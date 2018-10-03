@@ -1,7 +1,7 @@
 @testable import {{project}}
 import XCTest
 
-final class {{name}}CellsTests: XCTestCase {
+final class {{ name }}CellsTests: XCTestCase {
 {% for property in properties %}
     private var {{property.name}}Cell: {{model_name}}{{property.name_title}}Cell!
 {% endfor %}

@@ -1,4 +1,4 @@
-struct {{name}}ViewModel: ViewModelType {
+struct {{ name }}ViewModel: ViewModelType {
     struct Input {
         let loadTrigger: Driver<Void>
         let reloadTrigger: Driver<Void>
@@ -22,8 +22,8 @@ struct {{name}}ViewModel: ViewModelType {
         let {{model_variable}}List: [{{model_name}}]
     }
     
-    let navigator: {{name}}NavigatorType
-    let useCase: {{name}}UseCaseType
+    let navigator: {{ name }}NavigatorType
+    let useCase: {{ name }}UseCaseType
     
     func transform(_ input: Input) -> Output {
         let loadMoreOutput = setupLoadMorePaging(

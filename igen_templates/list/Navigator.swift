@@ -1,8 +1,8 @@
-protocol {{name}}NavigatorType {
+protocol {{ name }}NavigatorType {
     func to{{model_name}}Detail({{model_variable}}: {{model_name}})
 }
 
-struct {{name}}Navigator: {{name}}NavigatorType {
+struct {{ name }}Navigator: {{ name }}NavigatorType {
     unowned let assembler: Assembler
     unowned let navigationController: UINavigationController
 
