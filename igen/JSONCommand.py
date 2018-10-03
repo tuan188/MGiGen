@@ -6,12 +6,21 @@ from collections import OrderedDict
 from Pasteboard import pasteboard_write
 from Constants import SWIFT_TYPES_DEFAULT_VALUES, SWIFT_TYPES
 from StringHelpers import snake_to_camel, plural_to_singular
+from Command import Command
 
-class JSONCommand(object):
+class JSONCommand(Command):
 	def __init__(self, model_name, json_text):
 		super(JSONCommand, self).__init__()
 		self.model_name = model_name
 		self.json_text = json_text
+
+	@classmethod
+	def description(cls):
+		return "Create models from json text"
+
+	@classmethod
+	def name(cls):
+		return "json"
 
 	def create_models(self):
 		# try:

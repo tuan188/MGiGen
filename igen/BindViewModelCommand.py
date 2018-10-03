@@ -2,11 +2,20 @@
 
 from Pasteboard import pasteboard_write
 from ViewModel import BindViewModel
+from Command import Command
 
-class BindViewModelCommand(object):
+class BindViewModelCommand(Command):
 	def __init__(self, vm_text):
 		super(BindViewModelCommand, self).__init__()
 		self.vm_text = vm_text
+
+	@classmethod
+	def description(cls):
+		return "Create bindViewModel method for view controller from view model"
+
+	@classmethod
+	def name(cls):
+		return "bind"
 
 	def create_bind_view_model(self):
 		# try:

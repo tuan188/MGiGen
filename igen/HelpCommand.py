@@ -1,20 +1,44 @@
 # coding=utf-8
 
-class HelpCommand(object):
-	def __init__(self):
-		super(HelpCommand, self).__init__()
+from Command import Command
+from InitCommand import InitCommand
+from BindViewModelCommand import BindViewModelCommand
+from UnitTestCommand import UnitTestCommand
+from APICommand import APICommand
+from MockCommand import MockCommand
+from JSONCommand import JSONCommand
+from FileHeaderCommand import FileHeaderCommand
+from TemplateCommand import TemplateCommand
+
+
+class HelpCommand(Command):
+
+	@classmethod
+	def description(cls):
+		return "Show help"
+
+	@classmethod
+	def name(cls):
+		return "help"
 		
 	def show_help(self):
 		help = "igen commands:\n\n"
-		help += format("   help", "<15") + "Show help\n"
-		help += format("   header", "<15") + "Update file header info\n"
-		help += format("   template", "<15") + "Generate template files\n"
-		help += format("   json", "<15") + "Create models from json text\n"
-		help += format("   mock", "<15") + "Create mock from protocol\n"
-		help += format("   api", "<15") + "Create API request\n"
-		help += format("   test", "<15") + "Create Unit Tests from view model\n"
-		help += format("   bind", "<15") + "Create bindViewModel method for view controller from view model\n"
-		help += format("   init", "<15") + "Create init method for struct model\n"
-		# help += "\n"
-		# help += "Get help on a command: igen help [command]\n"
+		commands = "\n".join([
+			HelpCommand.long_description(),
+			FileHeaderCommand.long_description(),
+			TemplateCommand.long_description(),
+			JSONCommand.long_description(),
+			MockCommand.long_description(),
+			APICommand.long_description(),
+			UnitTestCommand.long_description(),
+			BindViewModelCommand.long_description(),
+			InitCommand.long_description()
+		])
+		help += commands
+		help += "\n\n"
+		help += "Get help on a command: igen help [command]\n"
 		print(help)
+
+
+	
+	

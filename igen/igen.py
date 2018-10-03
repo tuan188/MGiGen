@@ -3,9 +3,10 @@
 import sys
 from StringHelpers import lower_first_letter, upper_first_letter, snake_to_camel, plural_to_singular
 from Constants import Commands
-from InitCommand import InitCommand
 from Constants import FILE_HEADER, SWIFT_TYPES_DEFAULT_VALUES, SWIFT_TYPES
 from Pasteboard import pasteboard_read, pasteboard_write
+
+from InitCommand import InitCommand
 from BindViewModelCommand import BindViewModelCommand
 from UnitTestCommand import UnitTestCommand
 from APICommand import APICommand
@@ -13,7 +14,7 @@ from MockCommand import MockCommand
 from JSONCommand import JSONCommand
 from HelpCommand import HelpCommand
 from FileHeaderCommand import FileHeaderCommand
-from TemplateCommmand import TemplateCommmand
+from TemplateCommand import TemplateCommand
 
 
 def execute(args):
@@ -29,7 +30,7 @@ def execute(args):
 			template_name = args[1]
 			scene_name = args[2]
 			options = args[3:]
-			TemplateCommmand(template_name, scene_name, options).create_files()
+			TemplateCommand(template_name, scene_name, options).create_files()
 		else:
 			print("Invalid params.")
 	elif command == Commands.JSON:

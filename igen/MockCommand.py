@@ -1,12 +1,20 @@
 # coding=utf-8
 
 from Pasteboard import pasteboard_write
+from Command import Command
 
-
-class MockCommand(object):
+class MockCommand(Command):
 	def __init__(self, protocol_text):
 		super(MockCommand, self).__init__()
 		self.protocol_text = protocol_text
+
+	@classmethod
+	def description(cls):
+		return "Create mock from protocol"
+
+	@classmethod
+	def name(cls):
+		return "mock"
 
 	def create_mock(self):
 		try:

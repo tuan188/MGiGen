@@ -5,13 +5,22 @@ from FileHeaderCommand import FileHeaderCommand
 from Template import Template
 from Pasteboard import pasteboard_read
 from datetime import datetime
+from Command import Command
 
-class TemplateCommmand(object):
+class TemplateCommand(Command):
 	def __init__(self, template_name, scene_name, options):
-		super(TemplateCommmand, self).__init__()
+		super(TemplateCommand, self).__init__()
 		self.template_name = template_name
 		self.scene_name = scene_name
 		self.options = options
+
+	@classmethod
+	def description(cls):
+		return "Generate template files"
+
+	@classmethod
+	def name(cls):
+		return "template"
 
 	def create_files(self):
 		try:
@@ -52,3 +61,4 @@ class TemplateCommmand(object):
 				print('Invalid model text in clipboard.')
 		else:
 			print("Invalid template name.")
+
