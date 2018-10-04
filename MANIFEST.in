@@ -1,1 +1,1 @@
-recursive-include igen_templates/*
+recursive-include igen_templates *.swift
