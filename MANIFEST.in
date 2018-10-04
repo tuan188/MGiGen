@@ -1,4 +1,1 @@
-include igen_templates/*
-include igen_templates/base/*
-include igen_templates/detail/*
-include igen_templates/list/*
+recursive-include igen_templates/*
