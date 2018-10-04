@@ -21,7 +21,11 @@ def execute(args):
 	if command == "t":
 		command = "template"
 	if command == Commands.HELP:
-		HelpCommand().show_help()
+		if len(args) >= 2:
+			command_name = args[1]
+			HelpCommand().show_help_for(command_name)
+		else:
+			HelpCommand().show_help()
 	elif command == Commands.HEADER:
 		FileHeaderCommand().update_file_header()
 	elif command == Commands.TEMPLATE:
