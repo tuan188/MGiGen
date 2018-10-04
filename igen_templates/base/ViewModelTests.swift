@@ -1,4 +1,4 @@
-@testable import {{project}}
+@testable import {{ project }}
 import XCTest
 import RxSwift
 import RxBlocking

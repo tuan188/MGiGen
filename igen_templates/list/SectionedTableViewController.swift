@@ -7,8 +7,8 @@ final class {{ name }}ViewController: UIViewController, BindableType {
 
     var viewModel: {{ name }}ViewModel!
 
-    fileprivate typealias {{model_name}}SectionModel = SectionModel<String, {{model_name}}>
-    fileprivate var dataSource: RxTableViewSectionedReloadDataSource<{{model_name}}SectionModel>!
+    fileprivate typealias {{ model_name }}SectionModel = SectionModel<String, {{ model_name }}>
+    fileprivate var dataSource: RxTableViewSectionedReloadDataSource<{{ model_name }}SectionModel>!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,7 +19,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
         tableView.do {
             $0.estimatedRowHeight = 550
             $0.rowHeight = UITableViewAutomaticDimension
-            $0.register(cellType: {{model_name}}Cell.self)
+            $0.register(cellType: {{ model_name }}Cell.self)
         }
         tableView.rx
             .setDelegate(self)
@@ -35,22 +35,22 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             loadTrigger: Driver.just(()),
             reloadTrigger: tableView.refreshTrigger,
             loadMoreTrigger: tableView.loadMoreTrigger,
-            select{{model_name}}Trigger: tableView.rx.itemSelected.asDriver()
+            select{{ model_name }}Trigger: tableView.rx.itemSelected.asDriver()
         )
         let output = viewModel.transform(input)
-        dataSource = RxTableViewSectionedReloadDataSource<{{model_name}}SectionModel>(
-            configureCell: { (_, tableView, indexPath, {{model_variable}}) -> UITableViewCell in
-                return tableView.dequeueReusableCell(for: indexPath, cellType: {{model_name}}Cell.self).then {
-                    $0.bindViewModel({{model_name}}ViewModel({{model_variable}}: {{model_variable}}))
+        dataSource = RxTableViewSectionedReloadDataSource<{{ model_name }}SectionModel>(
+            configureCell: { (_, tableView, indexPath, {{ model_variable }}) -> UITableViewCell in
+                return tableView.dequeueReusableCell(for: indexPath, cellType: {{ model_name }}Cell.self).then {
+                    $0.bindViewModel({{ model_name }}ViewModel({{ model_variable }}: {{ model_variable }}))
                 }
             },
             titleForHeaderInSection: { dataSource, section in
                 return dataSource.sectionModels[section].model
             })
-        output.{{model_variable}}Sections
+        output.{{ model_variable }}Sections
             .map {
                 $0.map { section in
-                    {{model_name}}SectionModel(model: section.header, items: section.{{model_variable}}List)
+                    {{ model_name }}SectionModel(model: section.header, items: section.{{ model_variable }}List)
                 }
             }
             .drive(tableView.rx.items(dataSource: dataSource))
@@ -70,7 +70,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
         output.fetchItems
             .drive()
             .disposed(by: rx.disposeBag)
-        output.selected{{model_name}}
+        output.selected{{ model_name }}
             .drive()
             .disposed(by: rx.disposeBag)
         output.isEmptyData

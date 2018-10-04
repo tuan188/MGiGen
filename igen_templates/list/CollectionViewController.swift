@@ -27,7 +27,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
 
     private func configView() {
         collectionView.do {
-            $0.register(cellType: {{model_name}}Cell.self)
+            $0.register(cellType: {{ model_name }}Cell.self)
             $0.alwaysBounceVertical = true
         }
         collectionView.rx
@@ -44,16 +44,16 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             loadTrigger: Driver.just(()),
             reloadTrigger: collectionView.refreshTrigger,
             loadMoreTrigger: collectionView.loadMoreTrigger,
-            select{{model_name}}Trigger: collectionView.rx.itemSelected.asDriver()
+            select{{ model_name }}Trigger: collectionView.rx.itemSelected.asDriver()
         )
         let output = viewModel.transform(input)
-        output.{{model_variable}}List
-            .drive(collectionView.rx.items) { collectionView, index, {{model_variable}} in
+        output.{{ model_variable }}List
+            .drive(collectionView.rx.items) { collectionView, index, {{ model_variable }} in
                 return collectionView.dequeueReusableCell(
                     for: IndexPath(row: index, section: 0),
-                    cellType: {{model_name}}Cell.self)
+                    cellType: {{ model_name }}Cell.self)
                     .then {
-                        $0.bindViewModel({{model_name}}ViewModel({{model_variable}}: {{model_variable}}))
+                        $0.bindViewModel({{ model_name }}ViewModel({{ model_variable }}: {{ model_variable }}))
                     }
             }
             .disposed(by: rx.disposeBag)
@@ -72,7 +72,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
         output.fetchItems
             .drive()
             .disposed(by: rx.disposeBag)
-        output.selected{{model_name}}
+        output.selected{{ model_name }}
             .drive()
             .disposed(by: rx.disposeBag)
         output.isEmptyData

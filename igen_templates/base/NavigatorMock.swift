@@ -1,4 +1,4 @@
-@testable import {{project}}
+@testable import {{ project }}
 
 final class {{ name }}NavigatorMock: {{ name }}NavigatorType {
 

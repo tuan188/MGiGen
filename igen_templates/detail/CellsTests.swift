@@ -1,21 +1,21 @@
-@testable import {{project}}
+@testable import {{ project }}
 import XCTest
 
 final class {{ name }}CellsTests: XCTestCase {
-{% for property in properties %}
-    private var {{property.name}}Cell: {{model_name}}{{property.name_title}}Cell!
+{% for p in properties %}
+    private var {{ p.name }}Cell: {{ model_name }}{{ p.name_title }}Cell!
 {% endfor %}
 
     override func setUp() {
         super.setUp()
-    {% for property in properties %}
-        {{property.name}}Cell = {{model_name}}{{property.name_title}}Cell.loadFromNib()
+    {% for p in properties %}
+        {{ p.name }}Cell = {{ model_name }}{{ p.name_title }}Cell.loadFromNib()
     {% endfor %}
     }
 
     func test_ibOutlets() {
-    {% for property in properties %}
-        XCTAssertNotNil({{property.name}}Cell.{{property.name}}Label)
+    {% for p in properties %}
+        XCTAssertNotNil({{ p.name }}Cell.{{ p.name }}Label)
     {% endfor %}
     }
 }

@@ -3,7 +3,7 @@ import Reusable
 
 final class {{ name }}ViewController: UITableViewController, BindableType {
 {% for p in properties %}
-    @IBOutlet weak var {{p.name}}Label: UILabel!
+    @IBOutlet weak var {{ p.name }}Label: UILabel!
 {% endfor %}
 
     var viewModel: {{ name }}ViewModel!

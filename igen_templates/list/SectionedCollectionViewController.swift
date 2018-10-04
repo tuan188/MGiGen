@@ -7,8 +7,8 @@ final class {{ name }}ViewController: UIViewController, BindableType {
 
     var viewModel: {{ name }}ViewModel!
 
-    fileprivate typealias {{model_name}}SectionModel = SectionModel<String, {{model_name}}>
-    fileprivate var dataSource: RxCollectionViewSectionedReloadDataSource<{{model_name}}SectionModel>!
+    fileprivate typealias {{ model_name }}SectionModel = SectionModel<String, {{ model_name }}>
+    fileprivate var dataSource: RxCollectionViewSectionedReloadDataSource<{{ model_name }}SectionModel>!
 
     fileprivate struct Options {
         var itemSpacing: CGFloat = 8
@@ -31,7 +31,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
 
     private func configView() {
         collectionView.do {
-            $0.register(cellType: {{model_name}}Cell.self)
+            $0.register(cellType: {{ model_name }}Cell.self)
             $0.alwaysBounceVertical = true
         }
         collectionView.rx
@@ -48,22 +48,22 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             loadTrigger: Driver.just(()),
             reloadTrigger: collectionView.refreshTrigger,
             loadMoreTrigger: collectionView.loadMoreTrigger,
-            select{{model_name}}Trigger: collectionView.rx.itemSelected.asDriver()
+            select{{ model_name }}Trigger: collectionView.rx.itemSelected.asDriver()
         )
         let output = viewModel.transform(input)
-        dataSource = RxCollectionViewSectionedReloadDataSource<{{model_name}}SectionModel>(
-            configureCell: { (_, collectionView, indexPath, {{model_variable}}) -> UICollectionViewCell in
-                return collectionView.dequeueReusableCell(for: indexPath, cellType: {{model_name}}Cell.self).then {
-                    $0.bindViewModel({{model_name}}ViewModel({{model_variable}}: {{model_variable}}))
+        dataSource = RxCollectionViewSectionedReloadDataSource<{{ model_name }}SectionModel>(
+            configureCell: { (_, collectionView, indexPath, {{ model_variable }}) -> UICollectionViewCell in
+                return collectionView.dequeueReusableCell(for: indexPath, cellType: {{ model_name }}Cell.self).then {
+                    $0.bindViewModel({{ model_name }}ViewModel({{ model_variable }}: {{ model_variable }}))
                 }
             },
             configureSupplementaryView: { dataSource, collectionView, kind, indexPath in
                 return UICollectionReusableView()
             })
-        output.{{model_variable}}Sections
+        output.{{ model_variable }}Sections
             .map {
                 $0.map { section in
-                    {{model_name}}SectionModel(model: section.header, items: section.{{model_variable}}List)
+                    {{ model_name }}SectionModel(model: section.header, items: section.{{ model_variable }}List)
                 }
             }
             .drive(collectionView.rx.items(dataSource: dataSource))
@@ -83,7 +83,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
         output.fetchItems
             .drive()
             .disposed(by: rx.disposeBag)
-        output.selected{{model_name}}
+        output.selected{{ model_name }}
             .drive()
             .disposed(by: rx.disposeBag)
         output.isEmptyData

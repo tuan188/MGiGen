@@ -15,8 +15,8 @@ final class {{ name }}ViewController: UIViewController, BindableType {
         tableView.do {
             $0.estimatedRowHeight = 550
             $0.rowHeight = UITableViewAutomaticDimension
-        {% for property in properties %}
-            $0.register(cellType: {{model_name}}{{property.name_title}}Cell.self)
+        {% for p in properties %}
+            $0.register(cellType: {{ model_name }}{{ p.name_title }}Cell.self)
         {% endfor %}
         }
     }
@@ -31,11 +31,11 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             .drive(tableView.rx.items) { tableView, index, cellType in
                 let indexPath = IndexPath(row: index, section: 0)
                 switch cellType {
-            {% for property in properties %}
-                case let .{{property.name}}({{property.name}}):
+            {% for p in properties %}
+                case let .{{ p.name }}({{ p.name }}):
                     return tableView.dequeueReusableCell(
                         for: indexPath,
-                        cellType: {{model_name}}{{property.name_title}}Cell.self)
+                        cellType: {{ model_name }}{{ p.name_title }}Cell.self)
             {% endfor %}
                 }
             }

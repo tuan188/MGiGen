@@ -15,7 +15,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
         tableView.do {
             $0.estimatedRowHeight = 550
             $0.rowHeight = UITableViewAutomaticDimension
-            $0.register(cellType: {{model_name}}Cell.self)
+            $0.register(cellType: {{ model_name }}Cell.self)
         }
         tableView.rx
             .setDelegate(self)
@@ -31,16 +31,16 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             loadTrigger: Driver.just(()),
             reloadTrigger: tableView.refreshTrigger,
             loadMoreTrigger: tableView.loadMoreTrigger,
-            select{{model_name}}Trigger: tableView.rx.itemSelected.asDriver()
+            select{{ model_name }}Trigger: tableView.rx.itemSelected.asDriver()
         )
         let output = viewModel.transform(input)
-        output.{{model_variable}}List
-            .drive(tableView.rx.items) { tableView, index, {{model_variable}} in
+        output.{{ model_variable }}List
+            .drive(tableView.rx.items) { tableView, index, {{ model_variable }} in
                 return tableView.dequeueReusableCell(
                     for: IndexPath(row: index, section: 0),
-                    cellType: {{model_name}}Cell.self)
+                    cellType: {{ model_name }}Cell.self)
                     .then {
-                        $0.bindViewModel({{model_name}}ViewModel({{model_variable}}: {{model_variable}}))
+                        $0.bindViewModel({{ model_name }}ViewModel({{ model_variable }}: {{ model_variable }}))
                     }
             }
             .disposed(by: rx.disposeBag)
@@ -59,7 +59,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
         output.fetchItems
             .drive()
             .disposed(by: rx.disposeBag)
-        output.selected{{model_name}}
+        output.selected{{ model_name }}
             .drive()
             .disposed(by: rx.disposeBag)
         output.isEmptyData

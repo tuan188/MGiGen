@@ -1,4 +1,4 @@
-@testable import {{project}}
+@testable import {{ project }}
 import XCTest
 import RxSwift
 import RxBlocking
@@ -16,7 +16,7 @@ final class {{ name }}ViewModelTests: XCTestCase {
         super.setUp()
         navigator = {{ name }}NavigatorMock()
         useCase = {{ name }}UseCaseMock()
-        viewModel = {{ name }}ViewModel(navigator: navigator, useCase: useCase, {{model_variable}}: {{model_name}}())
+        viewModel = {{ name }}ViewModel(navigator: navigator, useCase: useCase, {{ model_variable }}: {{ model_name }}())
         disposeBag = DisposeBag()
         input = {{ name }}ViewModel.Input(
             loadTrigger: loadTrigger.asDriverOnErrorJustComplete()

@@ -8,23 +8,23 @@ struct {{ name }}ViewModel: ViewModelType {
     }
 
     enum CellType {
-    {% for property in properties %}
-        case {{property.name}}({{property.type.name}})
+    {% for p in properties %}
+        case {{ p.name }}({{ p.type.name }})
     {% endfor %}
     }
 
     let navigator: {{ name }}NavigatorType
     let useCase: {{ name }}UseCaseType
-    let {{model_variable}}: {{model_name}}
+    let {{ model_variable }}: {{ model_name }}
 
     func transform(_ input: Input) -> Output {
-        let {{model_variable}} = input.loadTrigger
-            .map { self.{{model_variable}} }
-        let cells = {{model_variable}}
-            .map { {{model_variable}} -> [CellType] in
+        let {{ model_variable }} = input.loadTrigger
+            .map { self.{{ model_variable }} }
+        let cells = {{ model_variable }}
+            .map { {{ model_variable }} -> [CellType] in
                 var cells = [CellType]()
-            {% for property in properties %}
-                cells.append(CellType.{{property.name}}({{model_variable}}.{{property.name}}))
+            {% for p in properties %}
+                cells.append(CellType.{{ p.name }}({{ model_variable }}.{{ p.name }}))
             {% endfor %}
                 return cells
             }
