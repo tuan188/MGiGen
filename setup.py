@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
 	name = 'igen',
-	version = '1.0.5',
+	version = '1.1.0',
 	author="Tuan Truong",
 	author_email="tuan188@gmail.com",
 	description="Code Generation Tools for iOS",
@@ -24,7 +24,7 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-	python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
+	python_requires=">=3",
 	install_requires=['Jinja2>=2.10'],
 	include_package_data = True
 	)

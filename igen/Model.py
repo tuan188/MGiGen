@@ -1,7 +1,7 @@
 # coding=utf-8
 
 import re
-from Constants import SWIFT_TYPES_DEFAULT_VALUES, SWIFT_TYPES
+from .constants import SWIFT_TYPES_DEFAULT_VALUES, SWIFT_TYPES
 
 class Model(object):
 

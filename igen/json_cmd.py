@@ -3,10 +3,10 @@
 import json
 import re
 from collections import OrderedDict
-from Pasteboard import pasteboard_write
-from Constants import SWIFT_TYPES_DEFAULT_VALUES, SWIFT_TYPES
-from StringHelpers import snake_to_camel, plural_to_singular
-from Command import Command
+from .pb import pasteboard_write
+from .constants import SWIFT_TYPES_DEFAULT_VALUES, SWIFT_TYPES
+from .str_helpers import snake_to_camel, plural_to_singular
+from .command import Command
 
 class JSONCommand(Command):
 	def __init__(self, model_name, json_text):
@@ -36,7 +36,7 @@ class JSON(object):
 	JSON_TO_SWIFT_TYPES = { 
 		"int": "Int",
 		"bool": "Bool",
-		"unicode": "String",
+		"str": "String",
 		"float": "Double",
 		"NoneType": "Any?"
 	}

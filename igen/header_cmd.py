@@ -1,7 +1,8 @@
 # coding=utf-8
 
-from Constants import FILE_HEADER
-from Command import Command
+import sys
+from .constants import FILE_HEADER
+from .command import Command
 
 class FileHeaderCommand(Command):
 	def __init__(self):
@@ -16,9 +17,9 @@ class FileHeaderCommand(Command):
 		return "header"
 
 	def update_file_header(self):
-		project = raw_input('Enter project name: ')
-		developer = raw_input('Enter developer name: ')
-		company = raw_input('Enter company name: ')
+		project = input('Enter project name: ')
+		developer = input('Enter developer name: ')
+		company = input('Enter company name: ')
 		content = "\n".join([project, developer, company])
 		with open(FILE_HEADER, "w") as f:	
 			f.write(content)

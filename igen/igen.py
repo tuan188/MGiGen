@@ -1,20 +1,19 @@
 # coding=utf-8
 
 import sys
-from StringHelpers import lower_first_letter, upper_first_letter, snake_to_camel, plural_to_singular
-from Constants import Commands
-from Constants import FILE_HEADER, SWIFT_TYPES_DEFAULT_VALUES, SWIFT_TYPES
-from Pasteboard import pasteboard_read, pasteboard_write
+from .str_helpers import lower_first_letter, upper_first_letter, snake_to_camel, plural_to_singular
+from .constants import Commands, FILE_HEADER, SWIFT_TYPES_DEFAULT_VALUES, SWIFT_TYPES
+from .pb import pasteboard_read, pasteboard_write
 
-from InitCommand import InitCommand
-from BindViewModelCommand import BindViewModelCommand
-from UnitTestCommand import UnitTestCommand
-from APICommand import APICommand
-from MockCommand import MockCommand
-from JSONCommand import JSONCommand
-from HelpCommand import HelpCommand
-from FileHeaderCommand import FileHeaderCommand
-from TemplateCommand import TemplateCommand
+from .init_cmd import InitCommand
+from .bind_cmd import BindViewModelCommand
+from .test_cmd import UnitTestCommand
+from .api_cmd import APICommand
+from .mock_cmd import MockCommand
+from .json_cmd import JSONCommand
+from .help_cmd import HelpCommand
+from .header_cmd import FileHeaderCommand
+from .template_cmd import TemplateCommand
 
 
 def execute(args):

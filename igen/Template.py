@@ -4,6 +4,7 @@ import re
 import os
 from jinja2 import Environment, PackageLoader
 from datetime import datetime
+from .str_helpers import upper_first_letter, lower_first_letter
 
 class Template(object):
 
@@ -82,7 +83,7 @@ class Template(object):
 			self.__create_file(file_path, file_name, content)
 
 		def __create_file(self, file_path, file_name, content):
-			with open(file_path, "w") as f:
+			with open(file_path, "wb") as f:
 				f.write(content.encode('utf8'))
 				print("        new file:   {}".format(file_path))
 

@@ -1,11 +1,11 @@
 # coding=utf-8
 
-from Constants import FILE_HEADER
-from FileHeaderCommand import FileHeaderCommand
-from Template import Template
-from Pasteboard import pasteboard_read
+from .constants import FILE_HEADER
+from .header_cmd import FileHeaderCommand
+from .template import Template
+from .pb import pasteboard_read
 from datetime import datetime
-from Command import Command
+from .command import Command
 
 class TemplateCommand(Command):
 	def __init__(self, template_name, scene_name, options):
@@ -40,25 +40,25 @@ class TemplateCommand(Command):
 			print("Finish!")
 		elif self.template_name == Template.TemplateType.LIST:
 			model_text = pasteboard_read()
-			try:
-				model = Template().parse_model(model_text)
-				template = Template.ListTemplate(model, self.options, self.scene_name, project, developer, company, date)
-				template.create_files()
-				print("Finish!")
-			except:
-				print('Invalid model text in clipboard.')
+			# try:
+			model = Template().parse_model(model_text)
+			template = Template.ListTemplate(model, self.options, self.scene_name, project, developer, company, date)
+			template.create_files()
+			print("Finish!")
+			# except:
+			# 	print('Invalid model text in clipboard.')
 		elif self.template_name == Template.TemplateType.DETAIL:
 			model_text = pasteboard_read()
-			try:
-				model = Template().parse_model(model_text)
-				if "--static" in self.options:
-					template = Template.StaticDetailTemplate(model, self.options, self.scene_name, project, developer, company, date)
-				else:
-					template = Template.DetailTemplate(model, self.options, self.scene_name, project, developer, company, date)
-				template.create_files()
-				print("Finish!")
-			except:
-				print('Invalid model text in clipboard.')
+			# try:
+			model = Template().parse_model(model_text)
+			if "--static" in self.options:
+				template = Template.StaticDetailTemplate(model, self.options, self.scene_name, project, developer, company, date)
+			else:
+				template = Template.DetailTemplate(model, self.options, self.scene_name, project, developer, company, date)
+			template.create_files()
+			print("Finish!")
+			# except:
+			# 	print('Invalid model text in clipboard.')
 		else:
 			print("Invalid template name.")
 

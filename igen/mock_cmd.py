@@ -1,7 +1,9 @@
 # coding=utf-8
 
-from Pasteboard import pasteboard_write
-from Command import Command
+import re
+from .pb import pasteboard_write
+from .command import Command
+from .constants import SWIFT_TYPES_DEFAULT_VALUES, SWIFT_TYPES
 
 class MockCommand(Command):
 	def __init__(self, protocol_text):
@@ -17,12 +19,12 @@ class MockCommand(Command):
 		return "mock"
 
 	def create_mock(self):
-		try:
-			output = Mock(self.protocol_text).create_mock()
-			pasteboard_write(output)
-			print("Text has been copied to clipboard.")
-		except:
-			print("Invalid protocol text in clipboard.")
+		# try:
+		output = Mock(self.protocol_text).create_mock()
+		pasteboard_write(output)
+		print("Text has been copied to clipboard.")
+		# except:
+		# 	print("Invalid protocol text in clipboard.")
 
 
 class Mock(object):

@@ -1,14 +1,14 @@
 # coding=utf-8
 
-from Command import Command
-from InitCommand import InitCommand
-from BindViewModelCommand import BindViewModelCommand
-from UnitTestCommand import UnitTestCommand
-from APICommand import APICommand
-from MockCommand import MockCommand
-from JSONCommand import JSONCommand
-from FileHeaderCommand import FileHeaderCommand
-from TemplateCommand import TemplateCommand
+from .command import Command
+from .init_cmd import InitCommand
+from .bind_cmd import BindViewModelCommand
+from .test_cmd import UnitTestCommand
+from .api_cmd import APICommand
+from .mock_cmd import MockCommand
+from .json_cmd import JSONCommand
+from .header_cmd import FileHeaderCommand
+from .template_cmd import TemplateCommand
 
 
 class HelpCommand(Command):

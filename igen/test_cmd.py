@@ -1,8 +1,8 @@
 # coding=utf-8
 
-from Pasteboard import pasteboard_write
-from ViewModel import UnitTest
-from Command import Command
+from .pb import pasteboard_write
+from .vm import UnitTest
+from .command import Command
 
 class UnitTestCommand(Command):
 	def __init__(self, vm_text):

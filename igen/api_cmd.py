@@ -1,8 +1,8 @@
 # coding=utf-8
 
-from StringHelpers import lower_first_letter
-from Pasteboard import pasteboard_write
-from Command import Command
+from .str_helpers import lower_first_letter
+from .pb import pasteboard_write
+from .command import Command
 
 class APICommand(Command):
 	def __init__(self, api_name):

@@ -1,8 +1,8 @@
 # coding=utf-8
 
-from Pasteboard import pasteboard_write
-from Model import InitModel
-from Command import Command
+from .pb import pasteboard_write
+from .model import InitModel
+from .command import Command
 
 class InitCommand(Command):
 
