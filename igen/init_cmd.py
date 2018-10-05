@@ -22,7 +22,7 @@ class InitCommand(Command):
 		# try:
 		output = InitModel(self.model_text).create_init()
 		pasteboard_write(output)
-		print("Text has been copied to clipboard.")
+		print("The result has been copied to the pasteboard.")
 		# except:
 		# 	print("Invalid model text in clipboard.")
 

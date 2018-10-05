@@ -220,7 +220,7 @@ $ igen json Notice
 Output:
 
 ```
-Text has been copied to clipboard.
+The result has been copied to the pasteboard.
 ```
 
 Content in the pasteboard:
@@ -292,7 +292,7 @@ $ igen mock
 Output:
 
 ```
-Text has been copied to clipboard.
+The result has been copied to the pasteboard.
 ```
 
 Content in the pasteboard:
@@ -355,7 +355,7 @@ $ igen test
 Output:
 
 ```
-Text has been copied to clipboard.
+The result has been copied to the pasteboard.
 ```
 
 Content in the pasteboard:
@@ -427,7 +427,7 @@ $ igen init
 Output:
 
 ```
-Text has been copied to clipboard.
+The result has been copied to the pasteboard.
 ```
 
 Content in the pasteboard:

@@ -21,6 +21,6 @@ class BindViewModelCommand(Command):
 		# try:
 		output = BindViewModel(self.vm_text).create_bind_view_model()
 		pasteboard_write(output)
-		print("Text has been copied to clipboard.")
+		print("The result has been copied to the pasteboard.")
 		# except:
 		# 	print("Invalid view model text in clipboard.")

@@ -20,7 +20,7 @@ class APICommand(Command):
 	def create_api(self):
 		output = API(self.api_name).create_api()
 		pasteboard_write(output)
-		print("Text has been copied to clipboard.")
+		print("The result has been copied to the pasteboard.")
 
 
 class API(object):

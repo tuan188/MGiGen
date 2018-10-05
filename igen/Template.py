@@ -6,6 +6,14 @@ from jinja2 import Environment, PackageLoader
 from datetime import datetime
 from .str_helpers import upper_first_letter, lower_first_letter
 
+class ProjectInfo(object):
+	def __init__(self, project, developer, company):
+		super(ProjectInfo, self).__init__()
+		self.project = project
+		self.developer = developer
+		self.company = company
+		
+
 class Template(object):
 
 	class Model(object):
@@ -45,9 +53,9 @@ class Template(object):
 			return self.name.endswith(("]", "]?"))
 
 	class TemplateType:
-		BASE = "-base"
-		LIST = "-list"
-		DETAIL = "-detail"
+		BASE = "base"
+		LIST = "list"
+		DETAIL = "detail"
 
 	def parse_model(self, model_text):
 		model_regex = re.compile("(?:struct|class) (\w+) {((.|\n)*)}")
@@ -58,14 +66,16 @@ class Template(object):
 		properties = [Template.Property(p.group()) for p in property_regex.finditer(property_block)]
 		return Template.Model(model_name, properties)
 
+
+	#=================== BaseTemplate ===================
+
 	class BaseTemplate(object):
-		def __init__(self, name, project, developer, company, date):
+		def __init__(self, name, project_info):
 			super(Template.BaseTemplate, self).__init__()
 			self.name = name
-			self.project = project
-			self.developer = developer
-			self.company = company
-			self.date = date
+			self.project = project_info.project
+			self.developer = project_info.developer
+			self.company = project_info.company
 			self.env = Environment(
 				loader=PackageLoader('igen_templates', 'base'),
 				trim_blocks=True,
@@ -85,22 +95,24 @@ class Template(object):
 		def __create_file(self, file_path, file_name, content):
 			with open(file_path, "wb") as f:
 				f.write(content.encode('utf8'))
-				print("        new file:   {}".format(file_path))
+				print("    {}".format(file_path))
 
 		def _file_header(self, class_name):
-			template = self.env.get_template("header.swift")
+			template = self.env.get_template("FileHeader.swift")
+			now = datetime.now()
+			date = "{}/{}/{}".format(now.month, now.day, now.strftime("%y"))
 			header = template.render(
 				class_name=class_name,
 				project=self.project,
 				developer=self.developer,
-				created_date=self.date,
-				copyright_year=datetime.now().year,
+				created_date=date,
+				copyright_year=now.year,
 				company=self.company
 			)
 			return header + "\n\n"
 
 		def create_files(self):
-			print(" ")
+			print('Successfully created files:')
 			self._make_dirs()
 			self._create_view_model()
 			self._create_navigator()
@@ -112,7 +124,6 @@ class Template(object):
 			self._create_use_case_mock()
 			self._create_navigator_mock()
 			self._create_view_controller_tests()
-			print(" ")
 
 		def _make_dirs(self):
 			current_directory = os.getcwd()
@@ -218,12 +229,12 @@ class Template(object):
 
 	class ListTemplate(BaseTemplate):
 
-		def __init__(self, model, options, name, project, developer, company, date):
-			super(Template.ListTemplate, self).__init__(name, project, developer, company, date)
+		def __init__(self, model, options, name, project_info):
+			super(Template.ListTemplate, self).__init__(name, project_info)
 			self.model = model
 			self.options = options
-			self.is_sectioned_list = "--section" in options
-			self.is_collection = "--collection" in options
+			self.is_sectioned_list = options['section']
+			self.is_collection = options['collection']
 			self.model_name = self.model.name
 			self.model_variable = lower_first_letter(self.model_name)
 			self.env = Environment(
@@ -233,7 +244,7 @@ class Template(object):
 			)
 
 		def create_files(self):
-			print(" ")
+			print('Successfully created files:')
 			self._make_dirs()
 			self._create_view_model()
 			self._create_item_view_model()
@@ -248,7 +259,6 @@ class Template(object):
 			self._create_navigator_mock()
 			self._create_view_controller_tests()
 			self._create_table_view_cell_tests()
-			print(" ")
 
 		def _create_view_model(self):
 			class_name = self.name + "ViewModel"
@@ -403,10 +413,9 @@ class Template(object):
 
 
 	class DetailTemplate(BaseTemplate):
-		def __init__(self, model, options, name, project, developer, company, date):
-			super(Template.DetailTemplate, self).__init__(name, project, developer, company, date)
+		def __init__(self, model, options, name, project_info):
+			super(Template.DetailTemplate, self).__init__(name, project_info)
 			self.model = model
-			self.options = options
 			self.model_name = self.model.name
 			self.model_variable = lower_first_letter(self.model_name)
 			self.env = Environment(
@@ -416,7 +425,7 @@ class Template(object):
 			)
 
 		def create_files(self):
-			print(" ")
+			print('Successfully created files:')
 			self._make_dirs()
 			self._create_view_model()
 			self._create_navigator()
@@ -430,7 +439,6 @@ class Template(object):
 			self._create_navigator_mock()
 			self._create_view_controller_tests()
 			self._create_cells_tests()
-			print(" ")
 
 		def _create_assembler(self):
 			class_name = self.name + "Assembler"
@@ -523,7 +531,7 @@ class Template(object):
 	class StaticDetailTemplate(DetailTemplate):
 
 		def create_files(self):
-			print(" ")
+			print('Successfully created files:')
 			self._make_dirs()
 			self._create_assembler()
 			self._create_view_model()
@@ -534,7 +542,6 @@ class Template(object):
 			self._create_use_case_mock()
 			self._create_navigator_mock()
 			self._create_view_controller_tests()
-			print(" ")
 
 		def _create_view_model(self):
 			class_name = self.name + "ViewModel"

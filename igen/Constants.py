@@ -1,6 +1,6 @@
 # coding=utf-8
 
-FILE_HEADER = "file_header.txt"
+FILE_HEADER = "project_info.txt"
 
 SWIFT_TYPES_DEFAULT_VALUES = {
 	"Int": "0",

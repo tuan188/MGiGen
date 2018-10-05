@@ -22,7 +22,7 @@ class MockCommand(Command):
 		# try:
 		output = Mock(self.protocol_text).create_mock()
 		pasteboard_write(output)
-		print("Text has been copied to clipboard.")
+		print("The result has been copied to the pasteboard.")
 		# except:
 		# 	print("Invalid protocol text in clipboard.")
 

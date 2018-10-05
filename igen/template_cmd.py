@@ -1,10 +1,9 @@
 # coding=utf-8
 
 from .constants import FILE_HEADER
-from .header_cmd import FileHeaderCommand
-from .template import Template
+from .project_info_cmd import ProjectInfoCommand
+from .template import Template, ProjectInfo
 from .pb import pasteboard_read
-from datetime import datetime
 from .command import Command
 
 class TemplateCommand(Command):
@@ -32,31 +31,27 @@ class TemplateCommand(Command):
 				company = info[2]
 		except:
 			project, developer, company = FileHeaderCommand().update_file_header()
-		now = datetime.now()
-		date = "{}/{}/{}".format(now.month, now.day, now.strftime("%y"))
+		project_info = ProjectInfo(project, developer, company)
 		if self.template_name == Template.TemplateType.BASE:
-			template = Template.BaseTemplate(self.scene_name, project, developer, company, date)
+			template = Template.BaseTemplate(self.scene_name, project_info)
 			template.create_files()
-			print("Finish!")
 		elif self.template_name == Template.TemplateType.LIST:
 			model_text = pasteboard_read()
 			# try:
 			model = Template().parse_model(model_text)
-			template = Template.ListTemplate(model, self.options, self.scene_name, project, developer, company, date)
+			template = Template.ListTemplate(model, self.options, self.scene_name, project_info)
 			template.create_files()
-			print("Finish!")
 			# except:
 			# 	print('Invalid model text in clipboard.')
 		elif self.template_name == Template.TemplateType.DETAIL:
 			model_text = pasteboard_read()
 			# try:
 			model = Template().parse_model(model_text)
-			if "--static" in self.options:
-				template = Template.StaticDetailTemplate(model, self.options, self.scene_name, project, developer, company, date)
+			if self.options['static']:
+				template = Template.StaticDetailTemplate(model, self.options, self.scene_name, project_info)
 			else:
-				template = Template.DetailTemplate(model, self.options, self.scene_name, project, developer, company, date)
+				template = Template.DetailTemplate(model, self.options, self.scene_name, project_info)
 			template.create_files()
-			print("Finish!")
 			# except:
 			# 	print('Invalid model text in clipboard.')
 		else:

@@ -1,13 +1,147 @@
 import sys
-from .igen import execute
-from .igen import HelpCommand
+import argparse
+from arghandler import *
+
+from . import __version__
+from .pb import pasteboard_read
+from .api_cmd import APICommand
+from .mock_cmd import MockCommand
+from .init_cmd import InitCommand
+from .project_info_cmd import ProjectInfoCommand
+from .json_cmd import JSONCommand
+from .test_cmd import UnitTestCommand
+from .bind_cmd import BindViewModelCommand
+from .template_cmd import TemplateCommand
+
+@subcmd('template', help='create template files for the scene')
+def cmd_template(parser, context, args):
+	parser.add_argument(
+		'-t', '--type',
+		required=False, 
+		choices=['base', 'list', 'detail'],
+		default='base',
+		help='template type'
+	)
+	parser.add_argument(
+		'-n', '--name',  
+		required=True, 
+		help='scene name'
+	)
+	parser.add_argument(
+		'--section', 
+		required=False,
+		action='store_true',
+		help='show a list of items with header sections'
+	)
+	parser.add_argument(
+		'--collection', 
+		required=False, 
+		action='store_true', 
+		help='use UICollectionView instead of UITableView'
+	)
+	parser.add_argument(
+		'--static', 
+		required=False, 
+		action='store_true', 
+		help='use UICollectionView instead of UITableView'
+	)
+	args = parser.parse_args(args)
+	template_name = args.type
+	scene_name = args.name
+	options = {
+		'section': args.section,
+		'collection': args.collection,
+		'static': args.static,
+	}
+	TemplateCommand(template_name, scene_name, options).create_files()
+
+
+@subcmd('project', help='update the project information')
+def cmd_project(parser, context, args):
+	parser.add_argument(
+		'-i', '--info',
+		required=False, 
+		action='store_true',
+		help='show the project information and exit'
+	)
+	args = parser.parse_args(args)
+	cmd = ProjectInfoCommand()
+	if args.info:
+		cmd.info()
+	else:
+		cmd.update_info()
+
+
+@subcmd('mock', help='create mock for the protocol')
+def cmd_mock(parser, context, args):
+	parser.usage = 'copy the protocol to the pasteboard then run: igen mock [-h]'
+	args = parser.parse_args(args)
+	protocol_text = pasteboard_read()
+	MockCommand(protocol_text).create_mock()
+
+
+@subcmd('test', help='create unit tests for the ViewModel')
+def cmd_test(parser, context, args):
+	parser.usage = 'copy the ViewModel to the pasteboard then run: igen test [-h]'
+	args = parser.parse_args(args)
+	vm_text = pasteboard_read()
+	UnitTestCommand(vm_text).create_tests()
+
+
+@subcmd('bind', help='create bindViewModel method for the UIViewController')
+def cmd_test(parser, context, args):
+	parser.usage = 'copy the ViewModel to the pasteboard then run: igen bind [-h]'
+	args = parser.parse_args(args)
+	vm_text = pasteboard_read()
+	BindViewModelCommand(vm_text).create_bind_view_model()
+
+
+@subcmd('json', help='create model from json')
+def cmd_json(parser, context, args):
+	parser.usage = 'copy the json to the pasteboard then run: igen json [-h] -n NAME'
+	parser.add_argument(
+		'-n', '--name',
+		required=True, 
+		help='model name'
+	)
+	args = parser.parse_args(args)
+	json = pasteboard_read()
+	JSONCommand(args.name, json).create_models()
+
+
+@subcmd('api', help='create input and ouput files for the api')
+def cmd_api(parser, context, args):
+	parser.add_argument(
+		'-n', '--name',
+		required=True, 
+		help='api name'
+	)
+	args = parser.parse_args(args)
+	APICommand(args.name).create_api()
+
+
+@subcmd('init', help='create initialize method for the class/struct')
+def cmd_init(parser, context, args):
+	parser.usage = 'copy the protocol to the pasteboard then run: igen init [-h]'
+	args = parser.parse_args(args)
+	model_text = pasteboard_read()
+	InitCommand(model_text).create_init()
+
+
 
 def main():
-	if len(sys.argv) > 1:
-		args = sys.argv[1:]
-		execute(args)
-	else:
-		HelpCommand().show_help()
+	handler = ArgumentHandler(
+		use_subcommand_help=True,
+		epilog='get help on a subcommand: igen [subcommand] -h'
+	)
+	handler.add_argument(
+		'-v', '--version', 
+		action='version',
+		version=__version__,
+		help='show the version number and exit'
+	)
+	handler.run()
+
 
 if __name__ == '__main__':
 	main()

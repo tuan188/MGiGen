@@ -21,6 +21,6 @@ class UnitTestCommand(Command):
 		# try:
 		output = UnitTest(self.vm_text).create_tests()
 		pasteboard_write(output)
-		print("Text has been copied to clipboard.")
+		print("The result has been copied to the pasteboard.")
 		# except:
 		# 	print("Invalid view model text in clipboard.")

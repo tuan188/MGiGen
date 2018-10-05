@@ -26,6 +26,6 @@ setup(
         "Operating System :: OS Independent",
     ],
 	python_requires=">=3",
-	install_requires=['Jinja2>=2.10'],
+	install_requires=['Jinja2>=2.10', 'arghandler>=1.2'],
 	include_package_data = True
 	)
