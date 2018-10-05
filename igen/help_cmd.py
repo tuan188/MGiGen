@@ -1,6 +1,7 @@
 # coding=utf-8
 
 from collections import OrderedDict
+from . import __version__
 from .command import Command
 from .init_cmd import InitCommand
 from .bind_cmd import BindViewModelCommand
@@ -26,7 +27,8 @@ class HelpCommand(Command):
 		return "help"
 		
 	def show_help(self):
-		help = "igen commands:\n\n"
+		help = "igen v" + __version__ + "\n"
+		help += "Commands:\n\n"
 		help += "\n".join([eval(cmd).long_description() for cmd in COMMANDS])
 		help += "\n\n"
 		help += "Get help on a command: igen help [command]\n"

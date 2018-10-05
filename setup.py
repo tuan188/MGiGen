@@ -1,11 +1,12 @@
 from setuptools import setup
+from igen import __version__
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
 	name = 'igen',
-	version = '1.1.0',
+	version = __version__,
 	author="Tuan Truong",
 	author_email="tuan188@gmail.com",
 	description="Code Generation Tools for iOS",
