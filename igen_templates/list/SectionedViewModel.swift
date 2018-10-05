@@ -1,11 +1,17 @@
-struct {{ name }}ViewModel: ViewModelType {
+struct {{ name }}ViewModel {
+    let navigator: {{ name }}NavigatorType
+    let useCase: {{ name }}UseCaseType
+}
+
+// MARK: - ViewModelType
+extension {{ name }}ViewModel: ViewModelType {
     struct Input {
         let loadTrigger: Driver<Void>
         let reloadTrigger: Driver<Void>
         let loadMoreTrigger: Driver<Void>
         let select{{ model_name }}Trigger: Driver<IndexPath>
     }
-    
+
     struct Output {
         let error: Driver<Error>
         let loading: Driver<Bool>
@@ -21,9 +27,6 @@ struct {{ name }}ViewModel: ViewModelType {
         let header: String
         let {{ model_variable }}List: [{{ model_name }}]
     }
-    
-    let navigator: {{ name }}NavigatorType
-    let useCase: {{ name }}UseCaseType
     
     func transform(_ input: Input) -> Output {
         let loadMoreOutput = setupLoadMorePaging(

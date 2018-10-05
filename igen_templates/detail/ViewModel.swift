@@ -1,4 +1,11 @@
-struct {{ name }}ViewModel: ViewModelType {
+struct {{ name }}ViewModel {
+    let navigator: {{ name }}NavigatorType
+    let useCase: {{ name }}UseCaseType
+    let {{ model_variable }}: {{ model_name }}
+}
+
+// MARK: - ViewModelType
+extension {{ name }}ViewModel: ViewModelType {
     struct Input {
         let loadTrigger: Driver<Void>
     }
@@ -12,10 +19,6 @@ struct {{ name }}ViewModel: ViewModelType {
         case {{ p.name }}({{ p.type.name }})
     {% endfor %}
     }
-
-    let navigator: {{ name }}NavigatorType
-    let useCase: {{ name }}UseCaseType
-    let {{ model_variable }}: {{ model_name }}
 
     func transform(_ input: Input) -> Output {
         let {{ model_variable }} = input.loadTrigger
