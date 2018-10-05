@@ -1,0 +1,1 @@
+rm -rf dist build igen.egg-info
