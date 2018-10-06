@@ -11,12 +11,12 @@ class MockCommand(Command):
 		self.protocol_text = protocol_text
 
 	def create_mock(self):
-		# try:
-		output = Mock(self.protocol_text).create_mock()
-		pasteboard_write(output)
-		print("The result has been copied to the pasteboard.")
-		# except:
-		# 	print("Invalid protocol text in clipboard.")
+		try:
+			output = Mock(self.protocol_text).create_mock()
+			pasteboard_write(output)
+			print("The result has been copied to the pasteboard.")
+		except:
+			print("The protocol in the pasteboard is invalid.")
 
 
 class Mock(object):

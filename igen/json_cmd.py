@@ -15,12 +15,12 @@ class JSONCommand(Command):
 		self.json_text = json_text
 
 	def create_models(self):
-		# try:
-		output = JSON(self.model_name, self.json_text).create_models()
-		pasteboard_write(output)
-		print("The result has been copied to the pasteboard.")
-		# except:
-		# 	print("Invalid json string in clipboard
+		try:
+			output = JSON(self.model_name, self.json_text).create_models()
+			pasteboard_write(output)
+			print("The result has been copied to the pasteboard.")
+		except:
+			print("The JSON in the pasteboard is invalid.")
 
 
 class JSON(object):

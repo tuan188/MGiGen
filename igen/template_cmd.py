@@ -29,23 +29,23 @@ class TemplateCommand(Command):
 			template.create_files()
 		elif self.template_name == Template.TemplateType.LIST:
 			model_text = pasteboard_read()
-			# try:
-			model = Template().parse_model(model_text)
-			template = Template.ListTemplate(model, self.options, self.scene_name, project_info)
-			template.create_files()
-			# except:
-			# 	print('Invalid model text in clipboard.')
+			try:
+				model = Template().parse_model(model_text)
+				template = Template.ListTemplate(model, self.options, self.scene_name, project_info)
+				template.create_files()
+			except:
+				print("The Model in the pasteboard is invalid.")
 		elif self.template_name == Template.TemplateType.DETAIL:
 			model_text = pasteboard_read()
-			# try:
-			model = Template().parse_model(model_text)
-			if self.options['static']:
-				template = Template.StaticDetailTemplate(model, self.options, self.scene_name, project_info)
-			else:
-				template = Template.DetailTemplate(model, self.options, self.scene_name, project_info)
-			template.create_files()
-			# except:
-			# 	print('Invalid model text in clipboard.')
+			try:
+				model = Template().parse_model(model_text)
+				if self.options['static']:
+					template = Template.StaticDetailTemplate(model, self.options, self.scene_name, project_info)
+				else:
+					template = Template.DetailTemplate(model, self.options, self.scene_name, project_info)
+				template.create_files()
+			except:
+				print("The Model in the pasteboard is invalid.")
 		else:
 			print("Invalid template type.")
 

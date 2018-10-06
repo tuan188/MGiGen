@@ -97,9 +97,17 @@ def cmd_test(parser, context, args):
 	BindViewModelCommand(vm_text).create_bind_view_model()
 
 
-@subcmd('json', help='create model from json')
+@subcmd('init', help='create initialize method for the class/struct')
+def cmd_init(parser, context, args):
+	parser.usage = 'copy the protocol to the pasteboard then run: igen init [-h]'
+	args = parser.parse_args(args)
+	model_text = pasteboard_read()
+	InitCommand(model_text).create_init()
+
+
+@subcmd('json', help='create model from JSON')
 def cmd_json(parser, context, args):
-	parser.usage = 'copy the json to the pasteboard then run: igen json [-h] -n NAME'
+	parser.usage = 'copy the JSON to the pasteboard then run: igen json [-h] -n NAME'
 	parser.add_argument(
 		'-n', '--name',
 		required=True, 
@@ -119,15 +127,6 @@ def cmd_api(parser, context, args):
 	)
 	args = parser.parse_args(args)
 	APICommand(args.name).create_api()
-
-
-@subcmd('init', help='create initialize method for the class/struct')
-def cmd_init(parser, context, args):
-	parser.usage = 'copy the protocol to the pasteboard then run: igen init [-h]'
-	args = parser.parse_args(args)
-	model_text = pasteboard_read()
-	InitCommand(model_text).create_init()
-
 
 
 def main():

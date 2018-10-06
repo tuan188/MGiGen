@@ -10,9 +10,9 @@ class UnitTestCommand(Command):
 		self.vm_text = vm_text
 
 	def create_tests(self):
-		# try:
-		output = UnitTest(self.vm_text).create_tests()
-		pasteboard_write(output)
-		print("The result has been copied to the pasteboard.")
-		# except:
-		# 	print("Invalid view model text in clipboard.")
+		try:
+			output = UnitTest(self.vm_text).create_tests()
+			pasteboard_write(output)
+			print("The result has been copied to the pasteboard.")
+		except:
+			print("The ViewModel in the pasteboard is invalid.")
