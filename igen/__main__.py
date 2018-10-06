@@ -75,10 +75,16 @@ def cmd_project(parser, context, args):
 
 @subcmd('mock', help='create mock for the protocol')
 def cmd_mock(parser, context, args):
-	parser.usage = 'copy the protocol to the pasteboard then run: igen mock [-h]'
+	parser.usage = 'copy the protocol to the pasteboard then run: igen mock [-h] [-p]'
+	parser.add_argument(
+		'-p', '--print', 
+		required=False, 
+		action='store_true', 
+		help="print the result"
+	)
 	args = parser.parse_args(args)
 	protocol_text = pasteboard_read()
-	MockCommand(protocol_text).create_mock()
+	MockCommand(protocol_text).create_mock(args.print)
 
 
 @subcmd('test', help='create unit tests for the ViewModel')
@@ -97,7 +103,7 @@ def cmd_test(parser, context, args):
 
 @subcmd('bind', help='create bindViewModel method for the UIViewController')
 def cmd_test(parser, context, args):
-	parser.usage = 'copy the ViewModel to the pasteboard then run: igen bind [-h]'
+	parser.usage = 'copy the ViewModel to the pasteboard then run: igen bind [-h] [-p]'
 	parser.add_argument(
 		'-p', '--print', 
 		required=False, 

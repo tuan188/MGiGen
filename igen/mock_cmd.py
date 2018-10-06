@@ -10,13 +10,14 @@ class MockCommand(Command):
 		super(MockCommand, self).__init__()
 		self.protocol_text = protocol_text
 
-	def create_mock(self):
-		try:
-			output = Mock(self.protocol_text).create_mock()
-			pasteboard_write(output)
-			print("The result has been copied to the pasteboard.")
-		except:
-			print("The protocol in the pasteboard is invalid.")
+	def create_mock(self, print_result):
+		output = Mock(self.protocol_text).create_mock()
+		if print_result:
+			print()
+			print(output)
+			print()
+		pasteboard_write(output)
+		print("The result has been copied to the pasteboard.")
 
 
 class Mock(object):
@@ -49,9 +50,13 @@ class Mock(object):
 
 	def create_mock(self):
 		str = self.protocol_text
-		(protocol_name, class_name) = self._get_protocol_name(str)
-		func_regex = re.compile("func (\w+)\(.*\)( -> (.*))?")
-		funcs = [Mock.Function(f.group(), f.group(1), f.group(3)) for f in func_regex.finditer(str)]
+		try:
+			(protocol_name, class_name) = self._get_protocol_name(str)
+			func_regex = re.compile("func (\w+)\(.*\)( -> (.*))?")
+			funcs = [Mock.Function(f.group(), f.group(1), f.group(3)) for f in func_regex.finditer(str)]
+		except:
+			print("The protocol in the pasteboard is invalid.")
+			exit(1)
 		content = "final class {}Mock: {} {{\n".format(class_name, protocol_name)
 		for f in funcs:
 			content += "    // MARK: - {}\n".format(f.name)

@@ -12,8 +12,9 @@ class BindViewModelCommand(Command):
 	def create_bind_view_model(self, print_result):
 		output = BindViewModel(self.vm_text).create_bind_view_model()
 		if print_result:
+			print()
 			print(output)
-			print('\n')
+			print()
 		pasteboard_write(output)
 		print("The result has been copied to the pasteboard.")
 		
