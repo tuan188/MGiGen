@@ -125,8 +125,14 @@ def cmd_api(parser, context, args):
 		required=True, 
 		help='api name'
 	)
+	parser.add_argument(
+		'-p', '--print', 
+		required=False, 
+		action='store_true', 
+		help="print the result"
+	)
 	args = parser.parse_args(args)
-	APICommand(args.name).create_api()
+	APICommand(args.name).create_api(args.print)
 
 
 def main():
