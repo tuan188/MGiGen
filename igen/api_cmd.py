@@ -12,10 +12,10 @@ class APICommand(Command):
 
 	def create_api(self, print_result):
 		output = API(self.api_name).create_api()
-		pasteboard_write(output)
 		if print_result:
 			print(output)
 			print('\n')
+		pasteboard_write(output)
 		print('The result has been copied to the pasteboard.')
 
 

@@ -11,8 +11,8 @@ class UnitTestCommand(Command):
 
 	def create_tests(self, print_result):
 		output = UnitTest(self.vm_text).create_tests()
-		pasteboard_write(output)
 		if print_result:
 			print(output)
 			print('\n')
+		pasteboard_write(output)
 		print("The result has been copied to the pasteboard.")

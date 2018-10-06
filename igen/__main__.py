@@ -98,9 +98,15 @@ def cmd_test(parser, context, args):
 @subcmd('bind', help='create bindViewModel method for the UIViewController')
 def cmd_test(parser, context, args):
 	parser.usage = 'copy the ViewModel to the pasteboard then run: igen bind [-h]'
+	parser.add_argument(
+		'-p', '--print', 
+		required=False, 
+		action='store_true', 
+		help="print the result"
+	)
 	args = parser.parse_args(args)
 	vm_text = pasteboard_read()
-	BindViewModelCommand(vm_text).create_bind_view_model()
+	BindViewModelCommand(vm_text).create_bind_view_model(args.print)
 
 
 @subcmd('init', help='create initialize method for the class/struct')

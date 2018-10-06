@@ -9,10 +9,11 @@ class BindViewModelCommand(Command):
 		super(BindViewModelCommand, self).__init__()
 		self.vm_text = vm_text
 
-	def create_bind_view_model(self):
-		try:
-			output = BindViewModel(self.vm_text).create_bind_view_model()
-			pasteboard_write(output)
-			print("The result has been copied to the pasteboard.")
-		except:
-			print("The ViewModel in the pasteboard is invalid.")
+	def create_bind_view_model(self, print_result):
+		output = BindViewModel(self.vm_text).create_bind_view_model()
+		if print_result:
+			print(output)
+			print('\n')
+		pasteboard_write(output)
+		print("The result has been copied to the pasteboard.")
+		

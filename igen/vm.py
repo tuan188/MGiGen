@@ -62,26 +62,40 @@ class UnitTest(ViewModel):
 			output_properties=output_properties
 		)
 		return content
-		
+
 		
 class BindViewModel(ViewModel):
 
 	def create_bind_view_model(self):
-		view_model = self.view_model_name
 		input_properties, output_properties = self.properties
-
-		content = "    func bindViewModel() {\n"
-		content += "        let input = {}ViewModel.Input(\n".format(view_model)
-		args = []
-		for p in input_properties:
-			arg = "            {}: Driver.empty()".format(p.name)
-			args.append(arg)
-		content += ",\n".join(args)
-		content += "\n        )\n"
-		content += "        let output = viewModel.transform(input)\n"
-		for p in output_properties:
-			content += "        output.{}\n".format(p.name)
-			content += "              .drive()\n"
-			content += "              .disposed(by: rx.disposeBag)\n"
-		content += "    }\n\n"
+		env = Environment(
+			loader=PackageLoader('igen_templates', 'commands'),
+			trim_blocks=True,
+			lstrip_blocks=True
+		)
+		template = env.get_template("BindViewModel.swift")
+		content = template.render(
+			name=self.view_model_name,
+			input_properties=input_properties,
+			output_properties=output_properties
+		)
 		return content
+
+		# view_model = self.view_model_name
+		# input_properties, output_properties = self.properties
+
+		# content = "    func bindViewModel() {\n"
+		# content += "        let input = {}ViewModel.Input(\n".format(view_model)
+		# args = []
+		# for p in input_properties:
+		# 	arg = "            {}: Driver.empty()".format(p.name)
+		# 	args.append(arg)
+		# content += ",\n".join(args)
+		# content += "\n        )\n"
+		# content += "        let output = viewModel.transform(input)\n"
+		# for p in output_properties:
+		# 	content += "        output.{}\n".format(p.name)
+		# 	content += "              .drive()\n"
+		# 	content += "              .disposed(by: rx.disposeBag)\n"
+		# content += "    }\n\n"
+		# return content
