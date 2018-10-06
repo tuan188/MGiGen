@@ -118,7 +118,7 @@ def cmd_json(parser, context, args):
 	JSONCommand(args.name, json).create_models()
 
 
-@subcmd('api', help='create input and ouput files for the api')
+@subcmd('api', help='create input and ouput files for the API')
 def cmd_api(parser, context, args):
 	parser.add_argument(
 		'-n', '--name',

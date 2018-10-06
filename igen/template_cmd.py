@@ -1,5 +1,6 @@
 # coding=utf-8
 
+from subprocess import call
 from .constants import FILE_HEADER
 from .project_info_cmd import ProjectInfoCommand
 from .template import Template, ProjectInfo
@@ -31,21 +32,25 @@ class TemplateCommand(Command):
 			model_text = pasteboard_read()
 			try:
 				model = Template().parse_model(model_text)
-				template = Template.ListTemplate(model, self.options, self.scene_name, project_info)
-				template.create_files()
 			except:
 				print("The Model in the pasteboard is invalid.")
+				exit(1)
+			template = Template.ListTemplate(model, self.options, self.scene_name, project_info)
+			template.create_files()
 		elif self.template_name == Template.TemplateType.DETAIL:
 			model_text = pasteboard_read()
 			try:
 				model = Template().parse_model(model_text)
-				if self.options['static']:
-					template = Template.StaticDetailTemplate(model, self.options, self.scene_name, project_info)
-				else:
-					template = Template.DetailTemplate(model, self.options, self.scene_name, project_info)
-				template.create_files()
 			except:
 				print("The Model in the pasteboard is invalid.")
+			if self.options['static']:
+				template = Template.StaticDetailTemplate(model, self.options, self.scene_name, project_info)
+			else:
+				template = Template.DetailTemplate(model, self.options, self.scene_name, project_info)
+			template.create_files()
 		else:
 			print("Invalid template type.")
+			exit(1)
+		targetDirectory = "./{}".format(self.scene_name)
+		call(["open", targetDirectory])
 
