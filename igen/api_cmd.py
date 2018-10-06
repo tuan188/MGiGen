@@ -9,14 +9,6 @@ class APICommand(Command):
 		super(APICommand, self).__init__()
 		self.api_name = api_name
 
-	@classmethod
-	def description(cls):
-		return "Create API request"
-
-	@classmethod
-	def name(cls):
-		return "api"
-
 	def create_api(self):
 		output = API(self.api_name).create_api()
 		pasteboard_write(output)

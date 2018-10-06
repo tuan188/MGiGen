@@ -9,14 +9,6 @@ class BindViewModelCommand(Command):
 		super(BindViewModelCommand, self).__init__()
 		self.vm_text = vm_text
 
-	@classmethod
-	def description(cls):
-		return "Create bindViewModel method for view controller from view model"
-
-	@classmethod
-	def name(cls):
-		return "bind"
-
 	def create_bind_view_model(self):
 		# try:
 		output = BindViewModel(self.vm_text).create_bind_view_model()

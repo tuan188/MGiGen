@@ -15,6 +15,7 @@ from .template_cmd import TemplateCommand
 
 @subcmd('template', help='create template files for the scene')
 def cmd_template(parser, context, args):
+	parser.epilog="'list' and 'detail' template require copying the Model to the pasteboard before running the command."
 	parser.add_argument(
 		'-t', '--type',
 		required=False, 
@@ -31,19 +32,19 @@ def cmd_template(parser, context, args):
 		'--section', 
 		required=False,
 		action='store_true',
-		help='show a list of items with header sections'
+		help="show a list of items with header sections ('list' template only)"
 	)
 	parser.add_argument(
 		'--collection', 
 		required=False, 
 		action='store_true', 
-		help='use UICollectionView instead of UITableView'
+		help="use UICollectionView instead of UITableView ('list' template only)"
 	)
 	parser.add_argument(
 		'--static', 
 		required=False, 
 		action='store_true', 
-		help='use UICollectionView instead of UITableView'
+		help="display details in a static UITableViewController ('detail' template only)"
 	)
 	args = parser.parse_args(args)
 	template_name = args.type
@@ -132,7 +133,7 @@ def cmd_init(parser, context, args):
 def main():
 	handler = ArgumentHandler(
 		use_subcommand_help=True,
-		epilog='get help on a subcommand: igen [subcommand] -h'
+		epilog='Get help on a subcommand: igen [subcommand] -h'
 	)
 	handler.add_argument(
 		'-v', '--version', 

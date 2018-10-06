@@ -6,14 +6,6 @@ from .command import Command
 
 class ProjectInfoCommand(Command):
 
-	@classmethod
-	def description(cls):
-		return "Update file header info"
-
-	@classmethod
-	def name(cls):
-		return "header"
-
 	def update_info(self):
 		project = input('Enter project name: ')
 		developer = input('Enter developer name: ')

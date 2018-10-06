@@ -10,14 +10,6 @@ class MockCommand(Command):
 		super(MockCommand, self).__init__()
 		self.protocol_text = protocol_text
 
-	@classmethod
-	def description(cls):
-		return "Create mock from protocol"
-
-	@classmethod
-	def name(cls):
-		return "mock"
-
 	def create_mock(self):
 		# try:
 		output = Mock(self.protocol_text).create_mock()

@@ -13,14 +13,6 @@ class TemplateCommand(Command):
 		self.scene_name = scene_name
 		self.options = options
 
-	@classmethod
-	def description(cls):
-		return "Generate template files"
-
-	@classmethod
-	def name(cls):
-		return "template"
-
 	def create_files(self):
 		try:
 			with open(FILE_HEADER) as f:
@@ -55,5 +47,5 @@ class TemplateCommand(Command):
 			# except:
 			# 	print('Invalid model text in clipboard.')
 		else:
-			print("Invalid template name.")
+			print("Invalid template type.")
 

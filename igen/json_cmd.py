@@ -14,14 +14,6 @@ class JSONCommand(Command):
 		self.model_name = model_name
 		self.json_text = json_text
 
-	@classmethod
-	def description(cls):
-		return "Create models from json text"
-
-	@classmethod
-	def name(cls):
-		return "json"
-
 	def create_models(self):
 		# try:
 		output = JSON(self.model_name, self.json_text).create_models()
