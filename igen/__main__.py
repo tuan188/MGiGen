@@ -83,10 +83,16 @@ def cmd_mock(parser, context, args):
 
 @subcmd('test', help='create unit tests for the ViewModel')
 def cmd_test(parser, context, args):
-	parser.usage = 'copy the ViewModel to the pasteboard then run: igen test [-h]'
+	parser.usage = 'copy the ViewModel to the pasteboard then run: igen test [-h] [-p]'
+	parser.add_argument(
+		'-p', '--print', 
+		required=False, 
+		action='store_true', 
+		help="print the result"
+	)
 	args = parser.parse_args(args)
 	vm_text = pasteboard_read()
-	UnitTestCommand(vm_text).create_tests()
+	UnitTestCommand(vm_text).create_tests(args.print)
 
 
 @subcmd('bind', help='create bindViewModel method for the UIViewController')
