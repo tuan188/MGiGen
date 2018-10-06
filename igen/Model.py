@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import re
+from jinja2 import Environment, PackageLoader
 from .constants import SWIFT_TYPES_DEFAULT_VALUES, SWIFT_TYPES
 
 class Model(object):
@@ -19,42 +20,49 @@ class Model(object):
 		def is_array(self):
 			return self.type_name.endswith("]")
 
+		@property
+		def value(self):
+			if self.is_optional:
+				value = "nil"
+			elif self.is_array:
+				value = "[]"
+			elif self.type_name in SWIFT_TYPES:
+				value = SWIFT_TYPES_DEFAULT_VALUES[self.type_name]
+			else:
+				value = "{}()".format(self.type_name)
+			return value
+
 
 	def __init__(self, model_text):
 		super(Model, self).__init__()
 		self.model_text = model_text
 
 	def name_and_properties(self):
-		str = self.model_text
-		block_regex = re.search("struct (\w+) {([^}]+)", str)
-		model_name = block_regex.group(1)
-		block = block_regex.group(2)
-		properties_regex = re.compile("(let|var) (\w+): (.*)")
-		properties = [Model.Property(p[1], p[2]) for p in properties_regex.findall(block)]
-		return (model_name, properties)
+		try:
+			str = self.model_text
+			block_regex = re.search("struct (\w+) {([^}]+)", str)
+			model_name = block_regex.group(1)
+			block = block_regex.group(2)
+			properties_regex = re.compile("(let|var) (\w+): (.*)")
+			properties = [Model.Property(p[1], p[2]) for p in properties_regex.findall(block)]
+			return (model_name, properties)
+		except:
+			print("The Model in the pasteboard is invalid.")
+			exit(1)
+		
 
 class InitModel(Model):
 
 	def create_init(self):
 		model_name, properties = self.name_and_properties()
-		content = "extension {} {{\n".format(model_name)
-
-		content += "    init() {\n"
-		content += "        self.init(\n"
-		params = []
-		for p in properties:
-			if p.is_optional:
-				value = "nil"
-			elif p.is_array:
-				value = "[]"
-			elif p.type_name in SWIFT_TYPES:
-				value = SWIFT_TYPES_DEFAULT_VALUES[p.type_name]
-			else:
-				value = "{}()".format(p.type_name)
-			params.append("            {}: {}".format(p.name, value))
-		content += ",\n".join(params)
-		content += "\n"
-		content += "        )\n"
-		content += "    }\n"
-		content += "}"
+		env = Environment(
+			loader=PackageLoader('igen_templates', 'commands'),
+			trim_blocks=True,
+			lstrip_blocks=True
+		)
+		template = env.get_template("Init.swift")
+		content = template.render(
+			name=model_name,
+			properties=properties
+		)
 		return content

@@ -10,12 +10,12 @@ class InitCommand(Command):
 		super(InitCommand, self).__init__()
 		self.model_text = model_text
 		
-	def create_init(self):
-		try:
-			output = InitModel(self.model_text).create_init()
-			pasteboard_write(output)
-			print("The result has been copied to the pasteboard.")
-		except:
-			print("The Model in the pasteboard is invalid.")
-
+	def create_init(self, print_result):
+		output = InitModel(self.model_text).create_init()
+		if print_result:
+			print()
+			print(output)
+			print()
+		pasteboard_write(output)
+		print("The result has been copied to the pasteboard.")
 

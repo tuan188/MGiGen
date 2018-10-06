@@ -117,10 +117,16 @@ def cmd_test(parser, context, args):
 
 @subcmd('init', help='create initialize method for the class/struct')
 def cmd_init(parser, context, args):
-	parser.usage = 'copy the protocol to the pasteboard then run: igen init [-h]'
+	parser.usage = 'copy the protocol to the pasteboard then run: igen init [-h] [-p]'
+	parser.add_argument(
+		'-p', '--print', 
+		required=False, 
+		action='store_true', 
+		help="print the result"
+	)
 	args = parser.parse_args(args)
 	model_text = pasteboard_read()
-	InitCommand(model_text).create_init()
+	InitCommand(model_text).create_init(args.print)
 
 
 @subcmd('json', help='create model from JSON')
@@ -156,7 +162,7 @@ def cmd_api(parser, context, args):
 def main():
 	handler = ArgumentHandler(
 		use_subcommand_help=True,
-		epilog='Get help on a subcommand: igen [subcommand] -h'
+		epilog='Get help on a subcommand: igen subcommand -h'
 	)
 	handler.add_argument(
 		'-v', '--version', 
