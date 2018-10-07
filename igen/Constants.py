@@ -1,7 +1,5 @@
 # coding=utf-8
 
-FILE_HEADER = "project_info.txt"
-
 SWIFT_TYPES_DEFAULT_VALUES = {
 	"Int": "0",
 	"Bool": "false",
@@ -19,14 +17,3 @@ SWIFT_TYPES = {
 	"Float"
 	"Date"
 }
-
-class Commands:
-	HELP = "help"
-	HEADER = "header"
-	TEMPLATE = "template"
-	JSON = "json"
-	MOCK = "mock"
-	API = "api"
-	UNIT_TEST = "test"
-	BIND_VIEW_MODEL = "bind"
-	INIT = "init"

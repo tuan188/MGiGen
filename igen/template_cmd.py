@@ -1,8 +1,7 @@
 # coding=utf-8
 
 from subprocess import call
-from .constants import FILE_HEADER
-from .project_info_cmd import ProjectInfoCommand
+from .config_cmd import ConfigCommand
 from .template import Template, ProjectInfo
 from .pb import pasteboard_read
 from .command import Command
@@ -15,15 +14,11 @@ class TemplateCommand(Command):
 		self.options = options
 
 	def create_files(self):
-		try:
-			with open(FILE_HEADER) as f:
-				content = f.readlines()
-				info = [x.strip() for x in content]
-				project = info[0]
-				developer = info[1]
-				company = info[2]
-		except:
-			project, developer, company = FileHeaderCommand().update_file_header()
+		info = ConfigCommand().project_info(False)
+		if info != None:
+			project, developer, company = info
+		else:
+			project, developer, company = ConfigCommand().update_project_info()
 		project_info = ProjectInfo(project, developer, company)
 		if self.template_name == Template.TemplateType.BASE:
 			template = Template.BaseTemplate(self.scene_name, project_info)

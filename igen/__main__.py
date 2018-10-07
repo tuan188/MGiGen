@@ -7,7 +7,7 @@ from .pb import pasteboard_read
 from .api_cmd import APICommand
 from .mock_cmd import MockCommand
 from .init_cmd import InitCommand
-from .project_info_cmd import ProjectInfoCommand
+from .config_cmd import ConfigCommand
 from .json_cmd import JSONCommand
 from .test_cmd import UnitTestCommand
 from .bind_cmd import BindViewModelCommand
@@ -55,22 +55,6 @@ def cmd_template(parser, context, args):
 		'static': args.static,
 	}
 	TemplateCommand(template_name, scene_name, options).create_files()
-
-
-@subcmd('project', help='update the project information')
-def cmd_project(parser, context, args):
-	parser.add_argument(
-		'-i', '--info',
-		required=False, 
-		action='store_true',
-		help='show the project information and exit'
-	)
-	args = parser.parse_args(args)
-	cmd = ProjectInfoCommand()
-	if args.info:
-		cmd.info()
-	else:
-		cmd.update_info()
 
 
 @subcmd('mock', help='create mock for the protocol')
@@ -164,6 +148,30 @@ def cmd_api(parser, context, args):
 	args = parser.parse_args(args)
 	APICommand(args.name).create_api(args.print)
 
+
+@subcmd('config', help='configure igen')
+def cmd_project(parser, context, args):
+	parser.add_argument(
+		'-s', '--section',
+		required=False, 
+		choices=['project'],
+		default='project',
+		help='section name'
+	)
+	parser.add_argument(
+		'-i', '--info',
+		required=False, 
+		action='store_true',
+		help='show the section details and exit'
+	)
+	args = parser.parse_args(args)
+	cmd = ConfigCommand()
+	if args.section == 'project':
+		if args.info:
+			cmd.project_info(True)
+		else:
+			cmd.update_project_info()
+			
 
 def main():
 	handler = ArgumentHandler(
