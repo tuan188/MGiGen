@@ -131,15 +131,21 @@ def cmd_init(parser, context, args):
 
 @subcmd('json', help='create model from JSON')
 def cmd_json(parser, context, args):
-	parser.usage = 'copy the JSON to the pasteboard then run: igen json [-h] -n NAME'
+	parser.usage = 'copy the JSON to the pasteboard then run: igen json [-h] -n NAME [-p]'
 	parser.add_argument(
 		'-n', '--name',
 		required=True, 
 		help='model name'
 	)
+	parser.add_argument(
+		'-p', '--print', 
+		required=False, 
+		action='store_true', 
+		help="print the result"
+	)
 	args = parser.parse_args(args)
 	json = pasteboard_read()
-	JSONCommand(args.name, json).create_models()
+	JSONCommand(args.name, json).create_models(args.print)
 
 
 @subcmd('api', help='create input and ouput files for the API')
@@ -175,3 +181,5 @@ def main():
 
 if __name__ == '__main__':
 	main()
+
+	

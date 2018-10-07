@@ -3,6 +3,7 @@
 import json
 import re
 from collections import OrderedDict
+from jinja2 import Environment, PackageLoader
 from .pb import pasteboard_write
 from .constants import SWIFT_TYPES_DEFAULT_VALUES, SWIFT_TYPES
 from .str_helpers import snake_to_camel, plural_to_singular
@@ -14,13 +15,16 @@ class JSONCommand(Command):
 		self.model_name = model_name
 		self.json_text = json_text
 
-	def create_models(self):
-		try:
-			output = JSON(self.model_name, self.json_text).create_models()
-			pasteboard_write(output)
-			print("The result has been copied to the pasteboard.")
-		except:
-			print("The JSON in the pasteboard is invalid.")
+	def create_models(self, print_result):
+		output = JSON(self.model_name, self.json_text).create_models()
+		if print_result:
+			print()
+			print(output)
+			print()
+		pasteboard_write(output)
+		print("The result has been copied to the pasteboard.")
+
+			# print("The JSON in the pasteboard is invalid.")
 
 
 class JSON(object):
@@ -41,14 +45,37 @@ class JSON(object):
 			self.name = name
 			self.type_name = type_name
 
+		@property
 		def is_user_type(self):
-			return self.type_name.endswith("?") and self.original_type_name() not in SWIFT_TYPES
+			return self.is_optional and self.original_type_name() not in SWIFT_TYPES
 
+		@property
+		def is_optional(self):
+			return self.type_name.endswith("?")
+
+		@property
 		def is_array(self):
 			return self.type_name.startswith("[")
 
+		@property
+		def is_date(self):
+			return self.original_type_name == "Date"
+
+		@property
 		def original_type_name(self):
 			return ''.join(c for c in self.type_name if c not in '?[]')
+
+		@property
+		def value(self):
+			if self.is_optional:
+				value = "nil"
+			elif self.is_array:
+				value = "[]"
+			elif self.type_name in SWIFT_TYPES_DEFAULT_VALUES:
+				value = SWIFT_TYPES_DEFAULT_VALUES[self.type_name]
+			else:
+				value = "{}()".format(self.type_name)
+			return value
 
 	class Model(object):
 		def __init__(self, name, properties):
@@ -56,43 +83,16 @@ class JSON(object):
 			self.properties = properties
 
 		def model(self):
-			content = "struct {} {{\n".format(self.name)
-			for p in self.properties:
-				content += "    var {}: {}\n".format(p.name, p.type_name)
-			content += "}\n\n"
-			content += "extension {} {{\n".format(self.name)
-			content += "    init() {\n"
-			content += "        self.init(\n"
-			params = []
-			for p in self.properties:
-				if p.type_name.endswith("?"):
-					params.append("            {}: nil".format(p.name))
-				elif p.type_name.endswith("]"):
-					params.append("            {}: []".format(p.name))
-				else:
-					if p.type_name in SWIFT_TYPES_DEFAULT_VALUES:
-						default_value = SWIFT_TYPES_DEFAULT_VALUES[p.type_name]
-					else:
-						default_value = "{}()".format(p.type_name)
-					params.append("            {}: {}".format(p.name, default_value))
-			content += ",\n".join(params)
-			content += "\n"
-			content += "        )\n"
-			content += "    }\n"
-			content += "}\n\n"
-			content += "extension {}: Then {{ }}\n\n".format(self.name)
-			content += "extension {}: Mappable {{\n".format(self.name)
-			content += "    init?(map: Map) {\n"
-			content += "        self.init()\n"
-			content += "    }\n\n"
-			content += "    mutating func mapping(map: Map) {\n"
-			for p in self.properties:
-				if not p.original_type_name() == "Date":
-					content += '        {} <- map["{}"]\n'.format(p.name, p.raw_name)
-				else:
-					content += '        {} <- (map["{}"], DateTransform())\n'.format(p.name, p.raw_name)
-			content += "    }\n"
-			content += "}\n\n"
+			env = Environment(
+				loader=PackageLoader('igen_templates', 'commands'),
+				trim_blocks=True,
+				lstrip_blocks=True
+			)
+			template = env.get_template("JSON.swift")
+			content = template.render(
+				name=self.name,
+				properties=self.properties
+			)
 			return content
 
 		def __str__(self):
@@ -103,13 +103,15 @@ class JSON(object):
 		self.json_text = json_text
 
 	def create_models(self):
-		dictionary = json.loads(self.json_text, object_pairs_hook=OrderedDict)
-		models = []
-		self._extract_model(self.model_name, dictionary, models)
-		output = "import ObjectMapper\nimport Then\n\n"
-		output += "".join([model.__str__() for model in models])
-		return output
-
+		try:
+			dictionary = json.loads(self.json_text, object_pairs_hook=OrderedDict)
+			models = []
+			self._extract_model(self.model_name, dictionary, models)
+			output = "\n\n".join([model.__str__() for model in models])
+			return output
+		except:
+			print("The JSON in the pasteboard is invalid.")
+			exit(1)
 
 	def _extract_model(self, name, dictionary, models):
 		properties = []
