@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import re
+from jinja2 import Environment, PackageLoader
 from .pb import pasteboard_write
 from .command import Command
 from .constants import SWIFT_TYPES_DEFAULT_VALUES, SWIFT_TYPES
@@ -32,6 +33,27 @@ class Mock(object):
 		def __str__(self):
 			return self.origin
 
+		@property
+		def return_value(self):
+			if self.return_type == None:
+				return_value = "()"
+			elif self.return_type.endswith("?"):
+				return_value = "nil"
+			elif self.return_type.startswith("Driver"):
+				return_value = "Driver.empty()"
+			elif self.return_type.startswith("Observable"):
+				return_value = "Observable.empty()"
+			elif self.return_type in SWIFT_TYPES:
+				return_value = SWIFT_TYPES_DEFAULT_VALUES[self.return_type]
+			else:
+				return_value = "{}()".format(self.return_type)
+			return return_value
+
+		@property
+		def return_void(self):
+			return self.return_type == None
+		
+
 	def __init__(self, protocol_text):
 		super(Mock, self).__init__()
 		self.protocol_text = protocol_text
@@ -57,28 +79,15 @@ class Mock(object):
 		except:
 			print("The protocol in the pasteboard is invalid.")
 			exit(1)
-		content = "final class {}Mock: {} {{\n".format(class_name, protocol_name)
-		for f in funcs:
-			content += "    // MARK: - {}\n".format(f.name)
-			content += "    var {}_Called = false\n".format(f.name)
-			if f.return_type == None:
-				return_value = "()"
-			elif f.return_type.endswith("?"):
-				return_value = "nil"
-			elif f.return_type.startswith("Driver"):
-				return_value = "Driver.empty()"
-			elif f.return_type.startswith("Observable"):
-				return_value = "Observable.empty()"
-			elif f.return_type in SWIFT_TYPES:
-				return_value = SWIFT_TYPES_DEFAULT_VALUES[f.return_type]
-			else:
-				return_value = "{}()".format(f.return_type)
-			if f.return_type != None:
-				content += "    var {}_ReturnValue: {} = {}\n".format(f.name, f.return_type, return_value)
-			content += "    {} {{\n".format(f.origin)
-			content += "        {}_Called = true\n".format(f.name)
-			if f.return_type != None:
-				content += "        return {}_ReturnValue\n".format(f.name)
-			content += "    }\n\n"
-		content += "}\n"
+		env = Environment(
+			loader=PackageLoader('igen_templates', 'commands'),
+			trim_blocks=True,
+			lstrip_blocks=True
+		)
+		template = env.get_template("Mock.swift")
+		content = template.render(
+			class_name=class_name,
+			protocol_name=protocol_name,
+			functions=funcs
+		)
 		return content
