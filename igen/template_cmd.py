@@ -38,6 +38,7 @@ class TemplateCommand(Command):
 				model = Template().parse_model(model_text)
 			except:
 				print("The Model in the pasteboard is invalid.")
+				exit(1)
 			if self.options['static']:
 				template = Template.StaticDetailTemplate(model, self.options, self.scene_name, project_info)
 			else:
