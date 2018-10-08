@@ -24,8 +24,6 @@ class JSONCommand(Command):
 		pasteboard_write(output)
 		print("The result has been copied to the pasteboard.")
 
-			# print("The JSON in the pasteboard is invalid.")
-
 
 class JSON(object):
 
