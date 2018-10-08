@@ -17,15 +17,13 @@ from .template_cmd import TemplateCommand
 def cmd_template(parser, context, args):
 	parser.epilog="'list' and 'detail' template require copying the Model to the pasteboard before running the command."
 	parser.add_argument(
-		'-t', '--type',
-		required=False, 
-		choices=['base', 'list', 'detail'],
-		default='base',
-		help='template type'
+		'type',
+		nargs=1,
+		help="template type ('base', 'list', 'detail')"
 	)
 	parser.add_argument(
-		'-n', '--name',  
-		required=True, 
+		'name',
+		nargs=1,
 		help='scene name'
 	)
 	parser.add_argument(
@@ -47,8 +45,8 @@ def cmd_template(parser, context, args):
 		help="display details in a static UITableViewController ('detail' template only)"
 	)
 	args = parser.parse_args(args)
-	template_name = args.type
-	scene_name = args.name
+	template_name = args.type[0]
+	scene_name = args.name[0]
 	options = {
 		'section': args.section,
 		'collection': args.collection,
@@ -115,10 +113,10 @@ def cmd_init(parser, context, args):
 
 @subcmd('json', help='create model from JSON')
 def cmd_json(parser, context, args):
-	parser.usage = 'copy the JSON to the pasteboard then run: igen json [-h] -n NAME [-p]'
+	parser.usage = 'copy the JSON to the pasteboard then run: igen json [-h] [-p] name'
 	parser.add_argument(
-		'-n', '--name',
-		required=True, 
+		'name',
+		nargs=1,
 		help='model name'
 	)
 	parser.add_argument(
@@ -129,14 +127,14 @@ def cmd_json(parser, context, args):
 	)
 	args = parser.parse_args(args)
 	json = pasteboard_read()
-	JSONCommand(args.name, json).create_models(args.print)
+	JSONCommand(args.name[0], json).create_models(args.print)
 
 
 @subcmd('api', help='create input and ouput files for the API')
 def cmd_api(parser, context, args):
 	parser.add_argument(
-		'-n', '--name',
-		required=True, 
+		'name',
+		nargs=1,
 		help='api name'
 	)
 	parser.add_argument(
@@ -146,30 +144,33 @@ def cmd_api(parser, context, args):
 		help="print the result"
 	)
 	args = parser.parse_args(args)
-	APICommand(args.name).create_api(args.print)
+	APICommand(args.name[0]).create_api(args.print)
 
 
 @subcmd('config', help='configure igen')
 def cmd_project(parser, context, args):
 	parser.add_argument(
-		'-s', '--section',
-		required=False, 
-		choices=['project'],
-		default='project',
-		help='section name'
-	)
-	parser.add_argument(
 		'-i', '--info',
 		required=False, 
 		action='store_true',
-		help='show the section details and exit'
+		help='show the configuration of the section and exit'
+	)
+	parser.add_argument(
+		'name',
+		nargs=1,
+		help='section [and its key separated by a dot]'
+	)
+	parser.add_argument(
+		'value',
+		nargs='*',
+		help='section value'
 	)
 	args = parser.parse_args(args)
 	cmd = ConfigCommand()
-	if args.section == 'project':
-		if args.info:
-			cmd.project_info(True)
-		else:
+	if args.info:
+		cmd.project_info(True)
+	else:
+		if 'project' in args.name:
 			cmd.update_project_info()
 			
 
