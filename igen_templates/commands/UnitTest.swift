@@ -6,7 +6,7 @@ final class {{ name }}ViewModelTests: XCTestCase {
     private var input: {{ name }}ViewModel.Input!
     private var output: {{ name }}ViewModel.Output!
 {% for p in input_properties %}
-    private let {{ p.name }}Trigger = PublishSubject<{{ p.type_name }}>()
+    private let {{ p.name }} = PublishSubject<{{ p.type_name }}>()
 {% endfor %}
 
     override func setUp() {
@@ -18,7 +18,7 @@ final class {{ name }}ViewModelTests: XCTestCase {
 
         input = {{ name }}ViewModel.Input(
         {% for p in input_properties %}
-            {{ p.name }}Trigger: {{ p.name }}Trigger.asDriverOnErrorJustComplete(){{ "," if not loop.last }}
+            {{ p.name }}: {{ p.name }}.asDriverOnErrorJustComplete(){{ "," if not loop.last }}
         {% endfor %}
         )
         output = viewModel.transform(input)

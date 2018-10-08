@@ -185,6 +185,8 @@ def cmd_project(parser, context, args):
 			cmd.update_project_info()
 	elif values:
 		cmd.config(name, values[0])
+	else:
+		print('Invalid section and/or key.')
 		
 
 def main():
