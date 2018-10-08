@@ -20,7 +20,8 @@ def cmd_template(parser, context, args):
 	parser.add_argument(
 		'type',
 		nargs=1,
-		help="template type ('base', 'list', 'detail')"
+		choices=['base', 'list', 'detail'],
+		help="template type"
 	)
 	parser.add_argument(
 		'name',
@@ -175,12 +176,16 @@ def cmd_project(parser, context, args):
 	)
 	args = parser.parse_args(args)
 	cmd = ConfigCommand()
-	if args.info:
-		cmd.project_info(True)
-	else:
-		if 'project' in args.name:
+	name = args.name[0]
+	values = args.value
+	if 'project' in args.name:
+		if args.info:
+			cmd.project_info(True)
+		else:
 			cmd.update_project_info()
-			
+	elif values:
+		cmd.config(name, values[0])
+		
 
 def main():
 	handler = ArgumentHandler(
