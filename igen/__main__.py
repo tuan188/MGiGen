@@ -158,6 +158,7 @@ def cmd_api(parser, context, args):
 @subcmd('config', help='configure igen')
 def cmd_project(parser, context, args):
 	parser.description='Configure igen.'
+	parser.epilog="To configure the project information, run 'igen config project'"
 	parser.add_argument(
 		'-i', '--info',
 		required=False, 
@@ -187,7 +188,7 @@ def cmd_project(parser, context, args):
 		cmd.config(name, values[0])
 	else:
 		print('Invalid section and/or key.')
-		
+
 
 def main():
 	handler = ArgumentHandler(
