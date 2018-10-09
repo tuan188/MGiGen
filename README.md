@@ -7,7 +7,7 @@
 Open Terminal and run:
 
 ```
-$ pip3 install igen==1.1.0
+$ pip3 install igen
 ```
 
 ### Update:
