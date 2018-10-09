@@ -2,8 +2,13 @@ import UIKit
 import Reusable
 
 final class {{ name }}ViewController: UIViewController, BindableType {
+    
+    // MARK: - IBOutlets
+    
     @IBOutlet weak var collectionView: LoadMoreCollectionView!
 
+    // MARK: - Properties
+    
     var viewModel: {{ name }}ViewModel!
 
     fileprivate struct Options {
@@ -20,10 +25,18 @@ final class {{ name }}ViewController: UIViewController, BindableType {
 
     fileprivate var options = Options()
 
+    // MARK: - Life Cycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configView()
     }
+    
+    deinit {
+        logDeinit()
+    }
+    
+    // MARK: - Methods
 
     private func configView() {
         collectionView.do {
@@ -33,10 +46,6 @@ final class {{ name }}ViewController: UIViewController, BindableType {
         collectionView.rx
             .setDelegate(self)
             .disposed(by: rx.disposeBag)
-    }
-
-    deinit {
-        logDeinit()
     }
 
     func bindViewModel() {

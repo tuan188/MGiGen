@@ -3,18 +3,31 @@ import Reusable
 import RxDataSources
 
 final class {{ name }}ViewController: UIViewController, BindableType {
+    
+    // MARK: - IBOutlets
+    
     @IBOutlet weak var tableView: LoadMoreTableView!
 
+    // MARK: - Properties
+    
     var viewModel: {{ name }}ViewModel!
 
     fileprivate typealias {{ model_name }}SectionModel = SectionModel<String, {{ model_name }}>
     fileprivate var dataSource: RxTableViewSectionedReloadDataSource<{{ model_name }}SectionModel>!
 
+    // MARK: - Life Cycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configView()
     }
+    
+    deinit {
+        logDeinit()
+    }
 
+    // MARK: - Methods
+    
     private func configView() {
         tableView.do {
             $0.estimatedRowHeight = 550
@@ -24,10 +37,6 @@ final class {{ name }}ViewController: UIViewController, BindableType {
         tableView.rx
             .setDelegate(self)
             .disposed(by: rx.disposeBag)
-    }
-
-    deinit {
-        logDeinit()
     }
 
     func bindViewModel() {
