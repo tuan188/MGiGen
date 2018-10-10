@@ -2,15 +2,28 @@ import UIKit
 import Reusable
 
 final class {{ name }}ViewController: UIViewController, BindableType {
+    
+    // MARK: - IBOutlets
+
     @IBOutlet weak var tableView: UITableView!
     
+    // MARK: - Properties
+    
     var viewModel: {{ name }}ViewModel!
-
+    
+    // MARK: - Life Cycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configView()
     }
+    
+    deinit {
+        logDeinit()
+    }
 
+    // MARK: - Methods
+    
     private func configView() {
         tableView.do {
             $0.estimatedRowHeight = 550
@@ -19,9 +32,6 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             $0.register(cellType: {{ model_name }}{{ p.name_title }}Cell.self)
         {% endfor %}
         }
-    }
-    deinit {
-        logDeinit()
     }
 
     func bindViewModel() {
