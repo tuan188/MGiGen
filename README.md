@@ -13,6 +13,12 @@ $ pip3 install igen
 ### Update:
 
 ```
+$ pip3 install -U igen
+```
+
+or
+
+```
 $ pip3 uninstall igen
 $ pip3 install igen --no-cache-dir
 ```
