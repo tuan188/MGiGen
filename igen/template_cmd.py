@@ -28,7 +28,7 @@ class TemplateCommand(Command):
 			try:
 				model = Template().parse_model(model_text)
 			except:
-				print("The Model in the pasteboard is invalid.")
+				print("The model in the pasteboard is invalid.")
 				exit(1)
 			template = Template.ListTemplate(model, self.options, self.scene_name, project_info)
 			template.create_files()
@@ -37,7 +37,7 @@ class TemplateCommand(Command):
 			try:
 				model = Template().parse_model(model_text)
 			except:
-				print("The Model in the pasteboard is invalid.")
+				print("The model in the pasteboard is invalid.")
 				exit(1)
 			if self.options['static']:
 				template = Template.StaticDetailTemplate(model, self.options, self.scene_name, project_info)

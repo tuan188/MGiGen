@@ -47,7 +47,7 @@ class Model(object):
 			properties = [Model.Property(p[1], p[2]) for p in properties_regex.findall(block)]
 			return (model_name, properties)
 		except:
-			print("The Model in the pasteboard is invalid.")
+			print("The model in the pasteboard is invalid.")
 			exit(1)
 		
 
