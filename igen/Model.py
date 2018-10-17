@@ -18,7 +18,19 @@ class Model(object):
 
 		@property
 		def is_array(self):
-			return self.type_name.endswith("]")
+			return self.type_name.endswith("]") and ':' not in self.type_name
+
+		@property
+		def is_dictionary(self):
+			return self.type_name.endswith("]") and ':' in self.type_name
+
+		@property
+		def is_observable(self):
+			return self.type_name.startswith('Observable')
+		
+		@property
+		def is_driver(self):
+			return self.type_name.startswith('Driver')
 
 		@property
 		def value(self):
@@ -26,8 +38,14 @@ class Model(object):
 				value = "nil"
 			elif self.is_array:
 				value = "[]"
+			elif self.is_dictionary:
+				value = "[:]"
 			elif self.type_name in SWIFT_TYPES:
 				value = SWIFT_TYPES_DEFAULT_VALUES[self.type_name]
+			elif self.is_observable:
+				value = 'Observable.empty()'
+			elif self.is_driver:
+				value = 'Driver.empty()'
 			else:
 				value = "{}()".format(self.type_name)
 			return value
@@ -40,7 +58,7 @@ class Model(object):
 	def name_and_properties(self):
 		try:
 			str = self.model_text
-			block_regex = re.search("struct (\w+) {([^}]+)", str)
+			block_regex = re.search("(?:struct|class) (\w+) {([^}]+)", str)
 			model_name = block_regex.group(1)
 			block = block_regex.group(2)
 			properties_regex = re.compile("(let|var) (\w+): (.*)")
