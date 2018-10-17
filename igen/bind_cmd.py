@@ -16,5 +16,5 @@ class BindViewModelCommand(Command):
 			print(output)
 			print()
 		pasteboard_write(output)
-		print("The result has been copied to the pasteboard.")
+		print('The result has been copied to the pasteboard.')
 		

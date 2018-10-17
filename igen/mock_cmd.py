@@ -18,7 +18,7 @@ class MockCommand(Command):
 			print(output)
 			print()
 		pasteboard_write(output)
-		print("The result has been copied to the pasteboard.")
+		print('The result has been copied to the pasteboard.')
 
 
 class Mock(object):
@@ -36,17 +36,17 @@ class Mock(object):
 		@property
 		def return_value(self):
 			if self.return_type == None:
-				return_value = "()"
-			elif self.return_type.endswith("?"):
+				return_value = '()'
+			elif self.return_type.endswith('?'):
 				return_value = "nil"
-			elif self.return_type.startswith("Driver"):
-				return_value = "Driver.empty()"
-			elif self.return_type.startswith("Observable"):
-				return_value = "Observable.empty()"
+			elif self.return_type.startswith('Driver'):
+				return_value = 'Driver.empty()'
+			elif self.return_type.startswith('Observable'):
+				return_value = 'Observable.empty()'
 			elif self.return_type in SWIFT_TYPES:
 				return_value = SWIFT_TYPES_DEFAULT_VALUES[self.return_type]
 			else:
-				return_value = "{}()".format(self.return_type)
+				return_value = '{}()'.format(self.return_type)
 			return return_value
 
 		@property
