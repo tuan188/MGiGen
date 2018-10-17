@@ -1,7 +1,7 @@
 # coding=utf-8
 
 from jinja2 import Environment, PackageLoader
-from .str_helpers import lower_first_letter
+from .str_helpers import lower_first_letter, upper_first_letter
 from .pb import pasteboard_write
 from .command import Command
 
@@ -31,7 +31,7 @@ class API(object):
 		)
 
 	def create_api(self):
-		name = self.api_name
+		name = upper_first_letter(self.api_name)
 		var_name = lower_first_letter(name)
 		template = self.env.get_template("API.swift")
 		content = template.render(
