@@ -101,6 +101,11 @@ final class {{ name }}ViewController: UIViewController, BindableType {
     }
 }
 
+// MARK: - Binders
+extension {{ name }}ViewController {
+
+}
+
 // MARK: - UICollectionViewDelegate
 extension {{ name }}ViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView,

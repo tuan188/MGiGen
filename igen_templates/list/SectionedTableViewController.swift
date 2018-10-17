@@ -89,6 +89,11 @@ final class {{ name }}ViewController: UIViewController, BindableType {
 
 }
 
+// MARK: - Binders
+extension {{ name }}ViewController {
+
+}
+
 // MARK: - UITableViewDelegate
 extension {{ name }}ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

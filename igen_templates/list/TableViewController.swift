@@ -3,7 +3,7 @@ import Reusable
 
 final class {{ name }}ViewController: UIViewController, BindableType {
     
-    // MARK: - Methods
+    // MARK: - IBOutlets
     
     @IBOutlet weak var tableView: LoadMoreTableView!
 
@@ -75,6 +75,11 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             .drive()
             .disposed(by: rx.disposeBag)
     }
+}
+
+// MARK: - Binders
+extension {{ name }}ViewController {
+
 }
 
 // MARK: - UITableViewDelegate

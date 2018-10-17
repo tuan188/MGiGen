@@ -13,6 +13,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        configView()
     }
 
     deinit {
@@ -21,10 +22,19 @@ final class {{ name }}ViewController: UIViewController, BindableType {
     
     // MARK: - Methods
 
+    private func configView() {
+        
+    }
+
     func bindViewModel() {
         let input = {{ name }}ViewModel.Input()
         let output = viewModel.transform(input)
     }
+}
+
+// MARK: - Binders
+extension {{ name }}ViewController {
+
 }
 
 // MARK: - StoryboardSceneBased

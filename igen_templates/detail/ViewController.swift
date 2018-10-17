@@ -53,6 +53,11 @@ final class {{ name }}ViewController: UIViewController, BindableType {
     }
 }
 
+// MARK: - Binders
+extension {{ name }}ViewController {
+
+}
+
 // MARK: - StoryboardSceneBased
 extension {{ name }}ViewController: StoryboardSceneBased {
     static var sceneStoryboard = UIStoryboard()

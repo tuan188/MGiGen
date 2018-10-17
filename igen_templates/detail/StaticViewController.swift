@@ -17,6 +17,7 @@ final class {{ name }}ViewController: UITableViewController, BindableType {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        configView()
     }
 
     deinit {
@@ -24,6 +25,10 @@ final class {{ name }}ViewController: UITableViewController, BindableType {
     }
     
     // MARK: - Methods
+
+    private func configView() {
+        
+    }
 
     func bindViewModel() {
         let input = {{ name }}ViewModel.Input(
@@ -36,6 +41,11 @@ final class {{ name }}ViewController: UITableViewController, BindableType {
             .disposed(by: rx.disposeBag)
     {% endfor %}
     }
+}
+
+// MARK: - Binders
+extension {{ name }}ViewController {
+
 }
 
 // MARK: - StoryboardSceneBased
