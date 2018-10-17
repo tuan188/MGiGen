@@ -40,9 +40,21 @@ class Mock(object):
 			elif self.return_type.endswith('?'):
 				return_value = "nil"
 			elif self.return_type.startswith('Driver'):
-				return_value = 'Driver.empty()'
+				regex = re.compile('Driver<(.+)>')
+				mo = regex.search(self.return_type)
+				observable_type = mo.group(1)
+				if observable_type in SWIFT_TYPES:
+					return_value = 'Driver.just({})'.format(SWIFT_TYPES_DEFAULT_VALUES[observable_type])
+				else:
+					return_value = 'Driver.empty()'
 			elif self.return_type.startswith('Observable'):
-				return_value = 'Observable.empty()'
+				regex = re.compile('Observable<(.+)>')
+				mo = regex.search(self.return_type)
+				observable_type = mo.group(1)
+				if observable_type in SWIFT_TYPES:
+					return_value = 'Observable.just({})'.format(SWIFT_TYPES_DEFAULT_VALUES[observable_type])
+				else:
+					return_value = 'Observable.empty()'
 			elif self.return_type in SWIFT_TYPES:
 				return_value = SWIFT_TYPES_DEFAULT_VALUES[self.return_type]
 			else:
@@ -59,12 +71,12 @@ class Mock(object):
 		self.protocol_text = protocol_text
 
 	def _get_protocol_name(self, str):
-		regex = re.compile("protocol (\w+)")
+		regex = re.compile('protocol (\w+)')
 		mo = regex.search(str)
 		protocol_name = mo.group(1)
-		if protocol_name.endswith("Type"):
+		if protocol_name.endswith('Type'):
 			class_name = protocol_name[:-4]
-		elif protocol_name.endswith("Protocol"):
+		elif protocol_name.endswith('Protocol'):
 			class_name = protocol_name[:-8]
 		else:
 			class_name = protocol_name
@@ -74,10 +86,10 @@ class Mock(object):
 		str = self.protocol_text
 		try:
 			(protocol_name, class_name) = self._get_protocol_name(str)
-			func_regex = re.compile("func (\w+)\(.*\)( -> (.*))?")
+			func_regex = re.compile('func (\w+)\(.*\)( -> (.*))?')
 			funcs = [Mock.Function(f.group(), f.group(1), f.group(3)) for f in func_regex.finditer(str)]
 		except:
-			print("The protocol in the pasteboard is invalid.")
+			print('The protocol in the pasteboard is invalid.')
 			exit(1)
 		env = Environment(
 			loader=PackageLoader('igen_templates', 'commands'),
