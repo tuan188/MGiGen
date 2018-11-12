@@ -44,6 +44,9 @@ class TemplateCommand(Command):
 			else:
 				template = Template.DetailTemplate(model, self.options, self.scene_name, project_info)
 			template.create_files()
+		elif self.template_name == Template.TemplateType.SKELETON:
+			template = Template.SkeletonTemplate(self.scene_name, project_info)
+			template.create_files()
 		else:
 			print("Invalid template type.")
 			exit(1)

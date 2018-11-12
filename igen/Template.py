@@ -53,9 +53,10 @@ class Template(object):
 			return self.name.endswith(("]", "]?"))
 
 	class TemplateType:
-		BASE = "base"
-		LIST = "list"
-		DETAIL = "detail"
+		BASE = 'base'
+		LIST = 'list'
+		DETAIL = 'detail'
+		SKELETON = 'skeleton'
 
 	def parse_model(self, model_text):
 		model_regex = re.compile("(?:struct|class) (\w+) {((.|\n)*)}")
@@ -83,16 +84,17 @@ class Template(object):
 			)
 
 		def _create_file(self, class_name, content):
-			file_name = class_name + ".swift"
 			file_path = "{}/{}.swift".format(self.name, class_name)
-			self.__create_file(file_path, file_name, content)
+			self.__create_file(file_path, content)
 
 		def _create_test_file(self, class_name, content):
-			file_name = class_name + ".swift"
-			file_path = "{}/Test/{}.swift".format(self.name, class_name)
-			self.__create_file(file_path, file_name, content)
+			self._create_file_in_path("Test", class_name, content)
 
-		def __create_file(self, file_path, file_name, content):
+		def _create_file_in_path(self, file_path, class_name, content):
+			file_path = "{}/{}/{}.swift".format(self.name, file_path, class_name)
+			self.__create_file(file_path, content)	
+
+		def __create_file(self, file_path, content):
 			with open(file_path, "wb") as f:
 				f.write(content.encode('utf8'))
 				print("    {}".format(file_path))
@@ -127,16 +129,16 @@ class Template(object):
 
 		def _make_dirs(self):
 			current_directory = os.getcwd()
-			main_directory = os.path.join(current_directory, r'{}'.format(self.name))
+			main_directory = self._make_dir(current_directory, self.name)
+			self._make_dir(main_directory, 'Test')
+
+		def _make_dir(self, current_directory, new_directory_name):
+			directory = os.path.join(current_directory, r'{}'.format(new_directory_name))
 			try: 
-				os.makedirs(main_directory)
+				os.makedirs(directory)
 			except:
 				pass
-			test_directory = os.path.join(main_directory, "Test")
-			try:
-				os.makedirs(test_directory)
-			except:
-				pass
+			return directory
 
 		def _create_view_model(self):
 			class_name = self.name + "ViewModel"
@@ -588,3 +590,191 @@ class Template(object):
 				properties=self.model.properties
 			)
 			self._create_test_file(class_name, content)
+
+
+	#=================== SkeletonTemplate ===================
+
+	class SkeletonTemplate(BaseTemplate):
+
+		def __init__(self, name, project_info):
+			super(Template.SkeletonTemplate, self).__init__(name, project_info)
+			self.env = Environment(
+				loader=PackageLoader('igen_templates', 'skeleton'),
+				trim_blocks=True,
+				lstrip_blocks=True
+			)
+
+		def _make_dirs(self):
+			current_directory = os.getcwd()
+			main_directory = self._make_dir(current_directory, self.name)
+			self._make_dir(main_directory, "Assembler")
+			self._make_dir(main_directory, "Extensions")
+			self._make_dir(main_directory, "Support")
+			domain_directory = self._make_dir(main_directory, "Domain")
+			self._make_dir(domain_directory, "Model")
+			platform_directory = self._make_dir(main_directory, "Platform")
+			self._make_dir(platform_directory, "Repositories")
+			services_directory = self._make_dir(platform_directory, "Services")
+			self._make_dir(services_directory, "API")
+			scenes_directory = self._make_dir(main_directory, "Scenes")
+			self._make_dir(scenes_directory, "App")
+			self._make_dir(scenes_directory, "Storyboards")
+
+		def create_files(self):
+			print('Successfully created files:')
+			self._make_dirs()
+			self._create_podfile()
+			self._create_UnitTestViewController()
+			self._create_AppDelegate()
+			self._create_BridgingHeader()
+			self._create_assembler()
+			self._create_utils()
+			self._create_UIViewController_()
+			self._create_UIViewController_rx()
+			self._create_APIError()
+			self._create_APIService()
+			self._create_APIInput()
+			self._create_APIOutput()
+			self._create_APIUrls()
+			self._create_AppAssembler()
+			self._create_AppNavigator()
+			self._create_AppUseCase()
+			self._create_AppViewModel()
+			self._create_Storyboards()
+
+		def _create_podfile(self):
+			class_name = "Podfile"
+			template = self.env.get_template("Podfile.swift")
+			content = template.render(
+				project=self.project
+			)
+			file_path = "{}/{}".format(self.name, class_name)
+			Template.BaseTemplate._BaseTemplate__create_file(self, file_path, content)
+
+		def _create_UnitTestViewController(self):
+			class_name = "UnitTestViewController"
+			template = self.env.get_template("UnitTestViewController.swift")
+			content = self._file_header(class_name)
+			content += template.render()
+			self._create_file(class_name, content)
+
+		def _create_AppDelegate(self):
+			class_name = "AppDelegate"
+			template = self.env.get_template("AppDelegate.swift")
+			content = self._file_header(class_name)
+			content += template.render()
+			self._create_file(class_name, content)
+
+		def _create_BridgingHeader(self):
+			class_name = "{}-Bridging-Header".format(self.project)
+			template = self.env.get_template("Bridging-Header.swift")
+			content = self._file_header(class_name)
+			content += template.render()
+			file_path = "{}/{}.h".format(self.name, class_name)
+			Template.BaseTemplate._BaseTemplate__create_file(self, file_path, content)
+
+		def _create_assembler(self):
+			class_name = "Assembler"
+			template = self.env.get_template("Assembler.swift")
+			content = self._file_header(class_name)
+			content += template.render()
+			self._create_file_in_path("Assembler", class_name, content)
+
+		def _create_utils(self):
+			class_name = "Utils"
+			template = self.env.get_template("Utils.swift")
+			content = self._file_header(class_name)
+			content += template.render()
+			self._create_file_in_path("Support", class_name, content)
+
+		def _create_UIViewController_(self):
+			class_name = "UIViewController+"
+			template = self.env.get_template("UIViewController+.swift")
+			content = self._file_header(class_name)
+			content += template.render()
+			self._create_file_in_path("Extensions", class_name, content)
+
+		def _create_UIViewController_rx(self):
+			class_name = "UIViewController+Rx"
+			template = self.env.get_template("UIViewController+Rx.swift")
+			content = self._file_header(class_name)
+			content += template.render()
+			self._create_file_in_path("Extensions", class_name, content)
+
+		def _create_APIError(self):
+			class_name = "APIError"
+			template = self.env.get_template("APIError.swift")
+			content = self._file_header(class_name)
+			content += template.render()
+			self._create_file_in_path("Platform/Services/API", class_name, content)
+
+		def _create_APIService(self):
+			class_name = "APIService"
+			template = self.env.get_template("APIService.swift")
+			content = self._file_header(class_name)
+			content += template.render()
+			self._create_file_in_path("Platform/Services/API", class_name, content)
+
+		def _create_APIInput(self):
+			class_name = "APIInput"
+			template = self.env.get_template("APIInput.swift")
+			content = self._file_header(class_name)
+			content += template.render()
+			self._create_file_in_path("Platform/Services/API", class_name, content)
+
+		def _create_APIOutput(self):
+			class_name = "APIOutput"
+			template = self.env.get_template("APIOutput.swift")
+			content = self._file_header(class_name)
+			content += template.render()
+			self._create_file_in_path("Platform/Services/API", class_name, content)
+
+		def _create_APIUrls(self):
+			class_name = "APIUrls"
+			template = self.env.get_template("APIUrls.swift")
+			content = self._file_header(class_name)
+			content += template.render()
+			self._create_file_in_path("Platform/Services/API", class_name, content)
+
+		def _create_AppAssembler(self):
+			class_name = "AppAssembler"
+			template = self.env.get_template("AppAssembler.swift")
+			content = self._file_header(class_name)
+			content += template.render()
+			self._create_file_in_path("Scenes/App", class_name, content)
+
+		def _create_AppNavigator(self):
+			class_name = "AppNavigator"
+			template = self.env.get_template("AppNavigator.swift")
+			content = self._file_header(class_name)
+			content += template.render()
+			self._create_file_in_path("Scenes/App", class_name, content)
+
+		def _create_AppUseCase(self):
+			class_name = "AppUseCase"
+			template = self.env.get_template("AppUseCase.swift")
+			content = self._file_header(class_name)
+			content += template.render()
+			self._create_file_in_path("Scenes/App", class_name, content)
+
+		def _create_AppViewModel(self):
+			class_name = "AppViewModel"
+			template = self.env.get_template("AppViewModel.swift")
+			content = self._file_header(class_name)
+			content += template.render()
+			self._create_file_in_path("Scenes/App", class_name, content)
+
+		def _create_Storyboards(self):
+			class_name = "Storyboards"
+			template = self.env.get_template("Storyboards.swift")
+			content = self._file_header(class_name)
+			content += template.render()
+			self._create_file_in_path("Scenes/Storyboards", class_name, content)
+
+		
+
+
+
+
+
+

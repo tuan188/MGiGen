@@ -1,0 +1,5 @@
+extension API {
+    struct Urls {
+
+    }
+}
