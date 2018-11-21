@@ -8,7 +8,7 @@ final class {{ name }}UseCaseMock: {{ name }}UseCaseType {
         let items = [
             {{ model_name }}().with { $0.id = 1 }
         ]
-        let page = PagingInfo<{{ model_name }}>(page: 1, items: OrderedSet(sequence: items))
+        let page = PagingInfo<{{ model_name }}>(page: 1, items: items)
         return Observable.just(page)
     }()
     func get{{ model_name }}List() -> Observable<PagingInfo<{{ model_name }}>> {
@@ -22,7 +22,7 @@ final class {{ name }}UseCaseMock: {{ name }}UseCaseType {
         let items = [
             {{ model_name }}().with { $0.id = 2 }
         ]
-        let page = PagingInfo<{{ model_name }}>(page: 2, items: OrderedSet(sequence: items))
+        let page = PagingInfo<{{ model_name }}>(page: 2, items: items)
         return Observable.just(page)
     }()
     func loadMore{{ model_name }}List(page: Int) -> Observable<PagingInfo<{{ model_name }}>> {
