@@ -624,6 +624,7 @@ class Template(object):
 			print('Successfully created files:')
 			self._make_dirs()
 			self._create_podfile()
+			self._create_localizable()
 			self._create_UnitTestViewController()
 			self._create_AppDelegate()
 			self._create_BridgingHeader()
@@ -649,6 +650,13 @@ class Template(object):
 				project=self.project
 			)
 			file_path = "{}/{}".format(self.name, class_name)
+			Template.BaseTemplate._BaseTemplate__create_file(self, file_path, content)
+
+		def _create_localizable(self):
+			class_name = "Localizable"
+			template = self.env.get_template("Localizable.swift")
+			content = template.render()
+			file_path = "{}/{}.strings".format(self.name, class_name)
 			Template.BaseTemplate._BaseTemplate__create_file(self, file_path, content)
 
 		def _create_UnitTestViewController(self):

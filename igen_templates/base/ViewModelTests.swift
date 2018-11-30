@@ -8,6 +8,8 @@ final class {{ name }}ViewModelTests: XCTestCase {
     private var navigator: {{ name }}NavigatorMock!
     private var useCase: {{ name }}UseCaseMock!
     private var disposeBag: DisposeBag!
+    private var input: {{ name }}ViewModel.Input!
+    private var output: {{ name }}ViewModel.Output!
 
     override func setUp() {
         super.setUp()
@@ -15,5 +17,8 @@ final class {{ name }}ViewModelTests: XCTestCase {
         useCase = {{ name }}UseCaseMock()
         viewModel = {{ name }}ViewModel(navigator: navigator, useCase: useCase)
         disposeBag = DisposeBag()
+
+        input = {{ name }}ViewModel.Input()
+        output = viewModel.transform(input)
     }
 }

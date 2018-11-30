@@ -27,7 +27,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
     private func configView() {
         tableView.do {
             $0.estimatedRowHeight = 550
-            $0.rowHeight = UITableViewAutomaticDimension
+            $0.rowHeight = UITableView.automaticDimension
         {% for p in properties %}
             $0.register(cellType: {{ model_name }}{{ p.name_title }}Cell.self)
         {% endfor %}
