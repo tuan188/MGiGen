@@ -133,9 +133,15 @@ def cmd_json(parser, context, args):
 		action='store_true',
 		help="print the result"
 	)
+	parser.add_argument(
+		'--return-classes',
+		required=False,
+		action='store_true',
+		help="return classes instead of structs"
+	)
 	args = parser.parse_args(args)
 	json = pasteboard_read()
-	JSONCommand(args.name[0], json).create_models(args.print)
+	JSONCommand(args.name[0], json).create_models(args.print, args.return_classes)
 
 
 @subcmd('api', help='create input and ouput files for the API')

@@ -16,8 +16,8 @@ class JSONCommand(Command):
 		self.model_name = model_name
 		self.json_text = json_text
 
-	def create_models(self, print_result):
-		output = JSON(self.model_name, self.json_text).create_models()
+	def create_models(self, print_result, return_classes):
+		output = JSON(self.model_name, self.json_text).create_models(return_classes)
 		if print_result:
 			print()
 			print(output)
@@ -81,36 +81,33 @@ class JSON(object):
 			self.name = name
 			self.properties = properties
 
-		def model(self):
+		def model(self, return_classes):
 			env = Environment(
 				loader=PackageLoader('igen_templates', 'commands'),
 				trim_blocks=True,
 				lstrip_blocks=True
 			)
-			template = env.get_template("JSON.swift")
+			template = env.get_template("JSON.swift" if not return_classes else "JSONClass.swift")
 			content = template.render(
 				name=self.name,
 				properties=self.properties
 			)
 			return content
 
-		def __str__(self):
-			return self.model()
-
 	def __init__(self, model_name, json_text):
 		self.model_name = model_name
 		self.json_text = json_text
 
-	def create_models(self):
-		try:
-			dictionary = json.loads(self.json_text, object_pairs_hook=OrderedDict)
-			models = []
-			self._extract_model(self.model_name, dictionary, models)
-			output = "\n\n".join([model.__str__() for model in models])
-			return output
-		except:
-			print("The JSON in the pasteboard is invalid.")
-			exit(1)
+	def create_models(self, return_classes):
+		# try:
+		dictionary = json.loads(self.json_text, object_pairs_hook=OrderedDict)
+		models = []
+		self._extract_model(self.model_name, dictionary, models)
+		output = "\n\n".join([model.model(return_classes) for model in models])
+		return output
+		# except:
+		# 	print("The JSON in the pasteboard is invalid.")
+		# 	exit(1)
 
 	def _extract_model(self, name, dictionary, models):
 		properties = []

@@ -94,7 +94,6 @@ class Mock(object):
 		except:
 			pass
 		# get functions
-
 		func_regex = re.compile('func (\w+)\(.*\)( -> (.*))?')
 		funcs = [Mock.Function(f.group(), f.group(1), f.group(3)) for f in func_regex.finditer(str)]
 		if not funcs:
