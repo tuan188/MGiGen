@@ -84,13 +84,23 @@ class Mock(object):
 
 	def create_mock(self):
 		str = self.protocol_text
+		is_protocol = False
+		protocol_name = ''
+		class_name = ''
+		# get protocol name
 		try:
 			(protocol_name, class_name) = self._get_protocol_name(str)
-			func_regex = re.compile('func (\w+)\(.*\)( -> (.*))?')
-			funcs = [Mock.Function(f.group(), f.group(1), f.group(3)) for f in func_regex.finditer(str)]
+			is_protocol = True
 		except:
-			print('The protocol in the pasteboard is invalid.')
+			pass
+		# get functions
+
+		func_regex = re.compile('func (\w+)\(.*\)( -> (.*))?')
+		funcs = [Mock.Function(f.group(), f.group(1), f.group(3)) for f in func_regex.finditer(str)]
+		if not funcs:
+			print('The protocol or functions in the pasteboard is invalid.')
 			exit(1)
+
 		env = Environment(
 			loader=PackageLoader('igen_templates', 'commands'),
 			trim_blocks=True,
@@ -100,6 +110,7 @@ class Mock(object):
 		content = template.render(
 			class_name=class_name,
 			protocol_name=protocol_name,
-			functions=funcs
+			functions=funcs,
+			is_protocol=is_protocol
 		)
 		return content

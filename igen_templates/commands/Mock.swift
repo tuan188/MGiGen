@@ -1,4 +1,7 @@
+
+{% if is_protocol %}
 final class {{ class_name }}Mock: {{ protocol_name }} {
+{% endif %}
 {% for f in functions %}
     // MARK: - {{ f.name }}
     
@@ -15,4 +18,6 @@ final class {{ class_name }}Mock: {{ protocol_name }} {
     }
     
 {% endfor %}
+{% if is_protocol %}
 }
+{% endif %}
