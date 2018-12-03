@@ -13,10 +13,11 @@ from .test_cmd import UnitTestCommand
 from .bind_cmd import BindViewModelCommand
 from .template_cmd import TemplateCommand
 
+
 @subcmd('template', help='create template files for the scene')
 def cmd_template(parser, context, args):
-	parser.epilog="'list' and 'detail' template require copying the Model to the pasteboard before running the command."
-	parser.description='Create template files for the scene.'
+	parser.epilog = "'list' and 'detail' template require copying the Model to the pasteboard before running the command."
+	parser.description = 'Create template files for the scene.'
 	parser.add_argument(
 		'type',
 		nargs=1,
@@ -29,21 +30,21 @@ def cmd_template(parser, context, args):
 		help='scene name'
 	)
 	parser.add_argument(
-		'--section', 
+		'--section',
 		required=False,
 		action='store_true',
 		help="show a list of items with header sections ('list' template only)"
 	)
 	parser.add_argument(
-		'--collection', 
-		required=False, 
-		action='store_true', 
+		'--collection',
+		required=False,
+		action='store_true',
 		help="use UICollectionView instead of UITableView ('list' template only)"
 	)
 	parser.add_argument(
-		'--static', 
-		required=False, 
-		action='store_true', 
+		'--static',
+		required=False,
+		action='store_true',
 		help="display details in a static UITableViewController ('detail' template only)"
 	)
 	args = parser.parse_args(args)
@@ -60,11 +61,11 @@ def cmd_template(parser, context, args):
 @subcmd('mock', help='create mock for the protocol')
 def cmd_mock(parser, context, args):
 	parser.usage = 'copy the protocol to the pasteboard then run: igen mock [-h] [-p]'
-	parser.description='Create mock for the protocol.'
+	parser.description = 'Create mock for the protocol.'
 	parser.add_argument(
-		'-p', '--print', 
-		required=False, 
-		action='store_true', 
+		'-p', '--print',
+		required=False,
+		action='store_true',
 		help="print the result"
 	)
 	args = parser.parse_args(args)
@@ -75,11 +76,11 @@ def cmd_mock(parser, context, args):
 @subcmd('test', help='create unit tests for the ViewModel')
 def cmd_test(parser, context, args):
 	parser.usage = 'copy the ViewModel to the pasteboard then run: igen test [-h] [-p]'
-	parser.description='Create unit tests for the ViewModel.'
+	parser.description = 'Create unit tests for the ViewModel.'
 	parser.add_argument(
-		'-p', '--print', 
-		required=False, 
-		action='store_true', 
+		'-p', '--print',
+		required=False,
+		action='store_true',
 		help="print the result"
 	)
 	args = parser.parse_args(args)
@@ -90,11 +91,11 @@ def cmd_test(parser, context, args):
 @subcmd('bind', help='create bindViewModel method for the UIViewController')
 def cmd_test(parser, context, args):
 	parser.usage = 'copy the ViewModel to the pasteboard then run: igen bind [-h] [-p]'
-	parser.description='Create bindViewModel method for the UIViewController.'
+	parser.description = 'Create bindViewModel method for the UIViewController.'
 	parser.add_argument(
-		'-p', '--print', 
-		required=False, 
-		action='store_true', 
+		'-p', '--print',
+		required=False,
+		action='store_true',
 		help="print the result"
 	)
 	args = parser.parse_args(args)
@@ -105,11 +106,11 @@ def cmd_test(parser, context, args):
 @subcmd('init', help='create initialize method for the class/struct')
 def cmd_init(parser, context, args):
 	parser.usage = 'copy the protocol to the pasteboard then run: igen init [-h] [-p]'
-	parser.description='Create initialize method for the class/struct.'
+	parser.description = 'Create initialize method for the class/struct.'
 	parser.add_argument(
-		'-p', '--print', 
-		required=False, 
-		action='store_true', 
+		'-p', '--print',
+		required=False,
+		action='store_true',
 		help="print the result"
 	)
 	args = parser.parse_args(args)
@@ -120,16 +121,16 @@ def cmd_init(parser, context, args):
 @subcmd('json', help='create model from JSON')
 def cmd_json(parser, context, args):
 	parser.usage = 'copy the JSON to the pasteboard then run: igen json [-h] [-p] name'
-	parser.description='Create model from JSON.'
+	parser.description = 'Create model from JSON.'
 	parser.add_argument(
 		'name',
 		nargs=1,
 		help='model name'
 	)
 	parser.add_argument(
-		'-p', '--print', 
-		required=False, 
-		action='store_true', 
+		'-p', '--print',
+		required=False,
+		action='store_true',
 		help="print the result"
 	)
 	args = parser.parse_args(args)
@@ -139,16 +140,16 @@ def cmd_json(parser, context, args):
 
 @subcmd('api', help='create input and ouput files for the API')
 def cmd_api(parser, context, args):
-	parser.description='Create input and ouput files for the API.'
+	parser.description = 'Create input and ouput files for the API.'
 	parser.add_argument(
 		'name',
 		nargs=1,
 		help='api name'
 	)
 	parser.add_argument(
-		'-p', '--print', 
-		required=False, 
-		action='store_true', 
+		'-p', '--print',
+		required=False,
+		action='store_true',
 		help="print the result"
 	)
 	args = parser.parse_args(args)
@@ -157,11 +158,11 @@ def cmd_api(parser, context, args):
 
 @subcmd('config', help='configure igen')
 def cmd_project(parser, context, args):
-	parser.description='Configure igen.'
-	parser.epilog="To configure the project information, run 'igen config project'"
+	parser.description = 'Configure igen.'
+	parser.epilog = "To configure the project information, run 'igen config project'"
 	parser.add_argument(
 		'-i', '--info',
-		required=False, 
+		required=False,
 		action='store_true',
 		help='show the configuration of the section and exit'
 	)
@@ -196,7 +197,7 @@ def main():
 		epilog='Get help on a subcommand: igen subcommand -h'
 	)
 	handler.add_argument(
-		'-v', '--version', 
+		'-v', '--version',
 		action='version',
 		version=__version__,
 		help='show the version number and exit'
@@ -206,5 +207,3 @@ def main():
 
 if __name__ == '__main__':
 	main()
-
-	

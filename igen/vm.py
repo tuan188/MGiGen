@@ -3,6 +3,7 @@
 import re
 from jinja2 import Environment, PackageLoader
 
+
 class ViewModel(object):
 
 	class Property(object):
@@ -44,7 +45,7 @@ class ViewModel(object):
 		except:
 			print("The ViewModel in the pasteboard is invalid.")
 			exit(1)
-	
+
 
 class UnitTest(ViewModel):
 
@@ -63,7 +64,7 @@ class UnitTest(ViewModel):
 		)
 		return content
 
-		
+
 class BindViewModel(ViewModel):
 
 	def create_bind_view_model(self):
@@ -80,22 +81,3 @@ class BindViewModel(ViewModel):
 			output_properties=output_properties
 		)
 		return content
-
-		# view_model = self.view_model_name
-		# input_properties, output_properties = self.properties
-
-		# content = "    func bindViewModel() {\n"
-		# content += "        let input = {}ViewModel.Input(\n".format(view_model)
-		# args = []
-		# for p in input_properties:
-		# 	arg = "            {}: Driver.empty()".format(p.name)
-		# 	args.append(arg)
-		# content += ",\n".join(args)
-		# content += "\n        )\n"
-		# content += "        let output = viewModel.transform(input)\n"
-		# for p in output_properties:
-		# 	content += "        output.{}\n".format(p.name)
-		# 	content += "              .drive()\n"
-		# 	content += "              .disposed(by: rx.disposeBag)\n"
-		# content += "    }\n\n"
-		# return content

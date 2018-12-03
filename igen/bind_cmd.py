@@ -4,6 +4,7 @@ from .pb import pasteboard_write
 from .vm import BindViewModel
 from .command import Command
 
+
 class BindViewModelCommand(Command):
 	def __init__(self, vm_text):
 		super(BindViewModelCommand, self).__init__()
@@ -17,4 +18,3 @@ class BindViewModelCommand(Command):
 			print()
 		pasteboard_write(output)
 		print('The result has been copied to the pasteboard.')
-		

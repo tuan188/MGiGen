@@ -1,14 +1,18 @@
 # coding=utf-8
 
+
 def lower_first_letter(st):
 	return st[0].lower() + st[1:]
+
 
 def upper_first_letter(st):
 	return st[0].upper() + st[1:]
 
+
 def snake_to_camel(st):
-    components = st.split('_')
-    return components[0] + "".join(x.title() for x in components[1:])
+	components = st.split('_')
+	return components[0] + "".join(x.title() for x in components[1:])
+
 
 def plural_to_singular(st):
 	if st.endswith("ies"):

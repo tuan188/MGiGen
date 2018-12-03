@@ -5,6 +5,7 @@ from .str_helpers import lower_first_letter, upper_first_letter
 from .pb import pasteboard_write
 from .command import Command
 
+
 class APICommand(Command):
 	def __init__(self, api_name):
 		super(APICommand, self).__init__()

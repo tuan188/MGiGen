@@ -9,6 +9,7 @@ from .constants import SWIFT_TYPES_DEFAULT_VALUES, SWIFT_TYPES
 from .str_helpers import snake_to_camel, plural_to_singular
 from .command import Command
 
+
 class JSONCommand(Command):
 	def __init__(self, model_name, json_text):
 		super(JSONCommand, self).__init__()
@@ -27,7 +28,7 @@ class JSONCommand(Command):
 
 class JSON(object):
 
-	JSON_TO_SWIFT_TYPES = { 
+	JSON_TO_SWIFT_TYPES = {
 		"int": "Int",
 		"bool": "Bool",
 		"str": "String",

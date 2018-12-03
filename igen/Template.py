@@ -6,13 +6,14 @@ from jinja2 import Environment, PackageLoader
 from datetime import datetime
 from .str_helpers import upper_first_letter, lower_first_letter
 
+
 class ProjectInfo(object):
 	def __init__(self, project, developer, company):
 		super(ProjectInfo, self).__init__()
 		self.project = project
 		self.developer = developer
 		self.company = company
-		
+
 
 class Template(object):
 
@@ -21,7 +22,6 @@ class Template(object):
 			super(Template.Model, self).__init__()
 			self.name = name
 			self.properties = properties
-
 
 	class Property(object):
 		def __init__(self, property):
@@ -39,7 +39,6 @@ class Template(object):
 			if lowered_name.endswith("id"):
 				return False
 			return "image" in lowered_name or "url" in lowered_name
-		
 
 	class PropertyType(object):
 		def __init__(self, name):
@@ -92,7 +91,7 @@ class Template(object):
 
 		def _create_file_in_path(self, file_path, class_name, content):
 			file_path = "{}/{}/{}.swift".format(self.name, file_path, class_name)
-			self.__create_file(file_path, content)	
+			self.__create_file(file_path, content)
 
 		def __create_file(self, file_path, content):
 			with open(file_path, "wb") as f:
@@ -134,7 +133,7 @@ class Template(object):
 
 		def _make_dir(self, current_directory, new_directory_name):
 			directory = os.path.join(current_directory, r'{}'.format(new_directory_name))
-			try: 
+			try:
 				os.makedirs(directory)
 			except:
 				pass
@@ -224,8 +223,6 @@ class Template(object):
 				project=self.project
 			)
 			self._create_test_file(class_name, content)
-
-
 
 	#=================== ListTemplate ===================
 
@@ -410,9 +407,7 @@ class Template(object):
 			)
 			self._create_test_file(class_name, content)
 
-
 	#=================== DetailTemplate ===================
-
 
 	class DetailTemplate(BaseTemplate):
 		def __init__(self, model, options, name, project_info):
@@ -526,9 +521,7 @@ class Template(object):
 			)
 			self._create_test_file(class_name, content)
 
-
 	#=================== StaticDetailTemplate ===================
-
 
 	class StaticDetailTemplate(DetailTemplate):
 
@@ -590,7 +583,6 @@ class Template(object):
 				properties=self.model.properties
 			)
 			self._create_test_file(class_name, content)
-
 
 	#=================== SkeletonTemplate ===================
 
@@ -778,11 +770,3 @@ class Template(object):
 			content = self._file_header(class_name)
 			content += template.render()
 			self._create_file_in_path("Scenes/Storyboards", class_name, content)
-
-		
-
-
-
-
-
-

@@ -4,6 +4,7 @@ import re
 from jinja2 import Environment, PackageLoader
 from .constants import SWIFT_TYPES_DEFAULT_VALUES, SWIFT_TYPES
 
+
 class Model(object):
 
 	class Property(object):
@@ -27,7 +28,7 @@ class Model(object):
 		@property
 		def is_observable(self):
 			return self.type_name.startswith('Observable')
-		
+
 		@property
 		def is_driver(self):
 			return self.type_name.startswith('Driver')
@@ -50,7 +51,6 @@ class Model(object):
 				value = "{}()".format(self.type_name)
 			return value
 
-
 	def __init__(self, model_text):
 		super(Model, self).__init__()
 		self.model_text = model_text
@@ -67,7 +67,7 @@ class Model(object):
 		except:
 			print("The model in the pasteboard is invalid.")
 			exit(1)
-		
+
 
 class InitModel(Model):
 

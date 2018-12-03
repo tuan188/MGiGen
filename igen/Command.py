@@ -1,5 +1,6 @@
 # coding=utf-8
 
+
 class Command(object):
 
 	TAB_LENGTH = "<15"

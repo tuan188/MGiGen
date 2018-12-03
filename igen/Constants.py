@@ -10,11 +10,11 @@ SWIFT_TYPES_DEFAULT_VALUES = {
 	'Void': '()'
 }
 
-SWIFT_TYPES = { 
-	'Int', 
-	'Bool', 
-	'String', 
-	'Double', 
+SWIFT_TYPES = {
+	'Int',
+	'Bool',
+	'String',
+	'Double',
 	'Float',
 	'Date',
 	'Void'

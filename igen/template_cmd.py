@@ -6,6 +6,7 @@ from .template import Template, ProjectInfo
 from .pb import pasteboard_read
 from .command import Command
 
+
 class TemplateCommand(Command):
 	def __init__(self, template_name, scene_name, options):
 		super(TemplateCommand, self).__init__()
@@ -15,7 +16,7 @@ class TemplateCommand(Command):
 
 	def create_files(self):
 		info = ConfigCommand().project_info(False)
-		if info != None:
+		if info is not None:
 			project, developer, company = info
 		else:
 			project, developer, company = ConfigCommand().update_project_info()

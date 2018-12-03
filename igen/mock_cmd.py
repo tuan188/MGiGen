@@ -6,6 +6,7 @@ from .pb import pasteboard_write
 from .command import Command
 from .constants import SWIFT_TYPES_DEFAULT_VALUES, SWIFT_TYPES
 
+
 class MockCommand(Command):
 	def __init__(self, protocol_text):
 		super(MockCommand, self).__init__()
@@ -35,7 +36,7 @@ class Mock(object):
 
 		@property
 		def return_value(self):
-			if self.return_type == None:
+			if self.return_type is None:
 				return_value = '()'
 			elif self.return_type.endswith('?'):
 				return_value = "nil"
@@ -63,8 +64,7 @@ class Mock(object):
 
 		@property
 		def return_void(self):
-			return self.return_type == None
-		
+			return self.return_type is None
 
 	def __init__(self, protocol_text):
 		super(Mock, self).__init__()
