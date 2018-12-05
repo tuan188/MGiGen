@@ -616,6 +616,7 @@ class Template(object):
             self._make_dirs()
             self._create_podfile()
             self._create_localizable()
+            self._create_swiftlint()
             self._create_UnitTestViewController()
             self._create_AppDelegate()
             self._create_BridgingHeader()
@@ -648,6 +649,15 @@ class Template(object):
             template = self.env.get_template("Localizable.strings")
             content = template.render()
             file_path = "{}/{}.strings".format(self.name, class_name)
+            Template.BaseTemplate._BaseTemplate__create_file(self, file_path, content)
+
+        def _create_swiftlint(self):
+            class_name = "swiftlint"
+            template = self.env.get_template("swiftlint.yml")
+            content = template.render(
+                project=self.project
+            )
+            file_path = "{}/{}.yml".format(self.name, class_name)
             Template.BaseTemplate._BaseTemplate__create_file(self, file_path, content)
 
         def _create_UnitTestViewController(self):
