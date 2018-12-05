@@ -637,7 +637,7 @@ class Template(object):
 
         def _create_podfile(self):
             class_name = "Podfile"
-            template = self.env.get_template("Podfile.swift")
+            template = self.env.get_template("Podfile.txt")
             content = template.render(
                 project=self.project
             )
