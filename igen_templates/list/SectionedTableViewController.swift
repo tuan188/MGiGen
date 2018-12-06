@@ -46,7 +46,9 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             loadMoreTrigger: tableView.loadMoreTrigger,
             select{{ model_name }}Trigger: tableView.rx.itemSelected.asDriver()
         )
+
         let output = viewModel.transform(input)
+
         dataSource = RxTableViewSectionedReloadDataSource<{{ model_name }}SectionModel>(
             configureCell: { (_, tableView, indexPath, {{ model_variable }}) -> UITableViewCell in
                 return tableView.dequeueReusableCell(for: indexPath, cellType: {{ model_name }}Cell.self).then {
@@ -56,6 +58,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             titleForHeaderInSection: { dataSource, section in
                 return dataSource.sectionModels[section].model
             })
+        
         output.{{ model_variable }}Sections
             .map {
                 $0.map { section in

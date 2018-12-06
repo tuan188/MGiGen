@@ -8,6 +8,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func applicationDidFinishLaunching(_ application: UIApplication) {
         Localize.setCurrentLanguage("ja")
+
         if NSClassFromString("XCTest") != nil { // test
             window?.rootViewController = UnitTestViewController()
         } else {
@@ -17,6 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     private func bindViewModel() {
         guard let window = window else { return }
+        
         let vm: AppViewModel = assembler.resolve(window: window)
         let input = AppViewModel.Input(loadTrigger: Driver.just(()))
         let output = vm.transform(input)

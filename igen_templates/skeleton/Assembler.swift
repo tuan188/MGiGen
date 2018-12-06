@@ -1,9 +1,8 @@
 protocol Assembler: class,
-    AppAssembler
-{
+    AppAssembler {
     
 }
 
-class DefaultAssembler: Assembler {
+final class DefaultAssembler: Assembler {
     
 }

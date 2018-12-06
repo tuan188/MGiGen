@@ -16,12 +16,12 @@ from .template_cmd import TemplateCommand
 
 @subcmd('template', help='create template files for the scene')
 def cmd_template(parser, context, args):
-    parser.epilog = "'list' and 'detail' template require copying the Model to the pasteboard before running the command."
+    parser.epilog = "'list', 'detail' and 'form' template require copying the Model to the pasteboard before running the command."
     parser.description = 'Create template files for the scene.'
     parser.add_argument(
         'type',
         nargs=1,
-        choices=['base', 'list', 'detail', 'skeleton'],
+        choices=['skeleton', 'base', 'list', 'detail', 'form'],
         help="template type"
     )
     parser.add_argument(
@@ -47,6 +47,11 @@ def cmd_template(parser, context, args):
         action='store_true',
         help="display details in a static UITableViewController ('detail' template only)"
     )
+    parser.add_argument(
+        '--submit',
+        required=False,
+        help="set the name of 'Submit' action ('form' template only)"
+    )
     args = parser.parse_args(args)
     template_name = args.type[0]
     scene_name = args.name[0]
@@ -54,6 +59,7 @@ def cmd_template(parser, context, args):
         'section': args.section,
         'collection': args.collection,
         'static': args.static,
+        'submit': args.submit
     }
     TemplateCommand(template_name, scene_name, options).create_files()
 

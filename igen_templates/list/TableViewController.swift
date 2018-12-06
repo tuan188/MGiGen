@@ -42,7 +42,9 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             loadMoreTrigger: tableView.loadMoreTrigger,
             select{{ model_name }}Trigger: tableView.rx.itemSelected.asDriver()
         )
+
         let output = viewModel.transform(input)
+        
         output.{{ model_variable }}List
             .drive(tableView.rx.items) { tableView, index, {{ model_variable }} in
                 return tableView.dequeueReusableCell(

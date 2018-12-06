@@ -19,7 +19,7 @@ excluded: # paths to ignore during linting. Takes precedence over `included`.
   - Pods
 
 line_length:
-    warning: 150
+    warning: 120
     error: 200
     ignores_function_declarations: true
     ignores_comments: true

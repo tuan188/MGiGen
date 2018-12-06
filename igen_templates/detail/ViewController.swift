@@ -36,7 +36,9 @@ final class {{ name }}ViewController: UIViewController, BindableType {
 
     func bindViewModel() {
         let input = {{ name }}ViewModel.Input(loadTrigger: Driver.just(()))
+
         let output = viewModel.transform(input)
+        
         output.cells
             .drive(tableView.rx.items) { tableView, index, cellType in
                 let indexPath = IndexPath(row: index, section: 0)

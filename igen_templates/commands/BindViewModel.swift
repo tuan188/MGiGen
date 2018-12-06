@@ -4,7 +4,9 @@
             {{ p.name }}Trigger: Driver.empty(){{ "," if not loop.last }}
         {% endfor %}
         )
+
         let output = viewModel.transform(input)
+        
     {% for p in output_properties %}
         output.{{ p.name }}
               .drive()

@@ -5,6 +5,7 @@ import os
 from jinja2 import Environment, PackageLoader
 from datetime import datetime
 from .str_helpers import upper_first_letter, lower_first_letter
+from .constants import SWIFT_TYPES_DEFAULT_VALUES, SWIFT_TYPES
 
 
 class ProjectInfo(object):
@@ -45,17 +46,50 @@ class Template(object):
             super(Template.PropertyType, self).__init__()
             self.name = name
 
+        @property
         def is_optional(self):
             return self.name.endswith("?")
 
+        @property
         def is_array(self):
-            return self.name.endswith(("]", "]?"))
+            return self.name.endswith("]") and ':' not in self.name
+
+        @property
+        def is_dictionary(self):
+            return self.name.endswith("]") and ':' in self.name
+
+        @property
+        def is_observable(self):
+            return self.name.startswith('Observable')
+
+        @property
+        def is_driver(self):
+            return self.name.startswith('Driver')
+
+        @property
+        def default_value(self):
+            if self.is_optional:
+                value = "nil"
+            elif self.is_array:
+                value = "[]"
+            elif self.is_dictionary:
+                value = "[:]"
+            elif self.name in SWIFT_TYPES:
+                value = SWIFT_TYPES_DEFAULT_VALUES[self.name]
+            elif self.is_observable:
+                value = 'Observable.empty()'
+            elif self.is_driver:
+                value = 'Driver.empty()'
+            else:
+                value = "{}()".format(self.name)
+            return value
 
     class TemplateType:
         BASE = 'base'
         LIST = 'list'
         DETAIL = 'detail'
         SKELETON = 'skeleton'
+        FORM = 'form'
 
     def parse_model(self, model_text):
         model_regex = re.compile("(?:struct|class) (\w+) {((.|\n)*)}")
@@ -779,3 +813,141 @@ class Template(object):
             content = self._file_header(class_name)
             content += template.render()
             self._create_file_in_path("Scenes/Storyboards", class_name, content)
+
+    # =================== FormTemplate ===================
+
+    class FormTemplate(BaseTemplate):
+        def __init__(self, model, options, name, project_info):
+            super(Template.FormTemplate, self).__init__(name, project_info)
+            self.model = model
+            self.model_name = self.model.name
+            self.model_variable = lower_first_letter(self.model_name)
+            self.submit = lower_first_letter(options['submit']) if options['submit'] else 'submit'
+            self.env = Environment(
+                loader=PackageLoader('igen_templates', 'form'),
+                trim_blocks=True,
+                lstrip_blocks=True
+            )
+
+        def create_files(self):
+            print('Successfully created files:')
+            self._make_dirs()
+            self._create_assembler()
+            self._create_navigator()
+            self._create_view_model()
+            self._create_use_case()
+            self._create_view_controller()
+            # Test
+            self._create_use_case_mock()
+            self._create_navigator_mock()
+            self._create_view_model_tests()
+            self._create_view_controller_tests()
+
+        def _create_assembler(self):
+            class_name = self.name + "Assembler"
+            template = self.env.get_template("Assembler.swift")
+            content = self._file_header(class_name)
+            content += template.render(
+                name=self.name,
+                model_name=self.model_name,
+                model_variable=self.model_variable
+            )
+            self._create_file(class_name, content)
+
+        def _create_view_model(self):
+            class_name = self.name + "ViewModel"
+            template = self.env.get_template("ViewModel.swift")
+            content = self._file_header(class_name)
+            content += template.render(
+                name=self.name,
+                model_name=self.model_name,
+                model_variable=self.model_variable,
+                properties=self.model.properties,
+                submit=self.submit
+            )
+            self._create_file(class_name, content)
+
+        def _create_navigator(self):
+            class_name = self.name + "Navigator"
+            template = self.env.get_template("Navigator.swift")
+            content = self._file_header(class_name)
+            content += template.render(
+                name=self.name
+            )
+            self._create_file(class_name, content)
+
+        def _create_use_case(self):
+            class_name = self.name + "UseCase"
+            template = self.env.get_template("UseCase.swift")
+            content = self._file_header(class_name)
+            content += template.render(
+                name=self.name,
+                model_name=self.model_name,
+                model_variable=self.model_variable,
+                properties=self.model.properties,
+                submit=self.submit
+            )
+            self._create_file(class_name, content)
+
+        def _create_view_controller(self):
+            class_name = self.name + "ViewController"
+            template = self.env.get_template("ViewController.swift")
+            content = self._file_header(class_name)
+            content += template.render(
+                name=self.name,
+                model_name=self.model_name,
+                model_variable=self.model_variable,
+                properties=self.model.properties,
+                submit=self.submit
+            )
+            self._create_file(class_name, content)
+
+        def _create_use_case_mock(self):
+            class_name = self.name + "UseCaseMock"
+            template = self.env.get_template("UseCaseMock.swift")
+            content = self._file_header(class_name)
+            content += template.render(
+                project=self.project,
+                name=self.name,
+                model_name=self.model_name,
+                model_variable=self.model_variable,
+                properties=self.model.properties,
+                submit=self.submit
+            )
+            self._create_test_file(class_name, content)
+
+        def _create_navigator_mock(self):
+            class_name = self.name + "NavigatorMock"
+            template = self.env.get_template("NavigatorMock.swift")
+            content = self._file_header(class_name)
+            content += template.render(
+                project=self.project,
+                name=self.name
+            )
+            self._create_test_file(class_name, content)
+
+        def _create_view_model_tests(self):
+            class_name = self.name + "ViewModelTests"
+            template = self.env.get_template("ViewModelTests.swift")
+            content = self._file_header(class_name)
+            content += template.render(
+                name=self.name,
+                project=self.project,
+                model_name=self.model_name,
+                model_variable=self.model_variable,
+                properties=self.model.properties,
+                submit=self.submit
+            )
+            self._create_test_file(class_name, content)
+
+        def _create_view_controller_tests(self):
+            class_name = self.name + "ViewControllerTests"
+            template = self.env.get_template("ViewControllerTests.swift")
+            content = self._file_header(class_name)
+            content += template.render(
+                name=self.name,
+                project=self.project,
+                properties=self.model.properties,
+                submit=self.submit
+            )
+            self._create_test_file(class_name, content)

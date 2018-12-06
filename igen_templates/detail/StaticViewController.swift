@@ -34,7 +34,9 @@ final class {{ name }}ViewController: UITableViewController, BindableType {
         let input = {{ name }}ViewModel.Input(
             loadTrigger: Driver.just(())
         )
+
         let output = viewModel.transform(input)
+        
     {% for p in properties %}
         output.{{ p.name }}
             .drive()

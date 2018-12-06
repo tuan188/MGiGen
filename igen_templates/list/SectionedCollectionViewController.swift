@@ -59,7 +59,9 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             loadMoreTrigger: collectionView.loadMoreTrigger,
             select{{ model_name }}Trigger: collectionView.rx.itemSelected.asDriver()
         )
+
         let output = viewModel.transform(input)
+
         dataSource = RxCollectionViewSectionedReloadDataSource<{{ model_name }}SectionModel>(
             configureCell: { (_, collectionView, indexPath, {{ model_variable }}) -> UICollectionViewCell in
                 return collectionView.dequeueReusableCell(for: indexPath, cellType: {{ model_name }}Cell.self).then {
@@ -69,6 +71,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             configureSupplementaryView: { dataSource, collectionView, kind, indexPath in
                 return UICollectionReusableView()
             })
+        
         output.{{ model_variable }}Sections
             .map {
                 $0.map { section in

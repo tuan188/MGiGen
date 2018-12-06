@@ -31,6 +31,7 @@ extension {{ name }}ViewModel: ViewModelType {
             refreshItems: useCase.get{{ model_name }}List,
             loadMoreTrigger: input.loadMoreTrigger,
             loadMoreItems: useCase.loadMore{{ model_name }}List)
+        
         let (page, fetchItems, loadError, loading, refreshing, loadingMore) = loadMoreOutput
         
         let {{ model_variable }}List = page

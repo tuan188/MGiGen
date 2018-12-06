@@ -55,7 +55,9 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             loadMoreTrigger: collectionView.loadMoreTrigger,
             select{{ model_name }}Trigger: collectionView.rx.itemSelected.asDriver()
         )
+
         let output = viewModel.transform(input)
+        
         output.{{ model_variable }}List
             .drive(collectionView.rx.items) { collectionView, index, {{ model_variable }} in
                 return collectionView.dequeueReusableCell(
