@@ -172,90 +172,79 @@ class Template(object):
                 pass
             return directory
 
-        def _create_view_model(self):
-            class_name = self.name + "ViewModel"
-            template = self.env.get_template("ViewModel.swift")
+        def _create(self, class_name, template_file, path=''):
+            template = self.env.get_template(template_file)
             content = self._file_header(class_name)
-            content += template.render(
-                name=self.name
+            content += self._content_from_template(template)
+            if path:
+                self._create_file_in_path(path, class_name, content)
+            else:
+                self._create_file(class_name, content)
+
+        def _create_test(self, class_name, template_file):
+            self._create(class_name, template_file, path='Test')
+
+        def _content_from_template(self, template):
+            return template.render(
+                name=self.name,
+                project=self.project
             )
-            self._create_file(class_name, content)
+
+        def _create_view_model(self):
+            self._create(
+                class_name=self.name + "ViewModel",
+                template_file="ViewModel.swift"
+            )
 
         def _create_navigator(self):
-            class_name = self.name + "Navigator"
-            template = self.env.get_template("Navigator.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name
+            self._create(
+                class_name=self.name + "Navigator",
+                template_file="Navigator.swift"
             )
-            self._create_file(class_name, content)
 
         def _create_use_case(self):
-            class_name = self.name + "UseCase"
-            template = self.env.get_template("UseCase.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name
+            self._create(
+                class_name=self.name + "UseCase",
+                template_file="UseCase.swift"
             )
-            self._create_file(class_name, content)
 
         def _create_view_controller(self):
-            class_name = self.name + "ViewController"
-            template = self.env.get_template("ViewController.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name
+            self._create(
+                class_name=self.name + "ViewController",
+                template_file="ViewController.swift"
             )
-            self._create_file(class_name, content)
 
         def _create_assembler(self):
-            class_name = self.name + "Assembler"
-            template = self.env.get_template("Assembler.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name
+            self._create(
+                class_name=self.name + "Assembler",
+                template_file="Assembler.swift"
             )
-            self._create_file(class_name, content)
+
+        # ================ UnitTests ================
 
         def _create_view_model_tests(self):
-            class_name = self.name + "ViewModelTests"
-            template = self.env.get_template("ViewModelTests.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name,
-                project=self.project
+            self._create_test(
+                class_name=self.name + "ViewModelTests",
+                template_file="ViewModelTests.swift"
             )
-            self._create_test_file(class_name, content)
 
         def _create_use_case_mock(self):
-            class_name = self.name + "UseCaseMock"
-            template = self.env.get_template("UseCaseMock.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name,
-                project=self.project
+            self._create_test(
+                class_name=self.name + "UseCaseMock",
+                template_file="UseCaseMock.swift"
             )
-            self._create_test_file(class_name, content)
 
         def _create_navigator_mock(self):
-            class_name = self.name + "NavigatorMock"
-            template = self.env.get_template("NavigatorMock.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name,
-                project=self.project
+            self._create_test(
+                class_name=self.name + "NavigatorMock",
+                template_file="NavigatorMock.swift"
             )
-            self._create_test_file(class_name, content)
 
         def _create_view_controller_tests(self):
-            class_name = self.name + "ViewControllerTests"
-            template = self.env.get_template("ViewControllerTests.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name,
-                project=self.project
+            self._create_test(
+                class_name=self.name + "ViewControllerTests",
+                template_file="ViewControllerTests.swift"
             )
-            self._create_test_file(class_name, content)
 
     # =================== ListTemplate ===================
 
@@ -292,52 +281,26 @@ class Template(object):
             self._create_view_controller_tests()
             self._create_table_view_cell_tests()
 
-        def _create_view_model(self):
-            class_name = self.name + "ViewModel"
-            if self.is_sectioned_list:
-                template_name = "SectionedViewModel.swift"
-            else:
-                template_name = "ViewModel.swift"
-            template = self.env.get_template(template_name)
-            content = self._file_header(class_name)
-            content += template.render(
+        def _content_from_template(self, template):
+            return template.render(
                 name=self.name,
-                model_name=self.model_name,
-                model_variable=self.model_variable
-            )
-            self._create_file(class_name, content)
-
-        def _create_item_view_model(self):
-            class_name = self.model_name + "ViewModel"
-            template = self.env.get_template("ItemViewModel.swift")
-            content = self._file_header(class_name)
-            content += template.render(
+                project=self.project,
                 model_name=self.model_name,
                 model_variable=self.model_variable,
                 properties=self.model.properties
             )
-            self._create_file(class_name, content)
 
-        def _create_use_case(self):
-            class_name = self.name + "UseCase"
-            template = self.env.get_template("UseCase.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name,
-                model_name=self.model_name
+        def _create_view_model(self):
+            self._create(
+                class_name=self.name + "ViewModel",
+                template_file="SectionedViewModel.swift" if self.is_sectioned_list else "ViewModel.swift"
             )
-            self._create_file(class_name, content)
 
-        def _create_navigator(self):
-            class_name = self.name + "Navigator"
-            template = self.env.get_template("Navigator.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name,
-                model_name=self.model_name,
-                model_variable=self.model_variable
+        def _create_item_view_model(self):
+            self._create(
+                class_name=self.model_name + "ViewModel",
+                template_file="ItemViewModel.swift"
             )
-            self._create_file(class_name, content)
 
         def _create_view_controller(self):
             class_name = self.name + "ViewController"
@@ -351,14 +314,10 @@ class Template(object):
                     template_file = "CollectionViewController.swift"
                 else:
                     template_file = "TableViewController.swift"
-            template = self.env.get_template(template_file)
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name,
-                model_name=self.model_name,
-                model_variable=self.model_variable
+            self._create(
+                class_name=class_name,
+                template_file=template_file
             )
-            self._create_file(class_name, content)
 
         def _create_table_view_cell(self):
             class_name = self.model_name + "Cell"
@@ -366,79 +325,42 @@ class Template(object):
                 template_file = "CollectionViewCell.swift"
             else:
                 template_file = "TableViewCell.swift"
-            template = self.env.get_template(template_file)
-            content = self._file_header(class_name)
-            content += template.render(
-                model_name=self.model_name,
-                model_variable=self.model_variable,
-                properties=self.model.properties
+            self._create(
+                class_name=class_name,
+                template_file=template_file
             )
-            self._create_file(class_name, content)
+
+        # ================ UnitTests ================
 
         def _create_view_model_tests(self):
             class_name = self.name + "ViewModelTests"
             if self.is_sectioned_list:
-                template_name = "SectionedViewModelTests.swift"
+                template_file = "SectionedViewModelTests.swift"
             else:
-                template_name = "ViewModelTests.swift"
-            template = self.env.get_template(template_name)
-            content = self._file_header(class_name)
-            content += template.render(
-                project=self.project,
-                name=self.name,
-                model_name=self.model_name,
-                model_variable=self.model_variable
+                template_file = "ViewModelTests.swift"
+            self._create_test(
+                class_name=class_name,
+                template_file=template_file
             )
-            self._create_test_file(class_name, content)
-
-        def _create_use_case_mock(self):
-            class_name = self.name + "UseCaseMock"
-            template = self.env.get_template("UseCaseMock.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                project=self.project,
-                name=self.name,
-                model_name=self.model_name
-            )
-            self._create_test_file(class_name, content)
-
-        def _create_navigator_mock(self):
-            class_name = self.name + "NavigatorMock"
-            template = self.env.get_template("NavigatorMock.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                project=self.project,
-                name=self.name,
-                model_name=self.model_name,
-                model_variable=self.model_variable
-            )
-            self._create_test_file(class_name, content)
 
         def _create_view_controller_tests(self):
             class_name = self.name + "ViewControllerTests"
             if self.is_collection:
-                template_name = "CollectionViewControllerTests.swift"
+                template_file = "CollectionViewControllerTests.swift"
             else:
-                template_name = "TableViewControllerTests.swift"
-            template = self.env.get_template(template_name)
-            content = self._file_header(class_name)
-            content += template.render(
-                project=self.project,
-                name=self.name
+                template_file = "TableViewControllerTests.swift"
+            self._create_test(
+                class_name=class_name,
+                template_file=template_file
             )
-            self._create_test_file(class_name, content)
 
         def _create_table_view_cell_tests(self):
             class_name = "{}CellTests".format(self.model_name)
-            template_name = "TableViewCellTests.swift"
-            template = self.env.get_template(template_name)
-            content = self._file_header(class_name)
-            content += template.render(
-                project=self.project,
-                model_name=self.model_name,
-                properties=self.model.properties
+            template_file = "TableViewCellTests.swift"
+            self._create_test(
+                class_name=class_name,
+                template_file=template_file
             )
-            self._create_test_file(class_name, content)
 
     # =================== DetailTemplate ===================
 
@@ -470,39 +392,14 @@ class Template(object):
             self._create_view_controller_tests()
             self._create_cells_tests()
 
-        def _create_assembler(self):
-            class_name = self.name + "Assembler"
-            template = self.env.get_template("Assembler.swift")
-            content = self._file_header(class_name)
-            content += template.render(
+        def _content_from_template(self, template):
+            return template.render(
                 name=self.name,
-                model_name=self.model_name,
-                model_variable=self.model_variable
-            )
-            self._create_file(class_name, content)
-
-        def _create_view_model(self):
-            class_name = self.name + "ViewModel"
-            template = self.env.get_template("ViewModel.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name,
+                project=self.project,
                 model_name=self.model_name,
                 model_variable=self.model_variable,
                 properties=self.model.properties
             )
-            self._create_file(class_name, content)
-
-        def _create_view_controller(self):
-            class_name = self.name + "ViewController"
-            template = self.env.get_template("ViewController.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name,
-                model_name=self.model_name,
-                properties=self.model.properties
-            )
-            self._create_file(class_name, content)
 
         def _create_cells(self):
             for p in self.model.properties:
@@ -519,40 +416,13 @@ class Template(object):
             )
             self._create_file(class_name, content)
 
-        def _create_view_model_tests(self):
-            class_name = self.name + "ViewModelTests"
-            template = self.env.get_template("ViewModelTests.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name,
-                project=self.project,
-                model_name=self.model_name,
-                model_variable=self.model_variable
-            )
-            self._create_test_file(class_name, content)
-
-        def _create_view_controller_tests(self):
-            class_name = self.name + "ViewControllerTests"
-            template = self.env.get_template("ViewControllerTests.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name,
-                project=self.project,
-            )
-            self._create_test_file(class_name, content)
+        # ================ UnitTests ================
 
         def _create_cells_tests(self):
-            class_name = "{}CellsTests".format(self.name)
-            template = self.env.get_template("CellsTests.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name,
-                project=self.project,
-                model_name=self.model_name,
-                model_variable=self.model_variable,
-                properties=self.model.properties
+            self._create_test(
+                class_name="{}CellsTests".format(self.name),
+                template_file="CellsTests.swift"
             )
-            self._create_test_file(class_name, content)
 
     # =================== StaticDetailTemplate ===================
 
@@ -571,51 +441,40 @@ class Template(object):
             self._create_navigator_mock()
             self._create_view_controller_tests()
 
-        def _create_view_model(self):
-            class_name = self.name + "ViewModel"
-            template = self.env.get_template("StaticViewModel.swift")
-            content = self._file_header(class_name)
-            content += template.render(
+        def _content_from_template(self, template):
+            return template.render(
                 name=self.name,
+                project=self.project,
                 model_name=self.model_name,
                 model_variable=self.model_variable,
                 properties=self.model.properties
             )
-            self._create_file(class_name, content)
+
+        def _create_view_model(self):
+            self._create(
+                class_name=self.name + "ViewModel",
+                template_file="StaticViewModel.swift"
+            )
 
         def _create_view_controller(self):
-            class_name = self.name + "ViewController"
-            template = self.env.get_template("StaticViewController.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name,
-                properties=self.model.properties
+            self._create(
+                class_name=self.name + "ViewController",
+                template_file="StaticViewController.swift"
             )
-            self._create_file(class_name, content)
+
+        # ================ UnitTests ================
 
         def _create_view_model_tests(self):
-            class_name = self.name + "ViewModelTests"
-            template = self.env.get_template("StaticViewModelTests.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name,
-                project=self.project,
-                model_name=self.model_name,
-                model_variable=self.model_variable,
-                properties=self.model.properties
+            self._create_test(
+                class_name=self.name + "ViewModelTests",
+                template_file="StaticViewModelTests.swift"
             )
-            self._create_test_file(class_name, content)
 
         def _create_view_controller_tests(self):
-            class_name = self.name + "ViewControllerTests"
-            template = self.env.get_template("StaticViewControllerTests.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name,
-                project=self.project,
-                properties=self.model.properties
+            self._create_test(
+                class_name=self.name + "ViewControllerTests",
+                template_file="StaticViewControllerTests.swift"
             )
-            self._create_test_file(class_name, content)
 
     # =================== SkeletonTemplate ===================
 
@@ -669,6 +528,11 @@ class Template(object):
             self._create_AppViewModel()
             self._create_Storyboards()
 
+        def _content_from_template(self, template):
+            return template.render(
+                project=self.project
+            )
+
         def _create_podfile(self):
             class_name = "Podfile"
             template = self.env.get_template("Podfile.txt")
@@ -695,18 +559,16 @@ class Template(object):
             Template.BaseTemplate._BaseTemplate__create_file(self, file_path, content)
 
         def _create_UnitTestViewController(self):
-            class_name = "UnitTestViewController"
-            template = self.env.get_template("UnitTestViewController.swift")
-            content = self._file_header(class_name)
-            content += template.render()
-            self._create_file(class_name, content)
+            self._create(
+                class_name="UnitTestViewController",
+                template_file="UnitTestViewController.swift"
+            )
 
         def _create_AppDelegate(self):
-            class_name = "AppDelegate"
-            template = self.env.get_template("AppDelegate.swift")
-            content = self._file_header(class_name)
-            content += template.render()
-            self._create_file(class_name, content)
+            self._create(
+                class_name="AppDelegate",
+                template_file="AppDelegate.swift"
+            )
 
         def _create_BridgingHeader(self):
             class_name = "{}-Bridging-Header".format(self.project)
@@ -843,94 +705,8 @@ class Template(object):
             self._create_view_model_tests()
             self._create_view_controller_tests()
 
-        def _create_assembler(self):
-            class_name = self.name + "Assembler"
-            template = self.env.get_template("Assembler.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name,
-                model_name=self.model_name,
-                model_variable=self.model_variable
-            )
-            self._create_file(class_name, content)
-
-        def _create_view_model(self):
-            class_name = self.name + "ViewModel"
-            template = self.env.get_template("ViewModel.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name,
-                model_name=self.model_name,
-                model_variable=self.model_variable,
-                properties=self.model.properties,
-                submit=self.submit
-            )
-            self._create_file(class_name, content)
-
-        def _create_navigator(self):
-            class_name = self.name + "Navigator"
-            template = self.env.get_template("Navigator.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name
-            )
-            self._create_file(class_name, content)
-
-        def _create_use_case(self):
-            class_name = self.name + "UseCase"
-            template = self.env.get_template("UseCase.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name,
-                model_name=self.model_name,
-                model_variable=self.model_variable,
-                properties=self.model.properties,
-                submit=self.submit
-            )
-            self._create_file(class_name, content)
-
-        def _create_view_controller(self):
-            class_name = self.name + "ViewController"
-            template = self.env.get_template("ViewController.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name,
-                model_name=self.model_name,
-                model_variable=self.model_variable,
-                properties=self.model.properties,
-                submit=self.submit
-            )
-            self._create_file(class_name, content)
-
-        def _create_use_case_mock(self):
-            class_name = self.name + "UseCaseMock"
-            template = self.env.get_template("UseCaseMock.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                project=self.project,
-                name=self.name,
-                model_name=self.model_name,
-                model_variable=self.model_variable,
-                properties=self.model.properties,
-                submit=self.submit
-            )
-            self._create_test_file(class_name, content)
-
-        def _create_navigator_mock(self):
-            class_name = self.name + "NavigatorMock"
-            template = self.env.get_template("NavigatorMock.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                project=self.project,
-                name=self.name
-            )
-            self._create_test_file(class_name, content)
-
-        def _create_view_model_tests(self):
-            class_name = self.name + "ViewModelTests"
-            template = self.env.get_template("ViewModelTests.swift")
-            content = self._file_header(class_name)
-            content += template.render(
+        def _content_from_template(self, template):
+            return template.render(
                 name=self.name,
                 project=self.project,
                 model_name=self.model_name,
@@ -938,16 +714,3 @@ class Template(object):
                 properties=self.model.properties,
                 submit=self.submit
             )
-            self._create_test_file(class_name, content)
-
-        def _create_view_controller_tests(self):
-            class_name = self.name + "ViewControllerTests"
-            template = self.env.get_template("ViewControllerTests.swift")
-            content = self._file_header(class_name)
-            content += template.render(
-                name=self.name,
-                project=self.project,
-                properties=self.model.properties,
-                submit=self.submit
-            )
-            self._create_test_file(class_name, content)

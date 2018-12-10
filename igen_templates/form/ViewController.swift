@@ -57,7 +57,9 @@ final class {{ name }}ViewController: UITableViewController, BindableType {
                 .throttle(0.5, scheduler: MainScheduler.instance)
                 .asDriverOnErrorJustComplete()
         )
+
         let output = viewModel.transform(input)
+        
     {% for p in properties %}
         output.{{ p.name }}
             .drive({{ (p.name + 'TextField.rx.text') if p.type.name == 'String'}})
