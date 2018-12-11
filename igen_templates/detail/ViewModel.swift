@@ -23,6 +23,7 @@ extension {{ name }}ViewModel: ViewModelType {
     func transform(_ input: Input) -> Output {
         let {{ model_variable }} = input.loadTrigger
             .map { self.{{ model_variable }} }
+
         let cells = {{ model_variable }}
             .map { {{ model_variable }} -> [CellType] in
                 var cells = [CellType]()
@@ -31,6 +32,7 @@ extension {{ name }}ViewModel: ViewModelType {
             {% endfor %}
                 return cells
             }
+            
         return Output(cells: cells)
     }
 }
