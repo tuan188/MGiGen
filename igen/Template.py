@@ -170,7 +170,12 @@ class Template(object):
                 folder = '{}/{}'.format(self.name, folder)
             else:
                 folder = self.name
-            file_path = create_file(content, class_name, file_extension, folder)
+            file_path = create_file(
+                content=content,
+                file_name=class_name,
+                file_extension=file_extension,
+                folder=folder
+            )
             print('    {}'.format(file_path))
 
         def _content_from_template(self, template):
@@ -402,7 +407,13 @@ class Template(object):
                 property_name=property.name,
                 property_name_title=property.name_title
             )
-            create_file(content, class_name, 'swift')
+            file_path = create_file(
+                content=content,
+                file_name=class_name,
+                file_extension='swift',
+                folder=self.name
+            )
+            print('    {}'.format(file_path))
 
         # ================ UnitTests ================
 
