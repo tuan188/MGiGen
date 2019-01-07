@@ -157,14 +157,14 @@ class Template(object):
                 pass
             return directory
 
-        def _create_file_from_template(self, class_name, file_extension="swift", template_file=None, folder=None):
+        def _create_file_from_template(self, class_name, file_extension="swift", template_file=None, folder=None, has_file_header=True):
             if template_file is None:
                 if file_extension:
                     template_file = "{}.{}".format(class_name, file_extension)
                 else:
                     template_file = class_name[len(self.name):]
             template = self.env.get_template(template_file)
-            content = self._file_header(class_name)
+            content = self._file_header(class_name) if has_file_header else ''
             content += self._content_from_template(template)
             if folder:
                 folder = '{}/{}'.format(self.name, folder)
@@ -539,7 +539,8 @@ class Template(object):
             self._create_file_from_template(
                 class_name='Podfile',
                 file_extension=None,
-                template_file='Podfile.txt'
+                template_file='Podfile.txt',
+                has_file_header=False
             )
 
         def _create_localizable(self):
@@ -553,7 +554,8 @@ class Template(object):
             self._create_file_from_template(
                 class_name='swiftlint',
                 file_extension='yml',
-                template_file='swiftlint.yml'
+                template_file='swiftlint.yml',
+                has_file_header=False
             )
 
         def _create_UnitTestViewController(self):
