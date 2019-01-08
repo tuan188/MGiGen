@@ -7,6 +7,7 @@ from datetime import datetime
 from .str_helpers import upper_first_letter, lower_first_letter
 from .constants import SWIFT_TYPES_DEFAULT_VALUES, SWIFT_TYPES
 from .file_helpers import create_file
+from .config_cmd import ConfigCommand
 
 
 class ProjectInfo(object):
@@ -110,6 +111,10 @@ class Template(object):
             self.project = project_info.project
             self.developer = project_info.developer
             self.company = project_info.company
+            output_path = ConfigCommand().output_path()
+            if output_path is None:
+                output_path = '.'
+            self.output_path = output_path
             self.env = Environment(
                 loader=PackageLoader('igen_templates', 'base'),
                 trim_blocks=True,
@@ -145,7 +150,7 @@ class Template(object):
             self._create_view_controller_tests()
 
         def _make_dirs(self):
-            current_directory = os.getcwd()
+            current_directory = os.getcwd() if self.output_path == '.' else self.output_path
             main_directory = self._make_dir(current_directory, self.name)
             self._make_dir(main_directory, 'Test')
 
@@ -167,9 +172,9 @@ class Template(object):
             content = self._file_header(class_name) if has_file_header else ''
             content += self._content_from_template(template)
             if folder:
-                folder = '{}/{}'.format(self.name, folder)
+                folder = '{}/{}/{}'.format(self.output_path, self.name, folder)
             else:
-                folder = self.name
+                folder = '{}/{}'.format(self.output_path, self.name)
             file_path = create_file(
                 content=content,
                 file_name=class_name,
@@ -411,7 +416,7 @@ class Template(object):
                 content=content,
                 file_name=class_name,
                 file_extension='swift',
-                folder=self.name
+                folder='{}/{}'.format(self.output_path, self.name)
             )
             print('    {}'.format(file_path))
 

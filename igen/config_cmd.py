@@ -10,7 +10,8 @@ class ConfigCommand(Command):
     KEY_VALUES = {
         'project.name': 'str',
         'project.developer': 'str',
-        'project.company': 'str'
+        'project.company': 'str',
+        'output.path': 'str'
     }
 
     @property
@@ -22,11 +23,13 @@ class ConfigCommand(Command):
         developer = input('Enter developer name: ')
         company = input('Enter company name: ')
         config = configparser.ConfigParser()
-        config['project'] = {
-            'name': project,
-            'developer': developer,
-            'company': company
-        }
+        config.read(self.config_file)
+        if 'project' not in config:
+            config['project'] = {}
+        config['project']['name'] = project
+        config['project']['developer'] = developer
+        config['project']['company'] = company
+        # write to file
         with open(self.config_file, "w") as f:
             config.write(f)
         return (project, developer, company)
@@ -44,6 +47,14 @@ class ConfigCommand(Command):
         except:
             return None
 
+    def output_path(self):
+        try:
+            config = configparser.ConfigParser()
+            config.read(self.config_file)
+            return config['output']['path']
+        except:
+            return None
+
     def config(self, name, value):
         if name not in ConfigCommand.KEY_VALUES:
             print('Invalid section and/or key.')
@@ -52,6 +63,8 @@ class ConfigCommand(Command):
             config = configparser.ConfigParser()
             config.read(self.config_file)
             (section, section_item) = name.split('.')
+            if section not in config:
+                config[section] = {}
             config[section][section_item] = value
             with open(self.config_file, "w") as f:
                 config.write(f)

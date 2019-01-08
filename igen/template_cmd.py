@@ -60,6 +60,8 @@ class TemplateCommand(Command):
         else:
             print("Invalid template type.")
             exit(1)
-        targetDirectory = "./{}".format(self.scene_name)
+        output_path = ConfigCommand().output_path()
+        if output_path is None:
+            output_path = '.'
+        targetDirectory = "{}/{}".format(output_path, self.scene_name)
         call(["open", targetDirectory])
-
