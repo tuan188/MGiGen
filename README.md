@@ -1,9 +1,7 @@
 # igen - Code Generation Tools for iOS
 
 ## Installation:
-
 ### Install using pip:
-
 Open Terminal and run:
 
 ```
@@ -30,7 +28,6 @@ $ pip3 uninstall igen
 ```
 
 ## How to install pip3:
-
 pip3 is already installed if you are using Python 3 (>=3.4)
 
 In order to install Python 3, you need to install Homebrew, run the following command in Terminal:
@@ -46,10 +43,8 @@ $ brew install python
 ```
 
 ## 1. Create Template:
-
 ### 1.1. Base Template:
-
-The Base Template contains the necessary files for a scene in the Clean Architecture pattern.
+The Base Template contains necessary files for a scene in the [Clean Architecture](https://github.com/tuan188/MGCleanArchitecture) pattern.
 
 Open Terminal, navigate to the folder you want to save the files and run:
 
@@ -57,7 +52,7 @@ Open Terminal, navigate to the folder you want to save the files and run:
 $ igen template base <Scene_Name>
 ```
 
-The first time you use the template command, you need to enter your project information:
+The first time you use the `template` command, you need to enter your project information:
 
 ```
 Enter project name: Your Project
@@ -71,7 +66,7 @@ Later, if you want to update the information you can run the command:
 $ igen config project
 ```
 
-**Example:**
+#### Example:
 
 ```
 $ igen template base Login
@@ -93,8 +88,7 @@ Successfully created files:
 ```
 
 ### 1.2. List Template:
-
-The List Template shows a list of items in the UITableView or UICollectionView.
+The List Template shows a list of objects in the UITableView or UICollectionView.
 
 Copy the model to the pasteboard (clipboard) then run the command:
 
@@ -102,17 +96,16 @@ Copy the model to the pasteboard (clipboard) then run the command:
 $ igen template list <Scene_Name> [--section] [--collection]
 ```
 
-**Options**:
+#### Options:
 
-`--section`: show a list of items with header sections.
+`--section`: show the list with header sections.
 
 `--collection`: use UICollectionView instead of UITableView
 
-**Example:**
-
+#### Example:
 Copy the following text to the pasteboard:
 
-``` Swift
+```swift
 struct Product {
     let id: Int
     let name: String
@@ -145,8 +138,7 @@ Successfully created files:
 ```
 
 ### 1.3. Detail Template:
-
-The Detail Template shows item details in a UITableView.
+The Detail Template shows details of a object in a UITableView.
 
 Copy the model to the pasteboard then run the command:
 
@@ -154,15 +146,14 @@ Copy the model to the pasteboard then run the command:
 $ igen template detail <Scene_Name> [--static]
 ```
 
-**Options**:
+#### Options:
 
-`--static`: display item detail in a static UITableViewController.
+`--static`: display details of the object in a static UITableViewController.
 
-**Example:**
-
+#### Example:
 Copy the following text to the pasteboard:
 
-``` Swift
+```swift
 struct Product {
     let id: Int
     let name: String
@@ -195,23 +186,103 @@ Successfully created files:
     ProductDetail/Test/ProductDetailCellsTests.swift
 ```
 
-## 2. Create mock for protocol:
+### 1.4. Skeleton Template:
+To create a Clean Architecture skeleton project, run:
 
-Copy the protocol to the pasteboard then run the command:
+```
+$ igen template skeleton <Folder_Name>
+```
+
+#### Example:
+Run the following command in Terminal:
+
+```
+$ igen template skeleton DemoApp
+```
+
+Output:
+
+```
+Successfully created files:
+    DemoApp/Podfile
+    DemoApp/Localizable.strings
+    DemoApp/swiftlint.yml
+    DemoApp/UnitTestViewController.swift
+    DemoApp/AppDelegate.swift
+    DemoApp/Medical-Bridging-Header.h
+    DemoApp/Assembler/Assembler.swift
+    DemoApp/Support/Utils.swift
+    DemoApp/Extensions/UIViewController+.swift
+    DemoApp/Extensions/UIViewController+Rx.swift
+    DemoApp/Platform/Services/API/APIError.swift
+    DemoApp/Platform/Services/API/APIService.swift
+    DemoApp/Platform/Services/API/APIInput.swift
+    DemoApp/Platform/Services/API/APIOutput.swift
+    DemoApp/Platform/Services/API/APIUrls.swift
+    DemoApp/Scenes/App/AppAssembler.swift
+    DemoApp/Scenes/App/AppNavigator.swift
+    DemoApp/Scenes/App/AppUseCase.swift
+    DemoApp/Scenes/App/AppViewModel.swift
+    DemoApp/Scenes/Storyboards/Storyboards.swift
+```
+
+### 1.5. Form Input Template:
+To create a form input template for a model, copy the model then run the command:
+
+```
+$ igen template form <Scene_Name> [--submit SUBMIT]
+```
+
+#### Options:
+
+`--submit`: set the name of the submit action.
+
+#### Example:
+Copy the following text to the pasteboard:
+
+```swift
+struct Product {
+    let name: String
+    let price: Double
+}
+```
+
+then run the command:
+
+```
+$ igen template form CreateProduct --submit Create
+```
+
+Output:
+
+```
+Successfully created files:
+    CreateProduct/CreateProductAssembler.swift
+    CreateProduct/CreateProductNavigator.swift
+    CreateProduct/CreateProductViewModel.swift
+    CreateProduct/CreateProductUseCase.swift
+    CreateProduct/CreateProductViewController.swift
+    CreateProduct/Test/CreateProductUseCaseMock.swift
+    CreateProduct/Test/CreateProductNavigatorMock.swift
+    CreateProduct/Test/CreateProductViewModelTests.swift
+    CreateProduct/Test/CreateProductViewControllerTests.swift
+```
+
+## 2. Create a mock class for a protocol/function:
+Copy the protocol/function to the pasteboard then run the command:
 
 ```
 $ igen mock [-p]
 ```
 
-**Options**:
+#### Options:
 
 `-p`, `--print`: print the result.
 
-**Example**:
-
+#### Example:
 Copy the following text to the pasteboard:
 
-``` Swift
+```swift
 protocol ProductsNavigatorType {
     func toProducts()
     func toProductDetail(product: Product)
@@ -233,48 +304,53 @@ The result has been copied to the pasteboard.
 
 Content in the pasteboard:
 
-``` Swift
+```swift
 final class ProductsNavigatorMock: ProductsNavigatorType {
+    
     // MARK: - toProducts
+    
     var toProducts_Called = false
+
     func toProducts() {
         toProducts_Called = true
-    }
-    
+    } 
+
     // MARK: - toProductDetail
+    
     var toProductDetail_Called = false
+
     func toProductDetail(product: Product) {
         toProductDetail_Called = true
-    }
-    
+    } 
+
     // MARK: - toEditProduct
+    
     var toEditProduct_Called = false
     var toEditProduct_ReturnValue: Driver<EditProductDelegate> = Driver.empty()
+
     func toEditProduct(_ product: Product) -> Driver<EditProductDelegate> {
         toEditProduct_Called = true
         return toEditProduct_ReturnValue
-    }
-    
+    } 
 }
 ```
 
-## 3. Create unit tests for view model:
-
+## 3. Create unit tests for a view model:
 Copy the view model to the pasteboard then run the command:
 
 ```
 $ igen test [-p]
 ```
 
-**Options**:
+#### Options:
 
 `-p`, `--print`: print the result.
 
-**Example**:
+#### Example:
 
 Copy the following text to the pasteboard:
 
-``` Swift
+```swift
 struct AppViewModel: ViewModelType {
 
     struct Input {
@@ -300,14 +376,17 @@ The result has been copied to the pasteboard.
 
 Content in the pasteboard:
 
-``` Swift
+```swift
 final class AppViewModelTests: XCTestCase {
     private var viewModel: AppViewModel!
     private var navigator: AppNavigatorMock!
     private var useCase: AppUseCaseMock!
-    private var disposeBag: DisposeBag!
+    
     private var input: AppViewModel.Input!
     private var output: AppViewModel.Output!
+
+    private var disposeBag: DisposeBag!
+
     private let loadTrigger = PublishSubject<Void>()
 
     override func setUp() {
@@ -315,12 +394,15 @@ final class AppViewModelTests: XCTestCase {
         navigator = AppNavigatorMock()
         useCase = AppUseCaseMock()
         viewModel = AppViewModel(navigator: navigator, useCase: useCase)
-        disposeBag = DisposeBag()
-
+        
         input = AppViewModel.Input(
             loadTrigger: loadTrigger.asDriverOnErrorJustComplete()
         )
+
         output = viewModel.transform(input)
+
+        disposeBag = DisposeBag()
+
         output.toMain.drive().disposed(by: disposeBag)
     }
     
@@ -338,23 +420,22 @@ final class AppViewModelTests: XCTestCase {
 }
 ```
 
-## 4. Create init method for model:
-
-Copy the model to the pasteboard then run the command:
+## 4. Create a initialize method for a class/struct:
+Copy the class/struct to the pasteboard then run the command:
 
 ```
 $ igen init [-p]
 ```
 
-**Options**:
+#### Options:
 
 `-p`, `--print`: print the result.
 
-**Example**:
+#### Example:
 
 Copy the following text to the pasteboard:
 
-``` Swift
+```swift
 struct Product {
     var id: Int
     var name: String
@@ -376,7 +457,7 @@ The result has been copied to the pasteboard.
 
 Content in the pasteboard:
 
-``` Swift
+```swift
 extension Product {
     init() {
         self.init(
@@ -388,23 +469,23 @@ extension Product {
 }
 ```
 
-## 5. Create model from json:
-
+## 5. Create models from JSON:
 Copy the json to the pasteboard then run the command:
 
 ```
 $ igen json <Model_Name> [-p]
 ```
 
-**Options**:
+#### Options:
+
+`—return-classes`: return classes instead of structs.
 
 `-p`, `--print`: print the result.
 
-**Example**:
-
+#### Example:
 Copy the following text to the pasteboard:
 
-``` JSON
+```json
 {
     "id": 989,
     "content": "Hello world!",
@@ -427,7 +508,7 @@ The result has been copied to the pasteboard.
 
 Content in the pasteboard:
 
-``` Swift
+```swift
 struct Notice {
     var id: Int
     var content: String
@@ -462,15 +543,42 @@ extension Notice: Mappable {
 }
 ```
 
-## 6. Other commands:
+## 6. Configuration:
+### 6.1. Configure the project information:
+To update the project information, run the command:
 
-See:
 ```
-igen -h
+$ igen config project
 ```
 
+If you want to update the project name only, run the command:
 
+```
+$ igen config project.name <Project_Name>
+```
 
+or update the developer name:
 
+```
+$ igen config project.developer <Developer_Name>
+```
 
+or update the company name:
 
+```
+$ igen config project.company <Company_Name>
+```
+
+### 6.2. View the project information:
+To view the project information, run the command:
+
+```
+$ igen config project -i
+```
+
+## 7. Other commands:
+Run:
+
+```
+$ igen -h
+```
