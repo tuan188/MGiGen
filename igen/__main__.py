@@ -14,10 +14,10 @@ from .bind_cmd import BindViewModelCommand
 from .template_cmd import TemplateCommand
 
 
-@subcmd('template', help='create template files for the scene')
+@subcmd('template', help='create template files for a scene')
 def cmd_template(parser, context, args):
-    parser.epilog = "'list', 'detail' and 'form' template require copying the Model to the pasteboard before running the command."
-    parser.description = 'Create template files for the scene.'
+    parser.epilog = "'list', 'detail' and 'form' template require copying the model to the pasteboard before running the command."
+    parser.description = 'Create template files for a scene.'
     parser.add_argument(
         'type',
         nargs=1,
@@ -33,7 +33,7 @@ def cmd_template(parser, context, args):
         '--section',
         required=False,
         action='store_true',
-        help="show a list of items with header sections ('list' template only)"
+        help="show the list with header sections ('list' template only)"
     )
     parser.add_argument(
         '--collection',
@@ -45,12 +45,12 @@ def cmd_template(parser, context, args):
         '--static',
         required=False,
         action='store_true',
-        help="display details in a static UITableViewController ('detail' template only)"
+        help="display details of the object in a static UITableViewController ('detail' template only)"
     )
     parser.add_argument(
         '--submit',
         required=False,
-        help="set the name of 'Submit' action ('form' template only)"
+        help="set the name of the submit action ('form' template only)"
     )
     args = parser.parse_args(args)
     template_name = args.type[0]
@@ -64,10 +64,10 @@ def cmd_template(parser, context, args):
     TemplateCommand(template_name, scene_name, options).create_files()
 
 
-@subcmd('mock', help='create mock for the protocol')
+@subcmd('mock', help='create a mock class for a protocol/function')
 def cmd_mock(parser, context, args):
-    parser.usage = 'copy the protocol to the pasteboard then run: igen mock [-h] [-p]'
-    parser.description = 'Create mock for the protocol.'
+    parser.usage = 'copy the protocol/function to the pasteboard then run: igen mock [-h] [-p]'
+    parser.description = 'Create a mock class for a protocol/function.'
     parser.add_argument(
         '-p', '--print',
         required=False,
@@ -79,10 +79,10 @@ def cmd_mock(parser, context, args):
     MockCommand(protocol_text).create_mock(args.print)
 
 
-@subcmd('test', help='create unit tests for the ViewModel')
+@subcmd('test', help='create unit tests for a view model')
 def cmd_test(parser, context, args):
-    parser.usage = 'copy the ViewModel to the pasteboard then run: igen test [-h] [-p]'
-    parser.description = 'Create unit tests for the ViewModel.'
+    parser.usage = 'copy the view model to the pasteboard then run: igen test [-h] [-p]'
+    parser.description = 'Create unit tests for a view model.'
     parser.add_argument(
         '-p', '--print',
         required=False,
@@ -94,10 +94,10 @@ def cmd_test(parser, context, args):
     UnitTestCommand(vm_text).create_tests(args.print)
 
 
-@subcmd('bind', help='create bindViewModel method for the UIViewController')
+@subcmd('bind', help='create a bindViewModel method for a UIViewController')
 def cmd_test(parser, context, args):
-    parser.usage = 'copy the ViewModel to the pasteboard then run: igen bind [-h] [-p]'
-    parser.description = 'Create bindViewModel method for the UIViewController.'
+    parser.usage = 'copy the view model to the pasteboard then run: igen bind [-h] [-p]'
+    parser.description = 'Create a bindViewModel method for a UIViewController.'
     parser.add_argument(
         '-p', '--print',
         required=False,
@@ -109,10 +109,10 @@ def cmd_test(parser, context, args):
     BindViewModelCommand(vm_text).create_bind_view_model(args.print)
 
 
-@subcmd('init', help='create initialize method for the class/struct')
+@subcmd('init', help='create a initialize method for a class/struct')
 def cmd_init(parser, context, args):
-    parser.usage = 'copy the protocol to the pasteboard then run: igen init [-h] [-p]'
-    parser.description = 'Create initialize method for the class/struct.'
+    parser.usage = 'copy the class/struct to the pasteboard then run: igen init [-h] [-p]'
+    parser.description = 'Create a initialize method for a class/struct.'
     parser.add_argument(
         '-p', '--print',
         required=False,
@@ -124,20 +124,14 @@ def cmd_init(parser, context, args):
     InitCommand(model_text).create_init(args.print)
 
 
-@subcmd('json', help='create model from JSON')
+@subcmd('json', help='create a model from JSON')
 def cmd_json(parser, context, args):
-    parser.usage = 'copy the JSON to the pasteboard then run: igen json [-h] [-p] name'
-    parser.description = 'Create model from JSON.'
+    parser.usage = 'copy the JSON to the pasteboard then run: igen json [-h] [--return-classes] [-p] name'
+    parser.description = 'Create a model from JSON.'
     parser.add_argument(
         'name',
         nargs=1,
         help='model name'
-    )
-    parser.add_argument(
-        '-p', '--print',
-        required=False,
-        action='store_true',
-        help="print the result"
     )
     parser.add_argument(
         '--return-classes',
@@ -145,14 +139,20 @@ def cmd_json(parser, context, args):
         action='store_true',
         help="return classes instead of structs"
     )
+    parser.add_argument(
+        '-p', '--print',
+        required=False,
+        action='store_true',
+        help="print the result"
+    )
     args = parser.parse_args(args)
     json = pasteboard_read()
     JSONCommand(args.name[0], json).create_models(args.print, args.return_classes)
 
 
-@subcmd('api', help='create input and ouput files for the API')
+@subcmd('api', help='create input and ouput files for an API')
 def cmd_api(parser, context, args):
-    parser.description = 'Create input and ouput files for the API.'
+    parser.description = 'Create input and ouput files for an API.'
     parser.add_argument(
         'name',
         nargs=1,
