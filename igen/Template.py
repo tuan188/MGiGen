@@ -181,7 +181,8 @@ class Template(object):
                 file_extension=file_extension,
                 folder=folder
             )
-            print('    {}'.format(file_path))
+            if file_path is not None:
+                print('    {}'.format(file_path))
 
         def _content_from_template(self, template):
             return template.render(
@@ -418,7 +419,8 @@ class Template(object):
                 file_extension='swift',
                 folder='{}/{}'.format(self.output_path, self.name)
             )
-            print('    {}'.format(file_path))
+            if file_path is not None:
+                print('    {}'.format(file_path))
 
         # ================ UnitTests ================
 

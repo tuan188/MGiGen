@@ -64,4 +64,8 @@ class TemplateCommand(Command):
         if output_path is None:
             output_path = '.'
         targetDirectory = "{}/{}".format(output_path, self.scene_name)
-        call(["open", targetDirectory])
+        try:
+            call(["open", targetDirectory])
+        except Exception as e:
+            print(e)
+            pass
