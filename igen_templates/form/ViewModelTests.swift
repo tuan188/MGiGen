@@ -86,12 +86,12 @@ final class {{ name }}ViewModelTests: XCTestCase {
         {{ submit }}Trigger.onNext(())
         
         // assert
-        XCTAssert(useCase.validate{{ p.name_title }}_Called)
+        XCTAssert(useCase.validate{{ p.name_title }}Called)
     }
     
     func test_{{ p.name }}TriggerInvoked_validate{{ p.name_title }}FailNotEnable_{{ submit }}() {
         // arrange
-        useCase.validate{{ p.name_title }}_ReturnValue = ValidationResult.invalid([TestError()])
+        useCase.validate{{ p.name_title }}ReturnValue = ValidationResult.invalid([TestError()])
         
         // act
     {% for p in properties %}
@@ -120,7 +120,7 @@ final class {{ name }}ViewModelTests: XCTestCase {
     func test_{{ submit }}TriggerInvoked_not_{{ submit }}() {
         // arrange
     {% if properties %}
-        useCase.validate{{ properties[0].name_title }}_ReturnValue = ValidationResult.invalid([TestError()])
+        useCase.validate{{ properties[0].name_title }}ReturnValue = ValidationResult.invalid([TestError()])
     {% endif %}
 
         // act
@@ -130,7 +130,7 @@ final class {{ name }}ViewModelTests: XCTestCase {
         {{ submit }}Trigger.onNext(())
         
         // assert
-        XCTAssertFalse(useCase.{{ submit }}_Called)
+        XCTAssertFalse(useCase.{{ submit }}Called)
     }
     
     func test_{{ submit }}TriggerInvoked_{{ submit }}() {
@@ -141,26 +141,26 @@ final class {{ name }}ViewModelTests: XCTestCase {
         {{ submit }}Trigger.onNext(())
         
         // assert
-        XCTAssert(useCase.{{ submit }}_Called)
-        XCTAssert(navigator.dismiss_Called)
+        XCTAssert(useCase.{{ submit }}Called)
+        XCTAssert(navigator.dismissCalled)
     }
     
     func test_{{ submit }}TriggerInvoked_{{ submit }}FailShowError() {
         // arrange
-        let {{ submit }}_ReturnValue = PublishSubject<Void>()
-        useCase.{{ submit }}_ReturnValue = {{ submit }}_ReturnValue
+        let {{ submit }}ReturnValue = PublishSubject<Void>()
+        useCase.{{ submit }}ReturnValue = {{ submit }}ReturnValue
         
         // act
     {% for p in properties %}
         {{ p.name }}Trigger.onNext({{ p.type.default_value }})
     {% endfor %}
         {{ submit }}Trigger.onNext(())
-        {{ submit }}_ReturnValue.onError(TestError())
+        {{ submit }}ReturnValue.onError(TestError())
         let error = try? output.error.toBlocking(timeout: 1).first()
         
         // assert
-        XCTAssert(useCase.{{ submit }}_Called)
-        XCTAssertFalse(navigator.dismiss_Called)
+        XCTAssert(useCase.{{ submit }}Called)
+        XCTAssertFalse(navigator.dismissCalled)
         XCTAssert(error is TestError)
     }
     
@@ -169,7 +169,7 @@ final class {{ name }}ViewModelTests: XCTestCase {
         cancelTrigger.onNext(())
         
         // assert
-        XCTAssert(navigator.dismiss_Called)
+        XCTAssert(navigator.dismissCalled)
     }
     
 }

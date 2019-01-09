@@ -51,22 +51,22 @@ final class {{ name }}ViewModelTests: XCTestCase {
         let {{ model_variable }}Sections = try? output.{{ model_variable }}Sections.toBlocking(timeout: 1).first()
         
         // assert
-        XCTAssert(useCase.get{{ model_name }}List_Called)
+        XCTAssert(useCase.get{{ model_name }}ListCalled)
         XCTAssertEqual({{ model_variable }}Sections??[0].{{ model_variable }}List.count, 1)
     }
 
     func test_loadTrigger_get{{ model_name }}List_failedShowError() {
         // arrange
-        let get{{ model_name }}List_ReturnValue = PublishSubject<PagingInfo<{{ model_name }}>>()
-        useCase.get{{ model_name }}List_ReturnValue = get{{ model_name }}List_ReturnValue
+        let get{{ model_name }}ListReturnValue = PublishSubject<PagingInfo<{{ model_name }}>>()
+        useCase.get{{ model_name }}ListReturnValue = get{{ model_name }}ListReturnValue
 
         // act
         loadTrigger.onNext(())
-        get{{ model_name }}List_ReturnValue.onError(TestError())
+        get{{ model_name }}ListReturnValue.onError(TestError())
         let error = try? output.error.toBlocking(timeout: 1).first()
 
         // assert
-        XCTAssert(useCase.get{{ model_name }}List_Called)
+        XCTAssert(useCase.get{{ model_name }}ListCalled)
         XCTAssert(error is TestError)
     }
 
@@ -76,51 +76,51 @@ final class {{ name }}ViewModelTests: XCTestCase {
         let {{ model_variable }}Sections = try? output.{{ model_variable }}Sections.toBlocking(timeout: 1).first()
 
         // assert
-        XCTAssert(useCase.get{{ model_name }}List_Called)
+        XCTAssert(useCase.get{{ model_name }}ListCalled)
         XCTAssertEqual({{ model_variable }}Sections??[0].{{ model_variable }}List.count, 1)
     }
 
     func test_reloadTrigger_get{{ model_name }}List_failedShowError() {
         // arrange
-        let get{{ model_name }}List_ReturnValue = PublishSubject<PagingInfo<{{ model_name }}>>()
-        useCase.get{{ model_name }}List_ReturnValue = get{{ model_name }}List_ReturnValue
+        let get{{ model_name }}ListReturnValue = PublishSubject<PagingInfo<{{ model_name }}>>()
+        useCase.get{{ model_name }}ListReturnValue = get{{ model_name }}ListReturnValue
 
         // act
         reloadTrigger.onNext(())
-        get{{ model_name }}List_ReturnValue.onError(TestError())
+        get{{ model_name }}ListReturnValue.onError(TestError())
         let error = try? output.error.toBlocking(timeout: 1).first()
 
         // assert
-        XCTAssert(useCase.get{{ model_name }}List_Called)
+        XCTAssert(useCase.get{{ model_name }}ListCalled)
         XCTAssert(error is TestError)
     }
 
     func test_reloadTrigger_notGet{{ model_name }}ListIfStillLoading() {
         // arrange
-        let get{{ model_name }}List_ReturnValue = PublishSubject<PagingInfo<{{ model_name }}>>()
-        useCase.get{{ model_name }}List_ReturnValue = get{{ model_name }}List_ReturnValue
+        let get{{ model_name }}ListReturnValue = PublishSubject<PagingInfo<{{ model_name }}>>()
+        useCase.get{{ model_name }}ListReturnValue = get{{ model_name }}ListReturnValue
 
         // act
         loadTrigger.onNext(())
-        useCase.get{{ model_name }}List_Called = false
+        useCase.get{{ model_name }}ListCalled = false
         reloadTrigger.onNext(())
 
         // assert
-        XCTAssertFalse(useCase.get{{ model_name }}List_Called)
+        XCTAssertFalse(useCase.get{{ model_name }}ListCalled)
     }
 
     func test_reloadTrigger_notGet{{ model_name }}ListIfStillReloading() {
         // arrange
-        let get{{ model_name }}List_ReturnValue = PublishSubject<PagingInfo<{{ model_name }}>>()
-        useCase.get{{ model_name }}List_ReturnValue = get{{ model_name }}List_ReturnValue
+        let get{{ model_name }}ListReturnValue = PublishSubject<PagingInfo<{{ model_name }}>>()
+        useCase.get{{ model_name }}ListReturnValue = get{{ model_name }}ListReturnValue
 
         // act
         reloadTrigger.onNext(())
-        useCase.get{{ model_name }}List_Called = false
+        useCase.get{{ model_name }}ListCalled = false
         reloadTrigger.onNext(())
 
         // assert
-        XCTAssertFalse(useCase.get{{ model_name }}List_Called)
+        XCTAssertFalse(useCase.get{{ model_name }}ListCalled)
     }
 
     func test_loadMoreTrigger_loadMore{{ model_name }}List() {
@@ -130,65 +130,65 @@ final class {{ name }}ViewModelTests: XCTestCase {
         let {{ model_variable }}Sections = try? output.{{ model_variable }}Sections.toBlocking(timeout: 1).first()
 
         // assert
-        XCTAssert(useCase.loadMore{{ model_name }}List_Called)
+        XCTAssert(useCase.loadMore{{ model_name }}ListCalled)
         XCTAssertEqual({{ model_variable }}Sections??[0].{{ model_variable }}List.count, 2)
     }
 
     func test_loadMoreTrigger_loadMore{{ model_name }}List_failedShowError() {
         // arrange
-        let loadMore{{ model_name }}List_ReturnValue = PublishSubject<PagingInfo<{{ model_name }}>>()
-        useCase.loadMore{{ model_name }}List_ReturnValue = loadMore{{ model_name }}List_ReturnValue
+        let loadMore{{ model_name }}ListReturnValue = PublishSubject<PagingInfo<{{ model_name }}>>()
+        useCase.loadMore{{ model_name }}ListReturnValue = loadMore{{ model_name }}ListReturnValue
 
         // act
         loadTrigger.onNext(())
         loadMoreTrigger.onNext(())
-        loadMore{{ model_name }}List_ReturnValue.onError(TestError())
+        loadMore{{ model_name }}ListReturnValue.onError(TestError())
         let error = try? output.error.toBlocking(timeout: 1).first()
 
         // assert
-        XCTAssert(useCase.loadMore{{ model_name }}List_Called)
+        XCTAssert(useCase.loadMore{{ model_name }}ListCalled)
         XCTAssert(error is TestError)
     }
 
     func test_loadMoreTrigger_notLoadMore{{ model_name }}ListIfStillLoading() {
         // arrange
-        let get{{ model_name }}List_ReturnValue = PublishSubject<PagingInfo<{{ model_name }}>>()
-        useCase.get{{ model_name }}List_ReturnValue = get{{ model_name }}List_ReturnValue
+        let get{{ model_name }}ListReturnValue = PublishSubject<PagingInfo<{{ model_name }}>>()
+        useCase.get{{ model_name }}ListReturnValue = get{{ model_name }}ListReturnValue
 
         // act
         loadTrigger.onNext(())
-        useCase.get{{ model_name }}List_Called = false
+        useCase.get{{ model_name }}ListCalled = false
         loadMoreTrigger.onNext(())
 
         // assert
-        XCTAssertFalse(useCase.loadMore{{ model_name }}List_Called)
+        XCTAssertFalse(useCase.loadMore{{ model_name }}ListCalled)
     }
 
     func test_loadMoreTrigger_notLoadMore{{ model_name }}ListIfStillReloading() {
         // arrange
-        let get{{ model_name }}List_ReturnValue = PublishSubject<PagingInfo<{{ model_name }}>>()
-        useCase.get{{ model_name }}List_ReturnValue = get{{ model_name }}List_ReturnValue
+        let get{{ model_name }}ListReturnValue = PublishSubject<PagingInfo<{{ model_name }}>>()
+        useCase.get{{ model_name }}ListReturnValue = get{{ model_name }}ListReturnValue
 
         // act
         reloadTrigger.onNext(())
-        useCase.get{{ model_name }}List_Called = false
+        useCase.get{{ model_name }}ListCalled = false
         loadMoreTrigger.onNext(())
         // assert
-        XCTAssertFalse(useCase.loadMore{{ model_name }}List_Called)
+        XCTAssertFalse(useCase.loadMore{{ model_name }}ListCalled)
     }
 
     func test_loadMoreTrigger_notLoadMoreDocumentTypesStillLoadingMore() {
         // arrange
-        let loadMore{{ model_name }}List_ReturnValue = PublishSubject<PagingInfo<{{ model_name }}>>()
-        useCase.loadMore{{ model_name }}List_ReturnValue = loadMore{{ model_name }}List_ReturnValue
+        let loadMore{{ model_name }}ListReturnValue = PublishSubject<PagingInfo<{{ model_name }}>>()
+        useCase.loadMore{{ model_name }}ListReturnValue = loadMore{{ model_name }}ListReturnValue
 
         // act
         loadMoreTrigger.onNext(())
-        useCase.loadMore{{ model_name }}List_Called = false
+        useCase.loadMore{{ model_name }}ListCalled = false
         loadMoreTrigger.onNext(())
 
         // assert
-        XCTAssertFalse(useCase.loadMore{{ model_name }}List_Called)
+        XCTAssertFalse(useCase.loadMore{{ model_name }}ListCalled)
     }
 
     func test_select{{ model_name }}Trigger_to{{ model_name }}Detail() {
@@ -197,6 +197,6 @@ final class {{ name }}ViewModelTests: XCTestCase {
         select{{ model_name }}Trigger.onNext(IndexPath(row: 0, section: 0))
 
         // assert
-        XCTAssert(navigator.to{{ model_name }}Detail_Called)
+        XCTAssert(navigator.to{{ model_name }}DetailCalled)
     }
 }

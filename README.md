@@ -309,28 +309,28 @@ final class ProductsNavigatorMock: ProductsNavigatorType {
     
     // MARK: - toProducts
     
-    var toProducts_Called = false
+    var toProductsCalled = false
 
     func toProducts() {
-        toProducts_Called = true
+        toProductsCalled = true
     } 
 
     // MARK: - toProductDetail
     
-    var toProductDetail_Called = false
+    var toProductDetailCalled = false
 
     func toProductDetail(product: Product) {
-        toProductDetail_Called = true
+        toProductDetailCalled = true
     } 
 
     // MARK: - toEditProduct
     
-    var toEditProduct_Called = false
-    var toEditProduct_ReturnValue: Driver<EditProductDelegate> = Driver.empty()
+    var toEditProductCalled = false
+    var toEditProductReturnValue: Driver<EditProductDelegate> = Driver.empty()
 
     func toEditProduct(_ product: Product) -> Driver<EditProductDelegate> {
-        toEditProduct_Called = true
-        return toEditProduct_ReturnValue
+        toEditProductCalled = true
+        return toEditProductReturnValue
     } 
 }
 ```
