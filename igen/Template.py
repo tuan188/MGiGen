@@ -498,7 +498,7 @@ class Template(object):
             )
 
         def _make_dirs(self):
-            current_directory = os.getcwd()
+            current_directory = os.getcwd() if self.output_path == '.' else self.output_path
             main_directory = self._make_dir(current_directory, self.name)
             self._make_dir(main_directory, "Assembler")
             self._make_dir(main_directory, "Extensions")
