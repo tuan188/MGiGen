@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import os.path
+import os
 import configparser
 from .command import Command
 
@@ -47,6 +48,14 @@ class ConfigCommand(Command):
         except:
             return None
 
+    def info(self):
+        try:
+            with open(self.config_file, "r") as f:
+                content = f.readlines()
+                print(''.join(content))
+        except Exception as e:
+            print(e)
+
     def output_path(self):
         try:
             config = configparser.ConfigParser()
@@ -65,8 +74,11 @@ class ConfigCommand(Command):
             (section, section_item) = name.split('.')
             if section not in config:
                 config[section] = {}
+            if value == '@here':
+                value = os.getcwd()
             config[section][section_item] = value
             with open(self.config_file, "w") as f:
                 config.write(f)
+            self.info()
         except Exception as e:
             print(e)

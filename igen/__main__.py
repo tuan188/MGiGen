@@ -171,13 +171,8 @@ def cmd_api(parser, context, args):
 @subcmd('config', help='configure igen')
 def cmd_project(parser, context, args):
     parser.description = 'Configure igen.'
-    parser.epilog = "To configure the project information, run 'igen config project'"
-    parser.add_argument(
-        '-i', '--info',
-        required=False,
-        action='store_true',
-        help='show the configuration of the section and exit'
-    )
+    parser.epilog = """To configure the project information, run 'igen config project'.
+                       To view configuration file, run 'igen config info'."""
     parser.add_argument(
         'name',
         nargs=1,
@@ -192,13 +187,12 @@ def cmd_project(parser, context, args):
     cmd = ConfigCommand()
     name = args.name[0]
     values = args.value
-    if 'project' in args.name:
-        if args.info:
-            cmd.project_info(True)
-        else:
-            cmd.update_project_info()
+    if name == 'info':
+        cmd.info()
+    elif name == 'project':
+        cmd.update_project_info()
     elif values:
-        cmd.config(name, values[0])
+        cmd.config(args.name[0], values[0])
     else:
         print('Invalid section and/or key.')
 
