@@ -309,28 +309,28 @@ final class ProductsNavigatorMock: ProductsNavigatorType {
     
     // MARK: - toProducts
     
-    var toProductsCalled = false
+    var toProducts_Called = false
 
     func toProducts() {
-        toProductsCalled = true
+        toProducts_Called = true
     } 
 
     // MARK: - toProductDetail
     
-    var toProductDetailCalled = false
+    var toProductDetail_Called = false
 
     func toProductDetail(product: Product) {
-        toProductDetailCalled = true
+        toProductDetail_Called = true
     } 
 
     // MARK: - toEditProduct
     
-    var toEditProductCalled = false
-    var toEditProductReturnValue: Driver<EditProductDelegate> = Driver.empty()
+    var toEditProduct_Called = false
+    var toEditProduct_ReturnValue: Driver<EditProductDelegate> = Driver.empty()
 
     func toEditProduct(_ product: Product) -> Driver<EditProductDelegate> {
-        toEditProductCalled = true
-        return toEditProductReturnValue
+        toEditProduct_Called = true
+        return toEditProduct_ReturnValue
     } 
 }
 ```
@@ -569,11 +569,37 @@ or update the company name:
 $ igen config project.company <Company_Name>
 ```
 
-### 6.2. View the project information:
-To view the project information, run the command:
+### 6.2. Configure the output path:
+To configure the path for the output files, run the command:
 
 ```
-$ igen config project -i
+$igen config output.path <Path>
+```
+
+#### Example:
+Set the current working directory as the output path (relative path):
+
+```
+$igen config output.path .
+```
+
+Set the desktop as the output path:
+
+```
+$igen config output.path /Users/<Your_Name>/Desktop
+```
+
+You can use a special value `@here`  to set the current working directory as the output path (absolute path):
+
+```
+$igen config output.path @here
+```
+
+### 6.3. View the configuration:
+To view the configuration, run the command:
+
+```
+$ igen config info
 ```
 
 ## 7. Other commands:
