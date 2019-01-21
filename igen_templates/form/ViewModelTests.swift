@@ -1,4 +1,4 @@
-@testable import CleanArchitecture
+@testable import {{ project }}
 import XCTest
 import RxSwift
 import RxBlocking
