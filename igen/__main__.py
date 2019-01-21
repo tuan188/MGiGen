@@ -21,7 +21,7 @@ def cmd_template(parser, context, args):
     parser.add_argument(
         'type',
         nargs=1,
-        choices=['skeleton', 'base', 'list', 'detail', 'form'],
+        choices=['skeleton', 'base', 'list', 'detail', 'form', 'login'],
         help="template type"
     )
     parser.add_argument(

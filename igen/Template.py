@@ -92,6 +92,7 @@ class Template(object):
         DETAIL = 'detail'
         SKELETON = 'skeleton'
         FORM = 'form'
+        LOGIN = 'login'
 
     def parse_model(self, model_text):
         model_regex = re.compile("(?:struct|class) (\w+) {((.|\n)*)}")
@@ -102,7 +103,7 @@ class Template(object):
         properties = [Template.Property(p.group()) for p in property_regex.finditer(property_block)]
         return Template.Model(model_name, properties)
 
-    # =================== BaseTemplate ===================
+    # =============== BaseTemplate ===============
 
     class BaseTemplate(object):
         def __init__(self, name, project_info):
@@ -225,7 +226,7 @@ class Template(object):
                 template_file='{}.swift'.format(scene_name)
             )
 
-        # ================ UnitTests ================
+        # =============== UnitTests ===============
 
         def _create_view_model_tests(self):
             scene_name = 'ViewModelTests'
@@ -259,7 +260,7 @@ class Template(object):
                 folder='Test'
             )
 
-    # =================== ListTemplate ===================
+    # =============== ListTemplate ===============
 
     class ListTemplate(BaseTemplate):
 
@@ -338,7 +339,7 @@ class Template(object):
                 template_file='CollectionViewCell.swift' if self.is_collection else 'TableViewCell.swift'
             )
 
-        # ================ UnitTests ================
+        # =============== UnitTests ===============
 
         def _create_view_model_tests(self):
             self._create_file_from_template(
@@ -361,7 +362,7 @@ class Template(object):
                 folder='Test'
             )
 
-    # =================== DetailTemplate ===================
+    # =============== DetailTemplate ===============
 
     class DetailTemplate(BaseTemplate):
         def __init__(self, model, options, name, project_info):
@@ -422,7 +423,7 @@ class Template(object):
             if file_path is not None:
                 print('    {}'.format(file_path))
 
-        # ================ UnitTests ================
+        # =============== UnitTests ===============
 
         def _create_cells_tests(self):
             self._create_file_from_template(
@@ -431,7 +432,7 @@ class Template(object):
                 folder='Test'
             )
 
-    # =================== StaticDetailTemplate ===================
+    # =============== StaticDetailTemplate ===============
 
     class StaticDetailTemplate(DetailTemplate):
 
@@ -469,7 +470,7 @@ class Template(object):
                 template_file='StaticViewController.swift'
             )
 
-        # ================ UnitTests ================
+        # =============== UnitTests ===============
 
         def _create_view_model_tests(self):
             self._create_file_from_template(
@@ -485,7 +486,7 @@ class Template(object):
                 folder='Test'
             )
 
-    # =================== SkeletonTemplate ===================
+    # =============== SkeletonTemplate ===============
 
     class SkeletonTemplate(BaseTemplate):
 
@@ -666,7 +667,7 @@ class Template(object):
                 folder='Scenes/Storyboards'
             )
 
-    # =================== FormTemplate ===================
+    # =============== FormTemplate ===============
 
     class FormTemplate(BaseTemplate):
         def __init__(self, model, options, name, project_info):
@@ -704,3 +705,28 @@ class Template(object):
                 properties=self.model.properties,
                 submit=self.submit
             )
+
+    # =============== LoginTemplate ===============
+
+    class LoginTemplate(BaseTemplate):
+        def __init__(self, name, project_info):
+            super(Template.LoginTemplate, self).__init__(name, project_info)
+            self.env = Environment(
+                loader=PackageLoader('igen_templates', 'login'),
+                trim_blocks=True,
+                lstrip_blocks=True
+            )
+
+        def create_files(self):
+            print('Successfully created files:')
+            self._make_dirs()
+            self._create_assembler()
+            self._create_navigator()
+            self._create_view_model()
+            self._create_use_case()
+            self._create_view_controller()
+            # Test
+            self._create_use_case_mock()
+            self._create_navigator_mock()
+            self._create_view_model_tests()
+            self._create_view_controller_tests()
