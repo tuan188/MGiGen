@@ -9,10 +9,10 @@ setup(
     version=__version__,
     author="Tuan Truong",
     author_email="tuan188@gmail.com",
-    description="Code Generation Tools for iOS",
+    description="A code generator for iOS",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/tuan188/MGiOSTools",
+    url="https://github.com/tuan188/MGiGen",
     license='MIT',
     packages=['igen', 'igen_templates'],
     entry_points={
