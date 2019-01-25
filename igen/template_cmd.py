@@ -22,7 +22,7 @@ class TemplateCommand(Command):
             project, developer, company = ConfigCommand().update_project_info()
         project_info = ProjectInfo(project, developer, company)
         if self.template_name == Template.TemplateType.BASE:
-            template = Template.BaseTemplate(self.scene_name, project_info)
+            template = Template.BaseTemplate(self.options, self.scene_name, project_info)
             template.create_files()
         elif self.template_name == Template.TemplateType.LIST:
             model_text = pasteboard_read()
@@ -58,7 +58,16 @@ class TemplateCommand(Command):
             template = Template.FormTemplate(model, self.options, self.scene_name, project_info)
             template.create_files()
         elif self.template_name == Template.TemplateType.LOGIN:
-            template = Template.LoginTemplate(self.scene_name, project_info)
+            template = Template.LoginTemplate(self.options, self.scene_name, project_info)
+            template.create_files()
+        elif self.template_name == Template.TemplateType.SETTING:
+            enum_text = pasteboard_read()
+            try:
+                enum = Template().parse_enum(enum_text)
+            except:
+                print("The enum in the pasteboard is invalid.")
+                exit(1)
+            template = Template.SettingTemplate(enum, self.options, self.scene_name, project_info)
             template.create_files()
         else:
             print("Invalid template type.")

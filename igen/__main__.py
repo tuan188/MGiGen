@@ -16,18 +16,24 @@ from .template_cmd import TemplateCommand
 
 @subcmd('template', help='create template files for a scene')
 def cmd_template(parser, context, args):
-    parser.epilog = "'list', 'detail' and 'form' template require copying the model to the pasteboard before running the command."
+    parser.epilog = "'list', 'detail', 'form' and 'setting' template require copying the model to the pasteboard before running the command."
     parser.description = 'Create template files for a scene.'
     parser.add_argument(
         'type',
         nargs=1,
-        choices=['skeleton', 'base', 'list', 'detail', 'form', 'login'],
+        choices=['skeleton', 'base', 'list', 'detail', 'form', 'login', 'setting'],
         help="template type"
     )
     parser.add_argument(
         'name',
         nargs=1,
         help='scene name'
+    )
+    parser.add_argument(
+        '--window',
+        required=False,
+        action='store_true',
+        help="use a UIWindow as the root view controller"
     )
     parser.add_argument(
         '--section',
@@ -39,7 +45,7 @@ def cmd_template(parser, context, args):
         '--collection',
         required=False,
         action='store_true',
-        help="use UICollectionView instead of UITableView ('list' template only)"
+        help="use a UICollectionView instead of a UITableView ('list' template only)"
     )
     parser.add_argument(
         '--static',
@@ -56,6 +62,7 @@ def cmd_template(parser, context, args):
     template_name = args.type[0]
     scene_name = args.name[0]
     options = {
+        'window': args.window,
         'section': args.section,
         'collection': args.collection,
         'static': args.static,

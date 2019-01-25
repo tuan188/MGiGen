@@ -93,6 +93,13 @@ class Template(object):
         SKELETON = 'skeleton'
         FORM = 'form'
         LOGIN = 'login'
+        SETTING = 'setting'
+
+    class Enum(object):
+        def __init__(self, name, cases):
+            super(Template.Enum, self).__init__()
+            self.name = name
+            self.cases = cases
 
     def parse_model(self, model_text):
         model_regex = re.compile("(?:struct|class) (\w+) {((.|\n)*)}")
@@ -100,18 +107,28 @@ class Template(object):
         model_name = match.group(1)
         property_block = match.group(2)
         property_regex = re.compile("(?:let|var) (\w+): (.*)")
-        properties = [Template.Property(p.group()) for p in property_regex.finditer(property_block)]
+        properties = [Template.Property(m.group()) for m in property_regex.finditer(property_block)]
         return Template.Model(model_name, properties)
+
+    def parse_enum(self, enum_text):
+        enum_regex = re.compile("enum (\w+)[^{]* {([\d\D]*)}")
+        match = enum_regex.search(enum_text)
+        enum_name = match.group(1)
+        enum_block = match.group(2)
+        regex = re.compile('case (\w+)')
+        cases = [m.group(1) for m in regex.finditer(enum_block)]
+        return Template.Enum(enum_name, cases)
 
     # =============== BaseTemplate ===============
 
     class BaseTemplate(object):
-        def __init__(self, name, project_info):
+        def __init__(self, options, name, project_info):
             super(Template.BaseTemplate, self).__init__()
             self.name = name
             self.project = project_info.project
             self.developer = project_info.developer
             self.company = project_info.company
+            self.use_window = options['window']
             output_path = ConfigCommand().output_path()
             if output_path is None:
                 output_path = '.'
@@ -188,7 +205,8 @@ class Template(object):
         def _content_from_template(self, template):
             return template.render(
                 name=self.name,
-                project=self.project
+                project=self.project,
+                use_window=self.use_window
             )
 
         def _create_view_model(self):
@@ -265,9 +283,8 @@ class Template(object):
     class ListTemplate(BaseTemplate):
 
         def __init__(self, model, options, name, project_info):
-            super(Template.ListTemplate, self).__init__(name, project_info)
+            super(Template.ListTemplate, self).__init__(options, name, project_info)
             self.model = model
-            self.options = options
             self.is_sectioned_list = options['section']
             self.is_collection = options['collection']
             self.model_name = self.model.name
@@ -299,6 +316,7 @@ class Template(object):
             return template.render(
                 name=self.name,
                 project=self.project,
+                use_window=self.use_window,
                 model_name=self.model_name,
                 model_variable=self.model_variable,
                 properties=self.model.properties
@@ -366,7 +384,7 @@ class Template(object):
 
     class DetailTemplate(BaseTemplate):
         def __init__(self, model, options, name, project_info):
-            super(Template.DetailTemplate, self).__init__(name, project_info)
+            super(Template.DetailTemplate, self).__init__(options, name, project_info)
             self.model = model
             self.model_name = self.model.name
             self.model_variable = lower_first_letter(self.model_name)
@@ -396,6 +414,7 @@ class Template(object):
             return template.render(
                 name=self.name,
                 project=self.project,
+                use_window=self.use_window,
                 model_name=self.model_name,
                 model_variable=self.model_variable,
                 properties=self.model.properties
@@ -453,6 +472,7 @@ class Template(object):
             return template.render(
                 name=self.name,
                 project=self.project,
+                use_window=self.use_window,
                 model_name=self.model_name,
                 model_variable=self.model_variable,
                 properties=self.model.properties
@@ -491,7 +511,7 @@ class Template(object):
     class SkeletonTemplate(BaseTemplate):
 
         def __init__(self, name, project_info):
-            super(Template.SkeletonTemplate, self).__init__(name, project_info)
+            super(Template.SkeletonTemplate, self).__init__({}, name, project_info)
             self.env = Environment(
                 loader=PackageLoader('igen_templates', 'skeleton'),
                 trim_blocks=True,
@@ -671,7 +691,7 @@ class Template(object):
 
     class FormTemplate(BaseTemplate):
         def __init__(self, model, options, name, project_info):
-            super(Template.FormTemplate, self).__init__(name, project_info)
+            super(Template.FormTemplate, self).__init__(options, name, project_info)
             self.model = model
             self.model_name = self.model.name
             self.model_variable = lower_first_letter(self.model_name)
@@ -700,6 +720,7 @@ class Template(object):
             return template.render(
                 name=self.name,
                 project=self.project,
+                use_window=self.use_window,
                 model_name=self.model_name,
                 model_variable=self.model_variable,
                 properties=self.model.properties,
@@ -709,8 +730,8 @@ class Template(object):
     # =============== LoginTemplate ===============
 
     class LoginTemplate(BaseTemplate):
-        def __init__(self, name, project_info):
-            super(Template.LoginTemplate, self).__init__(name, project_info)
+        def __init__(self, options, name, project_info):
+            super(Template.LoginTemplate, self).__init__(options, name, project_info)
             self.env = Environment(
                 loader=PackageLoader('igen_templates', 'login'),
                 trim_blocks=True,
@@ -730,3 +751,29 @@ class Template(object):
             self._create_navigator_mock()
             self._create_view_model_tests()
             self._create_view_controller_tests()
+
+    # =============== SettingTemplate ===============
+
+    class SettingTemplate(BaseTemplate):
+        def __init__(self, enum, options, name, project_info):
+            super(Template.SettingTemplate, self).__init__(options, name, project_info)
+            self.enum = enum
+            self.env = Environment(
+                loader=PackageLoader('igen_templates', 'setting'),
+                trim_blocks=True,
+                lstrip_blocks=True
+            )
+
+        def create_files(self):
+            print('Successfully created files:')
+            self._make_dirs()
+            self._create_assembler()
+            # self._create_navigator()
+            # self._create_view_model()
+            # self._create_use_case()
+            # self._create_view_controller()
+            # Test
+            # self._create_use_case_mock()
+            # self._create_navigator_mock()
+            # self._create_view_model_tests()
+            # self._create_view_controller_tests()
