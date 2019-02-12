@@ -99,7 +99,10 @@ class Template(object):
         def __init__(self, name, cases):
             super(Template.Enum, self).__init__()
             self.name = name
+            self.name_variable = lower_first_letter(name)
             self.cases = cases
+            self.cases_title = [upper_first_letter(c) for c in cases]
+            self.case_count = len(cases)
 
     def parse_model(self, model_text):
         model_regex = re.compile("(?:struct|class) (\w+) {((.|\n)*)}")
@@ -768,12 +771,35 @@ class Template(object):
             print('Successfully created files:')
             self._make_dirs()
             self._create_assembler()
-            # self._create_navigator()
-            # self._create_view_model()
-            # self._create_use_case()
-            # self._create_view_controller()
+            self._create_navigator()
+            self._create_view_model()
+            self._create_use_case()
+            self._create_view_controller()
+            self._create_cell()
             # Test
-            # self._create_use_case_mock()
-            # self._create_navigator_mock()
-            # self._create_view_model_tests()
-            # self._create_view_controller_tests()
+            self._create_use_case_mock()
+            self._create_navigator_mock()
+            self._create_view_model_tests()
+            self._create_view_controller_tests()
+            self._create_cell_tests()
+
+        def _content_from_template(self, template):
+            return template.render(
+                name=self.name,
+                project=self.project,
+                use_window=self.use_window,
+                enum=self.enum
+            )
+
+        def _create_cell(self):
+            self._create_file_from_template(
+                class_name='{}Cell'.format(self.enum.name),
+                template_file='Cell.swift'
+            )
+
+        def _create_cell_tests(self):
+            self._create_file_from_template(
+                class_name='{}CellTests'.format(self.enum.name),
+                template_file='CellTests.swift',
+                folder='Test'
+            )
