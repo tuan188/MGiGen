@@ -9,7 +9,7 @@ final class {{ model_name }}CellTests: XCTestCase {
 //        cell = {{ model_name }}Cell.loadFromNib()
     }
 
-    func test_iboutlets() {
+    func test_ibOutlets() {
 //        XCTAssertNotNil(cell)
         {% for p in properties %}
 //        XCTAssertNotNil(cell.{{ p.name }}Label)

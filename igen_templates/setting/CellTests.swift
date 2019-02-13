@@ -9,7 +9,7 @@ final class {{ enum.name }}CellTests: XCTestCase {
         cell = {{ enum.name }}Cell.loadFromNib()
     }
 
-    func test_iboutlets() {
+    func test_ibOutlets() {
         XCTAssertNotNil(cell)
         XCTAssertNotNil(cell.titleLabel)
     }

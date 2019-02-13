@@ -42,7 +42,7 @@ final class {{ name }}ViewModelTests: XCTestCase {
         let {{ enum.name_variable }}Sections = try? output.{{ enum.name_variable }}Sections.toBlocking(timeout: 1).first()
         
         // assert
-        XCTAssertEqual({{ enum.name_variable }}Sections??.count, {{ enum.case_count }})
+        XCTAssertEqual({{ enum.name_variable }}Sections??.count, 1)
     }
     
     private func indexPath(of {{ enum.name_variable }}: {{ name }}ViewModel.{{ enum.name }}) -> IndexPath? {
