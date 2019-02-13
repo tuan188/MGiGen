@@ -16,7 +16,7 @@ from .template_cmd import TemplateCommand
 
 @subcmd('template', help='create template files for a scene')
 def cmd_template(parser, context, args):
-    parser.epilog = "'list', 'detail', 'form' and 'setting' template require copying the model to the pasteboard before running the command."
+    parser.epilog = "'list', 'detail', 'form' and 'setting' templates require copying the model to the pasteboard before running the command."
     parser.description = 'Create template files for a scene.'
     parser.add_argument(
         'type',
@@ -39,7 +39,7 @@ def cmd_template(parser, context, args):
         '--section',
         required=False,
         action='store_true',
-        help="show the list with header sections ('list' template only)"
+        help="show the list with header sections ('list' and 'setting' templates only)"
     )
     parser.add_argument(
         '--collection',

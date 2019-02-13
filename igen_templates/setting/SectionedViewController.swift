@@ -12,6 +12,9 @@ final class {{ name }}ViewController: UIViewController, BindableType {
 
     var viewModel: {{ name }}ViewModel!
     
+    private typealias {{ name }}{{ enum.name }}SectionModel = SectionModel<String, {{ name }}ViewModel.{{ enum.name }}>
+    private var dataSource: RxTableViewSectionedReloadDataSource<{{ name }}{{ enum.name }}SectionModel>?
+    
     // MARK: - Life Cycle
     
     override func viewDidLoad() {
@@ -41,15 +44,25 @@ final class {{ name }}ViewController: UIViewController, BindableType {
         
         let output = viewModel.transform(input)
         
-        output.{{ enum.name_variable }}List
-            .drive(tableView.rx.items) { tableView, index, {{ enum.name_variable }} in
-                return tableView.dequeueReusableCell(
-                    for: IndexPath(row: index, section: 0),
-                    cellType: {{ enum.name }}Cell.self)
+        let dataSource = RxTableViewSectionedReloadDataSource<{{ name }}{{ enum.name }}SectionModel>(
+            configureCell: { (_, tableView, indexPath, {{ enum.name_variable }}) -> UITableViewCell in
+                return tableView.dequeueReusableCell(for: indexPath, cellType: {{ enum.name }}Cell.self)
                     .then {
                         $0.titleLabel.text = {{ enum.name_variable }}.description
                     }
+            }, titleForHeaderInSection: { dataSource, section in
+                return dataSource.sectionModels[section].model
+            })
+        
+        self.dataSource = dataSource
+        
+        output.{{ enum.name_variable }}Sections
+            .map {
+                $0.map { section in
+                    {{ name }}{{ enum.name }}SectionModel(model: section.title, items: section.{{ enum.name_variable }}List)
+                }
             }
+            .drive(tableView.rx.items(dataSource: dataSource))
             .disposed(by: rx.disposeBag)
         
         output.selected{{ enum.name }}

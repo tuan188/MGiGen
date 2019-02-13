@@ -761,6 +761,7 @@ class Template(object):
         def __init__(self, enum, options, name, project_info):
             super(Template.SettingTemplate, self).__init__(options, name, project_info)
             self.enum = enum
+            self.is_sectioned_list = options['section']
             self.env = Environment(
                 loader=PackageLoader('igen_templates', 'setting'),
                 trim_blocks=True,
@@ -791,10 +792,31 @@ class Template(object):
                 enum=self.enum
             )
 
+        def _create_view_model(self):
+            self._create_file_from_template(
+                class_name=self.name + 'ViewModel',
+                template_file='SectionedViewModel.swift' if self.is_sectioned_list else 'ViewModel.swift'
+            )
+
+        def _create_view_controller(self):
+            self._create_file_from_template(
+                class_name=self.name + 'ViewController',
+                template_file='SectionedViewController.swift' if self.is_sectioned_list else 'ViewController.swift'
+            )
+
         def _create_cell(self):
             self._create_file_from_template(
                 class_name='{}Cell'.format(self.enum.name),
                 template_file='Cell.swift'
+            )
+
+        # =============== UnitTests ===============
+
+        def _create_view_model_tests(self):
+            self._create_file_from_template(
+                class_name='{}ViewModelTests'.format(self.name),
+                template_file='SectionedViewModelTests.swift' if self.is_sectioned_list else 'ViewModelTests.swift',
+                folder='Test'
             )
 
         def _create_cell_tests(self):

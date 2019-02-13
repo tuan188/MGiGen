@@ -32,28 +32,39 @@ final class {{ name }}ViewModelTests: XCTestCase {
         
         disposeBag = DisposeBag()
         
-        output.{{ enum.name_variable }}List.drive().disposed(by: disposeBag)
+        output.{{ enum.name_variable }}Sections.drive().disposed(by: disposeBag)
         output.selected{{ enum.name }}.drive().disposed(by: disposeBag)
     }
     
     func test_loadTriggerInvoked_load{{ enum.name }}List() {
         // act
         loadTrigger.onNext(())
-        let {{ enum.name_variable }}List = try? output.{{ enum.name_variable }}List.toBlocking(timeout: 1).first()
+        let {{ enum.name_variable }}Sections = try? output.{{ enum.name_variable }}Sections.toBlocking(timeout: 1).first()
         
         // assert
-        XCTAssertEqual({{ enum.name_variable }}List??.count, {{ name }}ViewModel.{{ enum.name }}.allCases.count)
+        XCTAssertEqual({{ enum.name_variable }}Sections??.count, 1)
     }
     
-    private func indexPath(of {{ enum.name_variable }}: {{ name }}ViewModel.{{ enum.name }}) -> IndexPath {
-        return IndexPath(row: {{ enum.name_variable }}.rawValue, section: 0)
+    private func indexPath(of {{ enum.name_variable }}: {{ name }}ViewModel.{{ enum.name }}) -> IndexPath? {
+        let {{ enum.name_variable }}Sections = viewModel.{{ enum.name_variable }}Sections()
+        for (section, {{ enum.name_variable }}Section) in {{ enum.name_variable }}Sections.enumerated() {
+            for (row, a{{ enum.name }}) in {{ enum.name_variable }}Section.{{ enum.name_variable }}List.enumerated() {
+                if a{{ enum.name }} == {{ enum.name_variable }} { // swiftlint:disable:this for_where
+                    return IndexPath(row: row, section: section)
+                }
+            }
+        }
+        return nil
     }
 
 {% for menu_case in enum.cases_title %}
     func test_select{{ enum.name }}TriggerInvoked_to{{ menu_case }}() {
         // act
         loadTrigger.onNext(())
-        let indexPath = self.indexPath(of: .{{ enum.cases[loop.index0] }})
+        guard let indexPath = indexPath(of: .{{ enum.cases[loop.index0] }}) else {
+            XCTFail()
+            return
+        }
         select{{ enum.name }}Trigger.onNext(indexPath)
         
         // assert
