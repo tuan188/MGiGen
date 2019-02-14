@@ -14,9 +14,9 @@ final class {{ name }}ViewModelTests: XCTestCase {
     
     private var disposeBag: DisposeBag!
     
-{% for p in properties %}
+    {% for p in properties %}
     private let {{ p.name }}Trigger = PublishSubject<{{ p.type.name }}>()
-{% endfor %}
+    {% endfor %}
 
     private let loadTrigger = PublishSubject<Void>()
     private let {{ submit }}Trigger = PublishSubject<Void>()
@@ -44,12 +44,12 @@ final class {{ name }}ViewModelTests: XCTestCase {
         
         disposeBag = DisposeBag()
 
-    {% for p in properties %}
+        {% for p in properties %}
         output.{{ p.name }}.drive().disposed(by: disposeBag)
-    {% endfor %}
-    {% for p in properties %}
+        {% endfor %}
+        {% for p in properties %}
         output.{{ p.name }}Validation.drive().disposed(by: disposeBag)
-    {% endfor %}
+        {% endfor %}
         output.{{ submit }}Enabled.drive().disposed(by: disposeBag)
         output.{{ submit }}.drive().disposed(by: disposeBag)
         output.cancel.drive().disposed(by: disposeBag)
@@ -60,14 +60,14 @@ final class {{ name }}ViewModelTests: XCTestCase {
     func test_loadTriggerInvoked_show{{ model_name }}() {
         // act
         loadTrigger.onNext(())
-    {% for p in properties %}
+        {% for p in properties %}
         let {{ p.name }} = try? output.{{ p.name }}.toBlocking(timeout: 1).first()
-    {% endfor %}
+        {% endfor %}
         
         // assert
-    {% for p in properties %}
+        {% for p in properties %}
         XCTAssertEqual({{ p.name }}, {{ model_variable }}.{{ p.name }})
-    {% endfor %}
+        {% endfor %}
     }
     
     func test_loadTriggerInvoked_enable_{{ submit }}_byDefault() {
@@ -79,10 +79,10 @@ final class {{ name }}ViewModelTests: XCTestCase {
         XCTAssertEqual({{ submit }}Enabled, true)
     }
     
-{% for p in properties %}
+    {% for p in properties %}
     func test_{{ p.name }}TriggerInvoked_validate{{ p.name_title }}() {
         // act
-        {{ p.name }}Trigger.onNext({{ p.type.default_value }})
+        {{ p.name }}Trigger.onNext({{ p.type.mock_value }})
         {{ submit }}Trigger.onNext(())
         
         // assert
@@ -94,22 +94,22 @@ final class {{ name }}ViewModelTests: XCTestCase {
         useCase.validate{{ p.name_title }}ReturnValue = ValidationResult.invalid([TestError()])
         
         // act
-    {% for p in properties %}
-        {{ p.name }}Trigger.onNext({{ p.type.default_value }})
-    {% endfor %}
+        {% for p in properties %}
+        {{ p.name }}Trigger.onNext({{ p.type.mock_value }})
+        {% endfor %}
         {{ submit }}Trigger.onNext(())
         let {{ submit }}Enabled = try? output.{{ submit }}Enabled.toBlocking(timeout: 1).first()
         
         // assert
         XCTAssertEqual({{ submit }}Enabled, false)
     } {{ '\n' if not loop.last }}
-{% endfor %}
+    {% endfor %}
     
     func test_enable_{{ submit }}() {
         // act
-    {% for p in properties %}
-        {{ p.name }}Trigger.onNext({{ p.type.default_value }})
-    {% endfor %}
+        {% for p in properties %}
+        {{ p.name }}Trigger.onNext({{ p.type.mock_value }})
+        {% endfor %}
         {{ submit }}Trigger.onNext(())
         let {{ submit }}Enabled = try? output.{{ submit }}Enabled.toBlocking(timeout: 1).first()
         
@@ -119,14 +119,14 @@ final class {{ name }}ViewModelTests: XCTestCase {
     
     func test_{{ submit }}TriggerInvoked_not_{{ submit }}() {
         // arrange
-    {% if properties %}
+        {% if properties %}
         useCase.validate{{ properties[0].name_title }}ReturnValue = ValidationResult.invalid([TestError()])
-    {% endif %}
+        {% endif %}
 
         // act
-    {% for p in properties %}
-        {{ p.name }}Trigger.onNext({{ p.type.default_value }})
-    {% endfor %}
+        {% for p in properties %}
+        {{ p.name }}Trigger.onNext({{ p.type.mock_value }})
+        {% endfor %}
         {{ submit }}Trigger.onNext(())
         
         // assert
@@ -135,9 +135,9 @@ final class {{ name }}ViewModelTests: XCTestCase {
     
     func test_{{ submit }}TriggerInvoked_{{ submit }}() {
         // act
-    {% for p in properties %}
-        {{ p.name }}Trigger.onNext({{ p.type.default_value }})
-    {% endfor %}
+        {% for p in properties %}
+        {{ p.name }}Trigger.onNext({{ p.type.mock_value }})
+        {% endfor %}
         {{ submit }}Trigger.onNext(())
         
         // assert
@@ -151,9 +151,9 @@ final class {{ name }}ViewModelTests: XCTestCase {
         useCase.{{ submit }}ReturnValue = {{ submit }}ReturnValue
         
         // act
-    {% for p in properties %}
-        {{ p.name }}Trigger.onNext({{ p.type.default_value }})
-    {% endfor %}
+        {% for p in properties %}
+        {{ p.name }}Trigger.onNext({{ p.type.mock_value }})
+        {% endfor %}
         {{ submit }}Trigger.onNext(())
         {{ submit }}ReturnValue.onError(TestError())
         let error = try? output.error.toBlocking(timeout: 1).first()

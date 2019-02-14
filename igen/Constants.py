@@ -5,7 +5,17 @@ SWIFT_TYPES_DEFAULT_VALUES = {
     'Bool': 'false',
     'String': '""',
     'Double': '0.0',
-    'Float': '0.0',
+    'Float': 'Float(0.0)',
+    'Date': 'Date()',
+    'Void': '()'
+}
+
+SWIFT_TYPES_MOCK_VALUES = {
+    'Int': '1',
+    'Bool': 'true',
+    'String': '"foobar"',
+    'Double': '1.0',
+    'Float': 'Float(1.0)',
     'Date': 'Date()',
     'Void': '()'
 }

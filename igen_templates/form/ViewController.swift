@@ -7,21 +7,21 @@ final class {{ name }}ViewController: UITableViewController, BindableType {
 
     @IBOutlet weak var cancelButton: UIBarButtonItem!
     @IBOutlet weak var {{ submit }}Button: UIBarButtonItem!
-{% for p in properties %}
+    {% for p in properties %}
     {% if p.type.name == 'String' %}
     @IBOutlet weak var nameTextField: UITextField!
     {% endif %}
-{% endfor %}
+    {% endfor %}
 
     // MARK: - Properties
 
     var viewModel: {{ name }}ViewModel!
 
-{% for p in properties %}
+    {% for p in properties %}
     {% if p.type.name != 'String' %}
-    fileprivate let {{ p.name }}Trigger = PublishSubject<{{ p.type.name }}>()
+    private let {{ p.name }}Trigger = PublishSubject<{{ p.type.name }}>()
     {% endif %}
-{% endfor %}
+    {% endfor %}
 
     // MARK: - Life Cycle
 
@@ -43,13 +43,13 @@ final class {{ name }}ViewController: UITableViewController, BindableType {
     func bindViewModel() {
         let input = {{ name }}ViewModel.Input(
             loadTrigger: Driver.just(()),
-        {% for p in properties %}
+            {% for p in properties %}
             {% if p.type.name == 'String' %}
             {{ p.name }}Trigger: {{ p.name }}TextField.rx.text.orEmpty.asDriver(),
             {% else %}
             {{ p.name }}Trigger: {{ p.name }}Trigger.asDriverOnErrorJustComplete(),
             {% endif %}
-        {% endfor %}
+            {% endfor %}
             {{ submit }}Trigger: {{ submit }}Button.rx.tap
                 .throttle(0.5, scheduler: MainScheduler.instance)
                 .asDriverOnErrorJustComplete(),
@@ -60,16 +60,16 @@ final class {{ name }}ViewController: UITableViewController, BindableType {
 
         let output = viewModel.transform(input)
         
-    {% for p in properties %}
+        {% for p in properties %}
         output.{{ p.name }}
             .drive({{ (p.name + 'TextField.rx.text') if p.type.name == 'String'}})
             .disposed(by: rx.disposeBag)
-    {% endfor %}
-    {% for p in properties %}
+        {% endfor %}
+        {% for p in properties %}
         output.{{ p.name }}Validation
             .drive({{ p.name }}ValidatorBinder)
             .disposed(by: rx.disposeBag)
-    {% endfor %}
+        {% endfor %}
         output.{{ submit }}Enabled
             .drive({{ submit }}Button.rx.isEnabled)
             .disposed(by: rx.disposeBag)
@@ -91,13 +91,13 @@ final class {{ name }}ViewController: UITableViewController, BindableType {
 
 // MARK: - Binders
 extension {{ name }}ViewController {
-{% for p in properties %}
+    {% for p in properties %}
     var {{ p.name }}ValidatorBinder: Binder<ValidationResult> {
         return Binder(self) { vc, validation in
             
         }
     } {{ '\n' if not loop.last }}
-{% endfor %}
+    {% endfor %}
 }
 
 // MARK: - StoryboardSceneBased

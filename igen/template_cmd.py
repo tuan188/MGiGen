@@ -23,7 +23,7 @@ class TemplateCommand(Command):
         project_info = ProjectInfo(project, developer, company)
         if self.template_name == Template.TemplateType.BASE:
             template = Template.BaseTemplate(self.options, self.scene_name, project_info)
-            template.create_files()
+            output_path = template.create_files()
         elif self.template_name == Template.TemplateType.LIST:
             model_text = pasteboard_read()
             try:
@@ -32,7 +32,7 @@ class TemplateCommand(Command):
                 print("The model in the pasteboard is invalid.")
                 exit(1)
             template = Template.ListTemplate(model, self.options, self.scene_name, project_info)
-            template.create_files()
+            output_path = template.create_files()
         elif self.template_name == Template.TemplateType.DETAIL:
             model_text = pasteboard_read()
             try:
@@ -44,10 +44,10 @@ class TemplateCommand(Command):
                 template = Template.StaticDetailTemplate(model, self.options, self.scene_name, project_info)
             else:
                 template = Template.DetailTemplate(model, self.options, self.scene_name, project_info)
-            template.create_files()
+            output_path = template.create_files()
         elif self.template_name == Template.TemplateType.SKELETON:
-            template = Template.SkeletonTemplate(self.scene_name, project_info)
-            template.create_files()
+            template = Template.SkeletonTemplate(self.options, self.scene_name, project_info)
+            output_path = template.create_files()
         elif self.template_name == Template.TemplateType.FORM:
             model_text = pasteboard_read()
             try:
@@ -55,11 +55,14 @@ class TemplateCommand(Command):
             except:
                 print("The model in the pasteboard is invalid.")
                 exit(1)
-            template = Template.FormTemplate(model, self.options, self.scene_name, project_info)
-            template.create_files()
+            if self.options['dynamic']:
+                template = Template.DynamicFormTemplate(model, self.options, self.scene_name, project_info)
+            else:
+                template = Template.FormTemplate(model, self.options, self.scene_name, project_info)
+            output_path = template.create_files()
         elif self.template_name == Template.TemplateType.LOGIN:
             template = Template.LoginTemplate(self.options, self.scene_name, project_info)
-            template.create_files()
+            output_path = template.create_files()
         elif self.template_name == Template.TemplateType.SETTING:
             enum_text = pasteboard_read()
             try:
@@ -68,16 +71,13 @@ class TemplateCommand(Command):
                 print("The enum in the pasteboard is invalid.")
                 exit(1)
             template = Template.SettingTemplate(enum, self.options, self.scene_name, project_info)
-            template.create_files()
+            output_path = template.create_files()
         else:
             print("Invalid template type.")
             exit(1)
-        output_path = ConfigCommand().output_path()
-        if output_path is None:
-            output_path = '.'
-        targetDirectory = "{}/{}".format(output_path, self.scene_name)
-        try:
-            call(["open", targetDirectory])
-        except Exception as e:
-            print(e)
-            pass
+        if output_path is not None:
+            try:
+                call(["open", output_path])
+            except Exception as e:
+                print(e)
+                pass

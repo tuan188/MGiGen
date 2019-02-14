@@ -8,20 +8,20 @@ struct {{ name }}ViewModel {
 extension {{ name }}ViewModel: ViewModelType {
     struct Input {
         let loadTrigger: Driver<Void>
-    {% for p in properties %}
+        {% for p in properties %}
         let {{ p.name }}Trigger: Driver<{{ p.type.name }}>
-    {% endfor %}
+        {% endfor %}
         let {{ submit }}Trigger: Driver<Void>
         let cancelTrigger: Driver<Void>
     }
 
     struct Output {
-    {% for p in properties %}
+        {% for p in properties %}
         let {{ p.name }}: Driver<{{ p.type.name }}>
-    {% endfor %}
-    {% for p in properties %}
+        {% endfor %}
+        {% for p in properties %}
         let {{ p.name }}Validation: Driver<ValidationResult>
-    {% endfor %}
+        {% endfor %}
         let {{ submit }}Enabled: Driver<Bool>
         let {{ submit }}: Driver<Void>
         let cancel: Driver<Void>
@@ -36,7 +36,7 @@ extension {{ name }}ViewModel: ViewModelType {
         // Properties
         {% for p in properties %}
         let {{ p.name }} = input.loadTrigger
-            .map { self.{{ model_variable }}.{{ p.name }} }
+            .map { self.{{ model_variable }}.{{ p.name }} }{{ '\n' if not loop.last }}
         {% endfor %}
 
         // Validations
@@ -48,13 +48,13 @@ extension {{ name }}ViewModel: ViewModelType {
             .map { $0.0 }    
             .map { {{ p.name }} -> ValidationResult in
                 self.useCase.validate({{ p.name }}: {{ p.name }})
-            }
+            }{{ '\n' if not loop.last }}
         {% endfor %}
 
         let {{ submit }}Enabled = Driver.combineLatest([
-            {% for p in properties %}
+                {% for p in properties %}
                 {{ p.name }}Validation{{ ',' if not loop.last }}
-            {% endfor %}
+                {% endfor %}
             ])
             .map {
                 $0.reduce(true) { result, validation -> Bool in
@@ -67,16 +67,16 @@ extension {{ name }}ViewModel: ViewModelType {
             .withLatestFrom({{ submit }}Enabled)
             .filter { $0 }
             .withLatestFrom(Driver.combineLatest(
-            {% for p in properties %}
+                {% for p in properties %}
                 input.{{ p.name }}Trigger{{ ',' if not loop.last }}
-            {% endfor %}
+                {% endfor %}
             ))
             .flatMapLatest { params -> Driver<{{ model_name }}> in
                 let ({% for p in properties %}{{ p.name }}{{ ', ' if not loop.last }}{% endfor %}) = params
                 let {{ model_variable }} = self.{{ model_variable }}.with {
-                {% for p in properties %}
+                    {% for p in properties %}
                     $0.{{ p.name }} = {{ p.name }}
-                {% endfor %}
+                    {% endfor %}
                 }
                 return self.useCase.{{ submit }}({{ model_variable }})
                     .trackError(errorTracker)
@@ -97,12 +97,12 @@ extension {{ name }}ViewModel: ViewModelType {
         let loading = activityIndicator.asDriver()
 
         return Output(
-        {% for p in properties %}
+            {% for p in properties %}
             {{ p.name }}: {{ p.name }},
-        {% endfor %}
-        {% for p in properties %}
+            {% endfor %}
+            {% for p in properties %}
             {{ p.name }}Validation: {{ p.name }}Validation,
-        {% endfor %}
+            {% endfor %}
             {{ submit }}Enabled: {{ submit }}Enabled,
             {{ submit }}: {{ submit }},
             cancel: cancel,

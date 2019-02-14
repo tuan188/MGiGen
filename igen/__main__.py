@@ -45,7 +45,7 @@ def cmd_template(parser, context, args):
         '--collection',
         required=False,
         action='store_true',
-        help="use a UICollectionView instead of a UITableView ('list' template only)"
+        help="use UICollectionView instead of UITableView ('list' template only)"
     )
     parser.add_argument(
         '--static',
@@ -58,6 +58,12 @@ def cmd_template(parser, context, args):
         required=False,
         help="set the name of the submit action ('form' template only)"
     )
+    parser.add_argument(
+        '--dynamic',
+        required=False,
+        action='store_true',
+        help="use dynamic form instead of static form ('form' template only)"
+    )
     args = parser.parse_args(args)
     template_name = args.type[0]
     scene_name = args.name[0]
@@ -66,7 +72,8 @@ def cmd_template(parser, context, args):
         'section': args.section,
         'collection': args.collection,
         'static': args.static,
-        'submit': args.submit
+        'submit': args.submit,
+        'dynamic': args.dynamic
     }
     TemplateCommand(template_name, scene_name, options).create_files()
 
