@@ -123,7 +123,7 @@ class Template(object):
             self.case_count = len(cases)
 
     def parse_model(self, model_text):
-        model_regex = re.compile("(?:struct|class) (\w+) {((.|\n)*)}")
+        model_regex = re.compile("(?:struct|class|extension) (\w+)(?::\s)*(?:\w+,?\s?)* {([^}]+)")
         match = model_regex.search(model_text)
         model_name = match.group(1)
         property_block = match.group(2)

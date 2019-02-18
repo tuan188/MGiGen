@@ -58,7 +58,7 @@ class Model(object):
     def name_and_properties(self):
         try:
             str = self.model_text
-            block_regex = re.search("(?:struct|class) (\w+) {([^}]+)", str)
+            block_regex = re.search("(?:struct|class|extension) (\w+)(?::\s)*(?:\w+,?\s?)* {([^}]+)", str)
             model_name = block_regex.group(1)
             block = block_regex.group(2)
             properties_regex = re.compile("(let|var) (\w+): (.*)")
