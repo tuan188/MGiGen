@@ -22,7 +22,7 @@ final class {{ name }}ViewModelTests: XCTestCase {
         super.setUp()
         navigator = {{ name }}NavigatorMock()
         useCase = {{ name }}UseCaseMock()
-        viewModel = {{ name }}ViewModel(navigator: navigator, useCase: useCase, product: Product())
+        viewModel = {{ name }}ViewModel(navigator: navigator, useCase: useCase, {{ model_variable }}: {{ model_name }}())
         
         input = {{ name }}ViewModel.Input(
             loadTrigger: loadTrigger.asDriverOnErrorJustComplete(),
