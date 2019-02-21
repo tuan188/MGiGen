@@ -58,13 +58,17 @@ class Model(object):
     def name_and_properties(self):
         try:
             str = self.model_text
-            block_regex = re.search("(?:struct|class|extension) (\w+)(?::\s)*(?:\w+,?\s?)* {([^}]+)", str)
+            block_regex = re.search(
+                r'(?:struct|class|extension) (\w+)(?::\s)*(?:\w+,?\s?)* {([^}]+)',
+                str
+            )
             model_name = block_regex.group(1)
             block = block_regex.group(2)
-            properties_regex = re.compile("(let|var) (\w+): (.*)")
-            properties = [Model.Property(p[1], p[2]) for p in properties_regex.findall(block)]
+            properties_regex = re.compile(r'(let|var) (\w+): (.*)')
+            properties = [Model.Property(p[1], p[2])
+                          for p in properties_regex.findall(block)]
             return (model_name, properties)
-        except:
+        except Exception:
             print("The model in the pasteboard is invalid.")
             exit(1)
 

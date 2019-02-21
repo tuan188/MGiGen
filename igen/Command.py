@@ -19,7 +19,8 @@ class Command(object):
 
     @classmethod
     def long_description(cls):
-        return format("   " + cls.name(), Command.TAB_LENGTH) + cls.description()
+        return (format("   " + cls.name(), Command.TAB_LENGTH)
+                + cls.description())
 
     @classmethod
     def help(cls):

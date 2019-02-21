@@ -5,7 +5,9 @@ import os
 from jinja2 import Environment, PackageLoader
 from datetime import datetime
 from .str_helpers import upper_first_letter, lower_first_letter
-from .constants import SWIFT_TYPES_DEFAULT_VALUES, SWIFT_TYPES_MOCK_VALUES, SWIFT_TYPES
+from .constants import (SWIFT_TYPES_DEFAULT_VALUES,
+                        SWIFT_TYPES_MOCK_VALUES,
+                        SWIFT_TYPES)
 from .file_helpers import create_file
 from .config_cmd import ConfigCommand
 
@@ -30,7 +32,7 @@ class Template(object):
         def __init__(self, property):
             super(Template.Property, self).__init__()
             self.property = property
-            property_regex = re.compile("(?:let|var) (\w+): (.*)")
+            property_regex = re.compile(r'(?:let|var) (\w+): (.*)')
             mo = property_regex.search(property)
             self.name = mo.group(1)
             self.name_title = upper_first_letter(self.name)
@@ -123,20 +125,23 @@ class Template(object):
             self.case_count = len(cases)
 
     def parse_model(self, model_text):
-        model_regex = re.compile("(?:struct|class|extension) (\w+)(?::\s)*(?:\w+,?\s?)* {([^}]+)")
+        model_regex = re.compile(
+            r'(?:struct|class|extension) (\w+)(?::\s)*(?:\w+,?\s?)* {([^}]+)'
+        )
         match = model_regex.search(model_text)
         model_name = match.group(1)
         property_block = match.group(2)
-        property_regex = re.compile("(?:let|var) (\w+): (.*)")
-        properties = [Template.Property(m.group()) for m in property_regex.finditer(property_block)]
+        property_regex = re.compile(r'(?:let|var) (\w+): (.*)')
+        properties = [Template.Property(m.group())
+                      for m in property_regex.finditer(property_block)]
         return Template.Model(model_name, properties)
 
     def parse_enum(self, enum_text):
-        enum_regex = re.compile("enum (\w+)[^{]* {([\d\D]*)}")
+        enum_regex = re.compile(r'enum (\w+)[^{]* {([\d\D]*)}')
         match = enum_regex.search(enum_text)
         enum_name = match.group(1)
         enum_block = match.group(2)
-        regex = re.compile('case (\w+)')
+        regex = re.compile(r'case (\w+)')
         cases = [m.group(1) for m in regex.finditer(enum_block)]
         return Template.Enum(enum_name, cases)
 
@@ -190,20 +195,28 @@ class Template(object):
             return output_path
 
         def _make_dirs(self):
-            current_directory = os.getcwd() if self.output_path == '.' else self.output_path
+            current_directory = os.getcwd() if self.output_path == '.' \
+                                            else self.output_path
             main_directory = self._make_dir(current_directory, self.name)
             self._make_dir(main_directory, 'Test')
             return main_directory
 
         def _make_dir(self, current_directory, new_directory_name):
-            directory = os.path.join(current_directory, r'{}'.format(new_directory_name))
+            directory = os.path.join(current_directory,
+                                     r'{}'.format(new_directory_name))
             try:
                 os.makedirs(directory)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             return directory
 
-        def _create_file_from_template(self, class_name, file_extension="swift", template_file=None, folder=None, has_file_header=True):
+        def _create_file_from_template(self,
+                                       class_name,
+                                       file_extension="swift",
+                                       template_file=None,
+                                       folder=None,
+                                       has_file_header=True):
             if template_file is None:
                 if file_extension:
                     template_file = '{}.{}'.format(class_name, file_extension)
@@ -306,7 +319,11 @@ class Template(object):
     class ListTemplate(BaseTemplate):
 
         def __init__(self, model, options, name, project_info):
-            super(Template.ListTemplate, self).__init__(options, name, project_info)
+            super(Template.ListTemplate, self).__init__(
+                options,
+                name,
+                project_info
+            )
             self.model = model
             self.is_sectioned_list = options['section']
             self.is_collection = options['collection']
@@ -349,7 +366,9 @@ class Template(object):
         def _create_view_model(self):
             self._create_file_from_template(
                 class_name=self.name + 'ViewModel',
-                template_file='SectionedViewModel.swift' if self.is_sectioned_list else 'ViewModel.swift'
+                template_file='SectionedViewModel.swift'
+                              if self.is_sectioned_list
+                              else 'ViewModel.swift'
             )
 
         def _create_item_view_model(self):
@@ -378,7 +397,9 @@ class Template(object):
         def _create_table_view_cell(self):
             self._create_file_from_template(
                 class_name=self.model_name + 'Cell',
-                template_file='CollectionViewCell.swift' if self.is_collection else 'TableViewCell.swift'
+                template_file='CollectionViewCell.swift'
+                              if self.is_collection
+                              else 'TableViewCell.swift'
             )
 
         # =============== UnitTests ===============
@@ -386,14 +407,18 @@ class Template(object):
         def _create_view_model_tests(self):
             self._create_file_from_template(
                 class_name=self.name + 'ViewModelTests',
-                template_file='SectionedViewModelTests.swift' if self.is_sectioned_list else 'ViewModelTests.swift',
+                template_file='SectionedViewModelTests.swift'
+                              if self.is_sectioned_list
+                              else 'ViewModelTests.swift',
                 folder='Test'
             )
 
         def _create_view_controller_tests(self):
             self._create_file_from_template(
                 class_name=self.name + 'ViewControllerTests',
-                template_file='CollectionViewControllerTests.swift' if self.is_collection else 'TableViewControllerTests.swift',
+                template_file='CollectionViewControllerTests.swift'
+                              if self.is_collection
+                              else 'TableViewControllerTests.swift',
                 folder='Test'
             )
 
@@ -408,7 +433,11 @@ class Template(object):
 
     class DetailTemplate(BaseTemplate):
         def __init__(self, model, options, name, project_info):
-            super(Template.DetailTemplate, self).__init__(options, name, project_info)
+            super(Template.DetailTemplate, self).__init__(
+                options,
+                name,
+                project_info
+            )
             self.model = model
             self.model_name = self.model.name
             self.model_variable = lower_first_letter(self.model_name)
@@ -450,7 +479,10 @@ class Template(object):
                 self._create_cell(p)
 
         def _create_cell(self, property):
-            class_name = '{}{}Cell'.format(self.model_name, property.name_title)
+            class_name = '{}{}Cell'.format(
+                self.model_name,
+                property.name_title
+            )
             template = self.env.get_template('Cell.swift')
             content = self._file_header(class_name)
             content += template.render(
@@ -536,7 +568,11 @@ class Template(object):
     class SkeletonTemplate(BaseTemplate):
 
         def __init__(self, options, name, project_info):
-            super(Template.SkeletonTemplate, self).__init__(options, name, project_info)
+            super(Template.SkeletonTemplate, self).__init__(
+                options,
+                name,
+                project_info
+            )
             self.env = Environment(
                 loader=PackageLoader('igen_templates', 'skeleton'),
                 trim_blocks=True,
@@ -544,7 +580,8 @@ class Template(object):
             )
 
         def _make_dirs(self):
-            current_directory = os.getcwd() if self.output_path == '.' else self.output_path
+            current_directory = os.getcwd() if self.output_path == '.' \
+                                            else self.output_path
             main_directory = self._make_dir(current_directory, self.name)
             self._make_dir(main_directory, "Assembler")
             self._make_dir(main_directory, "Extensions")
@@ -718,11 +755,16 @@ class Template(object):
 
     class FormTemplate(BaseTemplate):
         def __init__(self, model, options, name, project_info):
-            super(Template.FormTemplate, self).__init__(options, name, project_info)
+            super(Template.FormTemplate, self).__init__(
+                options,
+                name,
+                project_info
+            )
             self.model = model
             self.model_name = self.model.name
             self.model_variable = lower_first_letter(self.model_name)
-            self.submit = lower_first_letter(options['submit']) if options['submit'] else 'submit'
+            self.submit = lower_first_letter(options['submit']) \
+                if options['submit'] else 'submit'
             self.env = Environment(
                 loader=PackageLoader('igen_templates', 'form'),
                 trim_blocks=True,
@@ -759,11 +801,16 @@ class Template(object):
 
     class DynamicFormTemplate(BaseTemplate):
         def __init__(self, model, options, name, project_info):
-            super(Template.DynamicFormTemplate, self).__init__(options, name, project_info)
+            super(Template.DynamicFormTemplate, self).__init__(
+                options,
+                name,
+                project_info
+            )
             self.model = model
             self.model_name = self.model.name
             self.model_variable = lower_first_letter(self.model_name)
-            self.submit = lower_first_letter(options['submit']) if options['submit'] else 'submit'
+            self.submit = lower_first_letter(options['submit']) \
+                if options['submit'] else 'submit'
             self.env = Environment(
                 loader=PackageLoader('igen_templates', 'form'),
                 trim_blocks=True,
@@ -859,7 +906,11 @@ class Template(object):
 
     class LoginTemplate(BaseTemplate):
         def __init__(self, options, name, project_info):
-            super(Template.LoginTemplate, self).__init__(options, name, project_info)
+            super(Template.LoginTemplate, self).__init__(
+                options,
+                name,
+                project_info
+            )
             self.env = Environment(
                 loader=PackageLoader('igen_templates', 'login'),
                 trim_blocks=True,
@@ -885,7 +936,11 @@ class Template(object):
 
     class SettingTemplate(BaseTemplate):
         def __init__(self, enum, options, name, project_info):
-            super(Template.SettingTemplate, self).__init__(options, name, project_info)
+            super(Template.SettingTemplate, self).__init__(
+                options,
+                name,
+                project_info
+            )
             self.enum = enum
             self.is_sectioned_list = options['section']
             self.env = Environment(
@@ -922,13 +977,17 @@ class Template(object):
         def _create_view_model(self):
             self._create_file_from_template(
                 class_name=self.name + 'ViewModel',
-                template_file='SectionedViewModel.swift' if self.is_sectioned_list else 'ViewModel.swift'
+                template_file='SectionedViewModel.swift'
+                              if self.is_sectioned_list
+                              else 'ViewModel.swift'
             )
 
         def _create_view_controller(self):
             self._create_file_from_template(
                 class_name=self.name + 'ViewController',
-                template_file='SectionedViewController.swift' if self.is_sectioned_list else 'ViewController.swift'
+                template_file='SectionedViewController.swift'
+                              if self.is_sectioned_list
+                              else 'ViewController.swift'
             )
 
         def _create_cell(self):
@@ -942,7 +1001,9 @@ class Template(object):
         def _create_view_model_tests(self):
             self._create_file_from_template(
                 class_name='{}ViewModelTests'.format(self.name),
-                template_file='SectionedViewModelTests.swift' if self.is_sectioned_list else 'ViewModelTests.swift',
+                template_file='SectionedViewModelTests.swift'
+                              if self.is_sectioned_list
+                              else 'ViewModelTests.swift',
                 folder='Test'
             )
 

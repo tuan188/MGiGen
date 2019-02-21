@@ -43,9 +43,10 @@ class ConfigCommand(Command):
             developer = config['project']['developer']
             company = config['project']['company']
             if print_result:
-                print('Project: {}\nDeveloper: {}\nCompany: {}'.format(project, developer, company))
+                print('Project: {}\nDeveloper: {}\nCompany: {}'
+                      .format(project, developer, company))
             return (project, developer, company)
-        except:
+        except Exception:
             return None
 
     def info(self):
@@ -61,7 +62,7 @@ class ConfigCommand(Command):
             config = configparser.ConfigParser()
             config.read(self.config_file)
             return config['output']['path']
-        except:
+        except Exception:
             return None
 
     def config(self, name, value):

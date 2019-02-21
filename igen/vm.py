@@ -22,10 +22,10 @@ class ViewModel(object):
     @property
     def view_model_name(self):
         try:
-            regex = re.compile("(?:struct|extension) (\w+)ViewModel")
+            regex = re.compile(r'(?:struct|extension) (\w+)ViewModel')
             mo = regex.search(self.vm_text)
             return mo.group(1)
-        except:
+        except Exception:
             print("The ViewModel in the pasteboard is invalid.")
             exit(1)
 
@@ -35,14 +35,20 @@ class ViewModel(object):
             str = self.vm_text
             input_block_regex = re.compile("struct Input {([^}]+)")
             input_block = input_block_regex.search(str).group(1)
-            input_properties_regex = re.compile("let (\w+): Driver<([^>]+)>")
-            input_properties = [ViewModel.Property(p[0], p[1]) for p in input_properties_regex.findall(input_block)]
+            input_properties_regex = re.compile(r'let (\w+): Driver<([^>]+)>')
+            input_properties = [
+                ViewModel.Property(p[0], p[1])
+                for p in input_properties_regex.findall(input_block)
+            ]
             output_block_regex = re.compile("struct Output {([^}]+)")
             output_block = output_block_regex.search(str).group(1)
-            output_properties_regex = re.compile("let (\w+): Driver<([^>]+)>")
-            output_properties = [ViewModel.Property(p[0], p[1]) for p in output_properties_regex.findall(output_block)]
+            output_properties_regex = re.compile(r'let (\w+): Driver<([^>]+)>')
+            output_properties = [
+                ViewModel.Property(p[0], p[1])
+                for p in output_properties_regex.findall(output_block)
+            ]
             return (input_properties, output_properties)
-        except:
+        except Exception:
             print("The ViewModel in the pasteboard is invalid.")
             exit(1)
 

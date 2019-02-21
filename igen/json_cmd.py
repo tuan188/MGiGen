@@ -17,7 +17,9 @@ class JSONCommand(Command):
         self.json_text = json_text
 
     def create_models(self, print_result, return_classes):
-        output = JSON(self.model_name, self.json_text).create_models(return_classes)
+        output = JSON(self.model_name, self.json_text).create_models(
+            return_classes
+        )
         if print_result:
             print()
             print(output)
@@ -46,7 +48,8 @@ class JSON(object):
 
         @property
         def is_user_type(self):
-            return self.is_optional and self.original_type_name() not in SWIFT_TYPES
+            return self.is_optional \
+                   and self.original_type_name() not in SWIFT_TYPES
 
         @property
         def is_optional(self):
@@ -87,7 +90,9 @@ class JSON(object):
                 trim_blocks=True,
                 lstrip_blocks=True
             )
-            template = env.get_template("JSON.swift" if not return_classes else "JSONClass.swift")
+            template = env.get_template(
+                "JSON.swift" if not return_classes else "JSONClass.swift"
+            )
             content = template.render(
                 name=self.name,
                 properties=self.properties
@@ -100,12 +105,14 @@ class JSON(object):
 
     def create_models(self, return_classes):
         try:
-            dictionary = json.loads(self.json_text, object_pairs_hook=OrderedDict)
+            dictionary = json.loads(self.json_text,
+                                    object_pairs_hook=OrderedDict)
             models = []
             self._extract_model(self.model_name, dictionary, models)
-            output = "\n\n".join([model.model(return_classes) for model in models])
+            output = "\n\n".join([model.model(return_classes)
+                                  for model in models])
             return output
-        except:
+        except Exception:
             print("The JSON in the pasteboard is invalid.")
             exit(1)
 
@@ -122,7 +129,11 @@ class JSON(object):
                 singular_var_name = plural_to_singular(var_name)
                 var_type = "[{}]".format(singular_var_name.title())
                 if len(value) > 0:
-                    self._extract_model(singular_var_name.title(), value[0], models)
+                    self._extract_model(
+                        singular_var_name.title(),
+                        value[0],
+                        models
+                    )
                 else:
                     var_type = "[Any]"
             else:

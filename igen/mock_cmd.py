@@ -45,7 +45,9 @@ class Mock(object):
                 mo = regex.search(self.return_type)
                 observable_type = mo.group(1)
                 if observable_type in SWIFT_TYPES:
-                    return_value = 'Driver.just({})'.format(SWIFT_TYPES_DEFAULT_VALUES[observable_type])
+                    return_value = 'Driver.just({})'.format(
+                        SWIFT_TYPES_DEFAULT_VALUES[observable_type]
+                    )
                 else:
                     return_value = 'Driver.empty()'
             elif self.return_type.startswith('Observable'):
@@ -53,7 +55,9 @@ class Mock(object):
                 mo = regex.search(self.return_type)
                 observable_type = mo.group(1)
                 if observable_type in SWIFT_TYPES:
-                    return_value = 'Observable.just({})'.format(SWIFT_TYPES_DEFAULT_VALUES[observable_type])
+                    return_value = 'Observable.just({})'.format(
+                        SWIFT_TYPES_DEFAULT_VALUES[observable_type]
+                    )
                 else:
                     return_value = 'Observable.empty()'
             elif self.return_type in SWIFT_TYPES:
@@ -71,7 +75,7 @@ class Mock(object):
         self.protocol_text = protocol_text
 
     def _get_protocol_name(self, str):
-        regex = re.compile('protocol (\w+)')
+        regex = re.compile(r'protocol (\w+)')
         mo = regex.search(str)
         protocol_name = mo.group(1)
         if protocol_name.endswith('Type'):
@@ -91,11 +95,12 @@ class Mock(object):
         try:
             (protocol_name, class_name) = self._get_protocol_name(str)
             is_protocol = True
-        except:
+        except Exception:
             pass
         # get functions
-        func_regex = re.compile('func (\w+)\(.*\)( -> (.*))?')
-        funcs = [Mock.Function(f.group(), f.group(1), f.group(3)) for f in func_regex.finditer(str)]
+        func_regex = re.compile(r'func (\w+)\(.*\)( -> (.*))?')
+        funcs = [Mock.Function(f.group(), f.group(1), f.group(3))
+                 for f in func_regex.finditer(str)]
         if not funcs:
             print('The protocol or functions in the pasteboard is invalid.')
             exit(1)

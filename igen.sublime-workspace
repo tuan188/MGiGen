@@ -1,0 +1,635 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"ca",
+				"_cards"
+			],
+			[
+				"car",
+				"_cards\tstatement"
+			],
+			[
+				"sui",
+				"suits"
+			],
+			[
+				"type",
+				"type_name"
+			],
+			[
+				"file",
+				"file_length"
+			],
+			[
+				"index",
+				"indexPath"
+			],
+			[
+				"case",
+				"cases_title\t(template.py)"
+			],
+			[
+				"cases",
+				"cases_title\t(template.py)"
+			],
+			[
+				"wo",
+				"word"
+			],
+			[
+				"cho",
+				"chomp"
+			],
+			[
+				"ch",
+				"chomp"
+			],
+			[
+				"for",
+				"foreach"
+			],
+			[
+				"fo",
+				"foreach"
+			],
+			[
+				"my",
+				"myList"
+			],
+			[
+				"num",
+				"num2"
+			],
+			[
+				"el",
+				"else"
+			],
+			[
+				"elf",
+				"elsif\tfunc"
+			],
+			[
+				"key",
+				"keys\tfunc *"
+			],
+			[
+				"if",
+				"if\tConditional"
+			],
+			[
+				"readli",
+				"readlines\tfunction"
+			],
+			[
+				"exce",
+				"Exception\tclass"
+			],
+			[
+				"conf",
+				"config_file\tfunction"
+			],
+			[
+				"open",
+				"open\tfunction"
+			],
+			[
+				"try",
+				"try\tTry/Except"
+			],
+			[
+				"oper",
+				"operate"
+			],
+			[
+				"per",
+				"previous_persons"
+			],
+			[
+				"abov",
+				"above_average_numbers"
+			],
+			[
+				"aver",
+				"average_number"
+			],
+			[
+				"nubm",
+				"number2"
+			],
+			[
+				"roc",
+				"rocks"
+			],
+			[
+				"ro",
+				"rocks"
+			],
+			[
+				"plat",
+				"platfrom_name_no_asr"
+			],
+			[
+				"pal",
+				"platfrom_name_no_asr"
+			],
+			[
+				"folder",
+				"folder_name"
+			],
+			[
+				"localti",
+				"local_time"
+			],
+			[
+				"local",
+				"local_time"
+			],
+			[
+				"dir",
+				"dir_name"
+			],
+			[
+				"new",
+				"new_name"
+			],
+			[
+				"fore",
+				"fore\tLoop"
+			],
+			[
+				"out",
+				"out_fh"
+			],
+			[
+				"prin",
+				"print\tfunc *"
+			],
+			[
+				"exis",
+				"exists\tfunc *"
+			],
+			[
+				"def",
+				"defined\tfunc"
+			],
+			[
+				"gree",
+				"greeted_person"
+			],
+			[
+				"gre",
+				"greeted_person"
+			],
+			[
+				"aboe",
+				"above_average_numbers"
+			],
+			[
+				"abo",
+				"above_average_numbers"
+			],
+			[
+				"total",
+				"total_value"
+			],
+			[
+				"max",
+				"maximum"
+			],
+			[
+				"foreach",
+				"foreach\tfunc"
+			],
+			[
+				"shif",
+				"shift\tfunc *"
+			],
+			[
+				"sor",
+				"sorted_names"
+			],
+			[
+				"rever",
+				"reversed_lines"
+			],
+			[
+				"rev",
+				"reverse\tfunc *"
+			],
+			[
+				"foreac",
+				"foreach\tfunc"
+			],
+			[
+				"in",
+				"index"
+			],
+			[
+				"nu",
+				"nums_2"
+			],
+			[
+				"ret",
+				"return_value"
+			],
+			[
+				"Swif",
+				"SWIFT_TYPES"
+			],
+			[
+				"re",
+				"return_type"
+			],
+			[
+				"is",
+				"is_array"
+			],
+			[
+				"p",
+				"property\tNew Property"
+			],
+			[
+				"up",
+				"upper_first_letter"
+			],
+			[
+				"upper",
+				"upper_first_letter\t(str_helpers.py)"
+			],
+			[
+				"video",
+				"videoEntity"
+			],
+			[
+				"entit",
+				"entityId"
+			],
+			[
+				"do",
+				"DownloadJob"
+			],
+			[
+				"jobs",
+				"_jobs"
+			],
+			[
+				"dow",
+				"download"
+			],
+			[
+				"down",
+				"DownloadJob"
+			],
+			[
+				"swi",
+				"switch\tswitch ..."
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				]
+			],
+			[
+				"Packages/Python/Python.sublime-build",
+				""
+			]
+		],
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				],
+				[
+					"Packages/User/Python 3.sublime-build",
+					""
+				]
+			],
+			[
+				"Packages/User/Python 3.sublime-build",
+				""
+			]
+		],
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				],
+				[
+					"Packages/User/python3.sublime-build",
+					""
+				]
+			],
+			[
+				"Packages/User/python3.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"update",
+				"Package Control: Upgrade/Overwrite All Packages"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"swif",
+				"Set Syntax: Swift"
+			],
+			[
+				"py",
+				"Set Syntax: Python"
+			],
+			[
+				"text",
+				"Set Syntax: Plain Text"
+			],
+			[
+				"swi",
+				"Set Syntax: Swift"
+			],
+			[
+				"pack",
+				"Package Control: Remove Package"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 128.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/tuan/Documents/Git/MGiGen",
+		"/Users/tuan/Documents/Git/MGiGen/igen"
+	],
+	"file_history":
+	[
+		"/Users/tuan/Documents/Git/MGiGen/igen/__init__.py",
+		"/Users/tuan/Documents/Git/MGiGen/igen.sublime-project",
+		"/Users/tuan/Library/Application Support/Sublime Text 3/Packages/User/Anaconda.sublime-settings",
+		"/Users/tuan/Desktop/learning.pl",
+		"/Users/tuan/Desktop/uiimage.py",
+		"/Users/tuan/Desktop/test.pl",
+		"/Users/tuan/Desktop/test.py",
+		"/Users/tuan/Documents/Git/MGCleanArchitecture/.swiftlint.yml",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/setting/ViewModelTests.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/setting/CellTests.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/setting/Cell.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/setting/NavigatorMock.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/setting/ViewModel.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/setting/Navigator.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/setting/ViewController.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/setting/UseCase.swift",
+		"/Users/tuan/Documents/Git/rubik/.swiftlint.yml",
+		"/Users/tuan/Documents/Git/MGTools/file_header.pl",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen/config_cmd.py",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen_templates/base/ViewController.swift",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen_templates/list/CollectionViewController.swift",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen_templates/form/ViewModelTests.swift",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen/template.py",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen/file_helpers.py",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen/template_cmd.py",
+		"/Users/tuan/Documents/Git/MGiOSTools/README.md",
+		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen_templates/commands/Mock.swift",
+		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen_templates/form/NavigatorMock.swift",
+		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen_templates/form/UseCaseMock.swift",
+		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen_templates/form/ViewModelTests.swift",
+		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen_templates/list/NavigatorMock.swift",
+		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen_templates/list/SectionedViewModelTests.swift",
+		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen_templates/list/UseCaseMock.swift",
+		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen_templates/list/ViewModelTests.swift",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen.egg-info/PKG-INFO",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen_templates/commands/Mock.swift",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen_templates/form/NavigatorMock.swift",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen_templates/form/UseCaseMock.swift",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen_templates/list/NavigatorMock.swift",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen_templates/list/SectionedViewModelTests.swift",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen_templates/list/ViewModelTests.swift",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen_templates/list/UseCaseMock.swift",
+		"/Users/tuan/Downloads/cwe/cwe.pl",
+		"/Users/tuan/Desktop/tuan.pl",
+		"/Users/tuan/Desktop/test.perl",
+		"/Users/tuan/Desktop/huyen.perl",
+		"/Users/tuan/Library/Application Support/Sublime Text 3/Packages/User/Perl.sublime-build",
+		"/Users/tuan/Desktop/TDD plan.txt",
+		"/Users/tuan/Desktop/swift.Login",
+		"/Users/tuan/Library/Application Support/Sublime Text 3/Packages/User/Python 3.sublime-build",
+		"/Users/tuan/Desktop/tuan.py",
+		"/Users/tuan/Desktop/Eth.xdm",
+		"/Users/tuan/Library/Application Support/Sublime Text 3/Packages/User/python3.sublime-build",
+		"/Users/tuan/Library/Application Support/Sublime Text 3/Packages/User/Python3.sublime-build",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen/__init__.py",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen/api_cmd.py",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen/bind_cmd.py",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen/init_cmd.py",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen/constants.py",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen/json_cmd.py",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen/model.py",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen/test_cmd.py",
+		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen/api_cmd.py",
+		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen/bind_cmd.py",
+		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen/init_cmd.py",
+		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen/json_cmd.py",
+		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen/mock_cmd.py",
+		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen/test_cmd.py",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen/str_helpers.py",
+		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen/template_cmd.py",
+		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen/model.py",
+		"/Users/tuan/Desktop/backup.sh",
+		"/Users/tuan/Desktop/python/practice.py",
+		"/Users/tuan/Documents/Git/MGiOSTools/igen_templates/detail/CellsTests.swift",
+		"/Users/tuan/Desktop/python/igen/igen/__main__.py",
+		"/Users/tuan/Desktop/python/igen/igen/__init__.py",
+		"/Users/tuan/Desktop/python/igen/setup.py",
+		"/Users/tuan/Desktop/python/igen/MANIFEST.in",
+		"/Users/tuan/Desktop/python/igen/igen/igen.py",
+		"/Users/tuan/Desktop/python/igen/install.sh",
+		"/Users/tuan/Desktop/python/igen/README.md"
+	],
+	"find":
+	{
+		"height": 32.0
+	},
+	"find_in_files":
+	{
+		"height": 135.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 32.0
+	},
+	"input":
+	{
+		"height": 56.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 232.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "Packages/User/Python 3.sublime-build",
+	"project": "igen.sublime-project",
+	"replace":
+	{
+		"height": 60.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 255.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
