@@ -59,7 +59,7 @@ class Model(object):
         try:
             str = self.model_text
             block_regex = re.search(
-                r'(?:struct|class|extension) (\w+)(?::\s)*(?:\w+,?\s?)* {([^}]+)',
+                r'(?:struct|class|extension) (\w+)(?:: )*(?:\w+,? ?)* {([^}]+)',
                 str
             )
             model_name = block_regex.group(1)
