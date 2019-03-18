@@ -303,7 +303,16 @@
 			"file": "igen/__main__.py",
 			"settings":
 			{
-				"buffer_size": 7390,
+				"buffer_size": 7326,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "igen/model.py",
+			"settings":
+			{
+				"buffer_size": 2748,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -443,6 +452,7 @@
 	],
 	"file_history":
 	[
+		"/Users/tuan/Documents/Git/MGiGen/README.md",
 		"/Users/tuan/Documents/Git/MGiGen/igen/config_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/model.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/pb.py",
@@ -558,6 +568,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"\\",
 			"config_file",
 			"dict",
 			"cmd_test"
@@ -565,20 +576,20 @@
 		"highlight": true,
 		"in_selection": false,
 		"preserve_case": false,
-		"regex": true,
+		"regex": false,
 		"replace_history":
 		[
 		],
 		"reverse": false,
 		"show_context": true,
-		"use_buffer2": false,
+		"use_buffer2": true,
 		"whole_word": false,
 		"wrap": true
 	},
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -603,13 +614,16 @@
 							"SL.67.region_keys":
 							[
 							],
+							"SL.79.region_keys":
+							[
+							],
 							"syntax": "Packages/Python/Python.sublime-syntax"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
@@ -618,29 +632,91 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 7390,
+						"buffer_size": 7326,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1171,
-								1171
+								910,
+								910
 							]
 						],
 						"settings":
 						{
+							"SL.30.region_keys":
+							[
+							],
 							"SL.68.region_keys":
 							[
 								"sublime_linter.protected_regions"
+							],
+							"SL.75.region_keys":
+							[
+							],
+							"SL.80.region_keys":
+							[
 							],
 							"syntax": "Packages/Python/Python.sublime-syntax",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 324.0,
+						"translation.y": 1609.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "igen/model.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2748,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								400,
+								400
+							]
+						],
+						"settings":
+						{
+							"SL.33.region_keys":
+							[
+								"sublime_linter.protected_regions",
+								"SL.flake8.Highlights.|481feea4eed244b499b68e173e5e562aa8f35ba77ac047292df4c38b08cb8e0d|region.yellowish markup.warning.sublime_linter|32",
+								"SL.flake8.Gutter.|region.yellowish markup.warning.sublime_linter|dot"
+							],
+							"SL.76.region_keys":
+							[
+								"SL.flake8.Gutter.|region.yellowish markup.warning.sublime_linter|dot",
+								"SL.flake8.Highlights.|481feea4eed244b499b68e173e5e562aa8f35ba77ac047292df4c38b08cb8e0d|region.yellowish markup.warning.sublime_linter|32",
+								"sublime_linter.protected_regions"
+							],
+							"auto_complete_triggers":
+							[
+								{
+									"characters": ".",
+									"selector": "source.python - string - comment - constant.numeric"
+								},
+								{
+									"characters": ".",
+									"selector": "source.python - string - constant.numeric"
+								}
+							],
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,

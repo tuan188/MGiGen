@@ -1,14 +1,18 @@
 {% if is_protocol %}
 final class {{ class_name }}Mock: {{ protocol_name }} {
-    
+
 {% endif %}
 {% for f in functions %}
     // MARK: - {{ f.name }}
-    
+
     var {{ f.name }}Called = false
-{% if not f.return_void %}
+    {% if not f.return_void %}
+    {% if f.return_nil %}
     var {{ f.name }}ReturnValue: {{ f.return_type }} = {{ f.return_value }}
-{% endif %}
+    {% else %}
+    var {{ f.name }}ReturnValue = {{ f.return_value }}
+    {% endif %}
+    {% endif %}
 
     {{ f.origin }} {
         {{ f.name }}Called = true

@@ -39,7 +39,7 @@ class Mock(object):
             if self.return_type is None:
                 return_value = '()'
             elif self.return_type.endswith('?'):
-                return_value = "nil"
+                return_value = 'nil'
             elif self.return_type.startswith('Driver'):
                 regex = re.compile('Driver<(.+)>')
                 mo = regex.search(self.return_type)
@@ -49,7 +49,7 @@ class Mock(object):
                         SWIFT_TYPES_DEFAULT_VALUES[observable_type]
                     )
                 else:
-                    return_value = 'Driver.empty()'
+                    return_value = 'Driver<{}>.empty()'.format(observable_type)
             elif self.return_type.startswith('Observable'):
                 regex = re.compile('Observable<(.+)>')
                 mo = regex.search(self.return_type)
@@ -59,7 +59,9 @@ class Mock(object):
                         SWIFT_TYPES_DEFAULT_VALUES[observable_type]
                     )
                 else:
-                    return_value = 'Observable.empty()'
+                    return_value = 'Observable<{}>.empty()'.format(
+                        observable_type
+                    )
             elif self.return_type in SWIFT_TYPES:
                 return_value = SWIFT_TYPES_DEFAULT_VALUES[self.return_type]
             else:
@@ -69,6 +71,10 @@ class Mock(object):
         @property
         def return_void(self):
             return self.return_type is None
+
+        @property
+        def return_nil(self):
+            return self.return_value == 'nil'
 
     def __init__(self, protocol_text):
         super(Mock, self).__init__()

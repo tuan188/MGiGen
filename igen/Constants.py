@@ -7,7 +7,8 @@ SWIFT_TYPES_DEFAULT_VALUES = {
     'Double': '0.0',
     'Float': 'Float(0.0)',
     'Date': 'Date()',
-    'Void': '()'
+    'Void': '()',
+    'ValidationResult': 'ValidationResult.valid'
 }
 
 SWIFT_TYPES_MOCK_VALUES = {
@@ -17,7 +18,8 @@ SWIFT_TYPES_MOCK_VALUES = {
     'Double': '1.0',
     'Float': 'Float(1.0)',
     'Date': 'Date()',
-    'Void': '()'
+    'Void': '()',
+    'ValidationResult': 'ValidationResult.valid'
 }
 
 SWIFT_TYPES = {
@@ -27,5 +29,6 @@ SWIFT_TYPES = {
     'Double',
     'Float',
     'Date',
-    'Void'
+    'Void',
+    'ValidationResult'
 }
