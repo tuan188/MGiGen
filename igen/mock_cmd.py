@@ -5,6 +5,7 @@ from jinja2 import Environment, PackageLoader
 from .pb import pasteboard_write
 from .command import Command
 from .constants import SWIFT_TYPES_DEFAULT_VALUES, SWIFT_TYPES
+from .str_helpers import upper_first_letter
 
 
 class MockCommand(Command):
@@ -25,11 +26,13 @@ class MockCommand(Command):
 class Mock(object):
 
     class Function(object):
-        def __init__(self, origin, name, return_type):
+        def __init__(self, origin, name, params, return_type):
             super(Mock.Function, self).__init__()
             self.origin = origin
             self.name = name
+            self.params = list(filter(None, params.split(',')))
             self.return_type = return_type
+            self.is_overloaded = False
 
         def __str__(self):
             return self.origin
@@ -76,6 +79,27 @@ class Mock(object):
         def return_nil(self):
             return self.return_value == 'nil'
 
+        @property
+        def first_param(self):
+            if self.params:
+                param = self.params[0]
+                param_name = param.split(':')[0].split(' ')
+                return param_name[0] \
+                    + "".join(x.title() for x in param_name[1:])
+            return None
+
+        @property
+        def first_param_title(self):
+            if self.first_param is not None:
+                return upper_first_letter(self.first_param)
+            return None
+
+        @property
+        def overloaded_name(self):
+            if self.is_overloaded and (self.first_param_title is not None):
+                return self.name + self.first_param_title
+            return self.name
+
     def __init__(self, protocol_text):
         super(Mock, self).__init__()
         self.protocol_text = protocol_text
@@ -104,12 +128,23 @@ class Mock(object):
         except Exception:
             pass
         # get functions
-        func_regex = re.compile(r'func (\w+)\(.*\)( -> (.*))?')
-        funcs = [Mock.Function(f.group(), f.group(1), f.group(3))
+        func_regex = re.compile(r'func (\w+)\((.*)\)( -> (.*))?')
+        funcs = [Mock.Function(f.group(), f.group(1), f.group(2), f.group(4))
                  for f in func_regex.finditer(str)]
+
         if not funcs:
             print('The protocol or functions in the pasteboard is invalid.')
             exit(1)
+
+        # check if overloaded
+        func_dict = {}
+        for f in funcs:
+            if f.name in func_dict:
+                func_dict[f.name] = func_dict[f.name] + 1
+            else:
+                func_dict[f.name] = 1
+        for f in funcs:
+            f.is_overloaded = func_dict[f.name] > 1
 
         env = Environment(
             loader=PackageLoader('igen_templates', 'commands'),

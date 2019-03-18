@@ -2,23 +2,23 @@
 final class {{ class_name }}Mock: {{ protocol_name }} {
 
 {% endif %}
-{% for f in functions %}
-    // MARK: - {{ f.name }}
+    {% for f in functions %}
+    // MARK: - {{ f.overloaded_name }}
 
-    var {{ f.name }}Called = false
+    var {{ f.overloaded_name }}Called = false
     {% if not f.return_void %}
     {% if f.return_nil %}
-    var {{ f.name }}ReturnValue: {{ f.return_type }} = {{ f.return_value }}
+    var {{ f.overloaded_name }}ReturnValue: {{ f.return_type }} = {{ f.return_value }}
     {% else %}
-    var {{ f.name }}ReturnValue = {{ f.return_value }}
+    var {{ f.overloaded_name }}ReturnValue = {{ f.return_value }}
     {% endif %}
     {% endif %}
 
     {{ f.origin }} {
-        {{ f.name }}Called = true
+        {{ f.overloaded_name }}Called = true
     {% if not f.return_void %}
-        return {{ f.name }}ReturnValue
+        return {{ f.overloaded_name }}ReturnValue
     {% endif %}
     } {{ '\n' if not loop.last }}
-{% endfor %}
+    {% endfor %}
 {{ '}' if is_protocol }}
