@@ -201,12 +201,13 @@ def cmd_api(parser, context, args):
 
 
 @subcmd('config', help='configure igen')
-def cmd_project(parser, context, args):
+def cmd_config(parser, context, args):
     parser.description = 'Configure igen.'
     parser.epilog = """To configure the project information, run 'igen config project'. \
-To view configuration file, run 'igen config info'. To delete configuration \
-file, run 'igen config delete. To view available configuration keys, \
-run 'igen config keys'"""
+To view the configuration file, run 'igen config info'. \
+To delete the configuration file, run 'igen config delete. \
+To view the available configuration keys, run 'igen config keys'"""
+
     parser.add_argument(
         'name',
         nargs=1,
