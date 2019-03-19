@@ -15,11 +15,12 @@ class TemplateCommand(Command):
         self.options = options
 
     def create_files(self):
-        info = ConfigCommand().project_info(False)
+        config_command = ConfigCommand(global_config=None)
+        info = config_command.project_info(print_result=False)
         if info is not None:
             project, developer, company = info
         else:
-            project, developer, company = ConfigCommand().update_project_info()
+            project, developer, company = config_command.update_project_info()
         project_info = ProjectInfo(project, developer, company)
         if self.template_name == Template.TemplateType.BASE:
             template = Template.BaseTemplate(

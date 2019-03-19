@@ -155,7 +155,7 @@ class Template(object):
             self.developer = project_info.developer
             self.company = project_info.company
             self.use_window = options['window']
-            output_path = ConfigCommand().output_path()
+            output_path = ConfigCommand(global_config=None).output_path()
             if output_path is None:
                 output_path = '.'
             self.output_path = output_path
@@ -196,7 +196,7 @@ class Template(object):
 
         def _make_dirs(self):
             current_directory = os.getcwd() if self.output_path == '.' \
-                                            else self.output_path
+                                else self.output_path
             main_directory = self._make_dir(current_directory, self.name)
             self._make_dir(main_directory, 'Test')
             return main_directory

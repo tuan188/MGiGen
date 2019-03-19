@@ -204,7 +204,9 @@ def cmd_api(parser, context, args):
 def cmd_project(parser, context, args):
     parser.description = 'Configure igen.'
     parser.epilog = """To configure the project information, run 'igen config project'. \
-To view configuration file, run 'igen config info'."""
+To view configuration file, run 'igen config info'. To delete configuration \
+file, run 'igen config delete. To view available configuration keys, \
+run 'igen config keys'"""
     parser.add_argument(
         'name',
         nargs=1,
@@ -215,18 +217,30 @@ To view configuration file, run 'igen config info'."""
         nargs='*',
         help='section value'
     )
+    parser.add_argument(
+        '--global',
+        required=False,
+        action='store_true',
+        help="global configuration"
+    )
     args = parser.parse_args(args)
-    cmd = ConfigCommand()
+    global_config = vars(args)['global']
+
+    cmd = ConfigCommand(global_config)
     name = args.name[0]
     values = args.value
     if name == 'info':
         cmd.info()
     elif name == 'project':
         cmd.update_project_info()
+    elif name == 'delete':
+        cmd.delete_config()
+    elif name == 'keys':
+        cmd.keys()
     elif values:
         cmd.config(args.name[0], values[0])
     else:
-        print('Invalid section and/or key.')
+        print('Invalid command, section and/or key.')
 
 
 def main():
