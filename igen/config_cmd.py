@@ -86,6 +86,10 @@ class ConfigCommand(Command):
         try:
             with open(self.config_file_path, "r") as f:
                 content = f.readlines()
+                if self.global_config:
+                    print('Global configuration:\n')
+                else:
+                    print('Local configuration:\n')
                 print(''.join(content))
         except Exception:
             print("The configuration file does not exist.")
@@ -137,3 +141,28 @@ class ConfigCommand(Command):
         print('Available configuration keys:')
         for key in self.KEY_VALUES.keys():
             print('   ', key)
+
+    def unset(self, name):
+        if name not in ConfigCommand.KEY_VALUES:
+            print('Invalid section and/or key.')
+            return
+
+        if not os.path.exists(self.config_file_path):
+            print('The configuration file does not exist.')
+            return
+
+        try:
+            config = configparser.ConfigParser()
+            config.read(self.config_file_path)
+
+            (section, section_item) = name.split('.')
+
+            if section in config and section_item in config[section]:
+                del config[section][section_item]
+
+            with open(self.config_file_path, 'w') as f:
+                config.write(f)
+
+            self.info()
+        except Exception as e:
+            print(e)

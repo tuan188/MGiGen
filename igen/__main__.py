@@ -200,13 +200,13 @@ def cmd_api(parser, context, args):
     APICommand(args.name[0]).create_api(args.print)
 
 
-@subcmd('config', help='configure igen')
+@subcmd('config', help='configure the tool')
 def cmd_config(parser, context, args):
-    parser.description = 'Configure igen.'
+    parser.description = 'Configure the tool.'
     parser.epilog = """To configure the project information, run 'igen config project'. \
 To view the configuration file, run 'igen config info'. \
 To delete the configuration file, run 'igen config delete. \
-To view the available configuration keys, run 'igen config keys'"""
+To view the available configuration keys, run 'igen config keys'."""
 
     parser.add_argument(
         'name',
@@ -224,12 +224,20 @@ To view the available configuration keys, run 'igen config keys'"""
         action='store_true',
         help="global configuration"
     )
+    parser.add_argument(
+        '--unset',
+        required=False,
+        action='store_true',
+        help="remove a setting"
+    )
     args = parser.parse_args(args)
     global_config = vars(args)['global']
 
     cmd = ConfigCommand(global_config)
     name = args.name[0]
     values = args.value
+    unset = args.unset
+
     if name == 'info':
         cmd.info()
     elif name == 'project':
@@ -238,8 +246,11 @@ To view the available configuration keys, run 'igen config keys'"""
         cmd.delete_config()
     elif name == 'keys':
         cmd.keys()
+    elif unset:
+        cmd.unset(name)
     elif values:
-        cmd.config(args.name[0], values[0])
+        value = values[0]
+        cmd.config(name, value)
     else:
         print('Invalid command, section and/or key.')
 
