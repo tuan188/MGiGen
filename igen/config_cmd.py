@@ -12,6 +12,7 @@ class ConfigCommand(Command):
         'project.name': 'str',
         'project.developer': 'str',
         'project.company': 'str',
+        'project.token': 'str',
         'output.path': 'str'
     }
 
@@ -116,10 +117,13 @@ class ConfigCommand(Command):
                 config[section] = {}
 
             if value == '@here':
-                if self.global_config:
-                    value = os.getcwd()
-                else:
-                    value = '.'
+                value = os.getcwd()
+            elif value == '@desktop':
+                value = os.path.join(os.path.expanduser("~"), 'Desktop/')
+            elif value == '@downloads':
+                value = os.path.join(os.path.expanduser("~"), 'Downloads/')
+            elif value == '@documents':
+                value = os.path.join(os.path.expanduser("~"), 'Documents/')
 
             config[section][section_item] = value
 

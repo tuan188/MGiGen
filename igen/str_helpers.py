@@ -1,4 +1,5 @@
 # coding=utf-8
+import hashlib
 
 
 def lower_first_letter(st):
@@ -30,3 +31,7 @@ def plural_to_singular(st):
         if len(st) > 3:
             return st[:-1]
     return st
+
+
+def md5_string(st):
+    return hashlib.md5(st.encode()).hexdigest()
