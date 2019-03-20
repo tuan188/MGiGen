@@ -2,8 +2,10 @@
 
 import re
 import os
-from jinja2 import Environment, PackageLoader
 from datetime import datetime
+
+from jinja2 import Environment, PackageLoader
+
 from .str_helpers import upper_first_letter, lower_first_letter
 from .constants import (SWIFT_TYPES_DEFAULT_VALUES,
                         SWIFT_TYPES_MOCK_VALUES,
@@ -12,25 +14,24 @@ from .file_helpers import create_file
 from .config_cmd import ConfigCommand
 
 
-class ProjectInfo(object):
-    def __init__(self, project, developer, company):
-        super(ProjectInfo, self).__init__()
+class ProjectInfo:
+
+    def __init__(self, project, developer, company, token):
         self.project = project
         self.developer = developer
         self.company = company
+        self.token = token
 
 
 class Template(object):
 
     class Model(object):
         def __init__(self, name, properties):
-            super(Template.Model, self).__init__()
             self.name = name
             self.properties = properties
 
     class Property(object):
         def __init__(self, property):
-            super(Template.Property, self).__init__()
             self.property = property
             property_regex = re.compile(r'(?:let|var) (\w+): (.*)')
             mo = property_regex.search(property)
@@ -47,7 +48,6 @@ class Template(object):
 
     class PropertyType(object):
         def __init__(self, name):
-            super(Template.PropertyType, self).__init__()
             self.name = name
 
         @property
@@ -149,16 +149,18 @@ class Template(object):
 
     class BaseTemplate(object):
         def __init__(self, options, name, project_info):
-            super(Template.BaseTemplate, self).__init__()
             self.name = name
             self.project = project_info.project
             self.developer = project_info.developer
             self.company = project_info.company
+            self.project_token = project_info.token
             self.use_window = options['window']
+
             output_path = ConfigCommand(global_config=None).output_path()
             if output_path is None:
                 output_path = '.'
             self.output_path = output_path
+
             self.env = Environment(
                 loader=PackageLoader('igen_templates', 'base'),
                 trim_blocks=True,
@@ -169,9 +171,15 @@ class Template(object):
             template = self.env.get_template("FileHeader.swift")
             now = datetime.now()
             date = "{}/{}/{}".format(now.month, now.day, now.strftime("%y"))
+
+            if self.project_token:
+                project = '{} ({})'.format(self.project, self.project_token)
+            else:
+                project = self.project
+
             header = template.render(
                 class_name=class_name,
-                project=self.project,
+                project=project,
                 developer=self.developer,
                 created_date=date,
                 copyright_year=now.year,

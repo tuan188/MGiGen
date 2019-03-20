@@ -1,10 +1,12 @@
 # coding=utf-8
 
 from subprocess import call
+
 from .config_cmd import ConfigCommand
 from .template import Template, ProjectInfo
 from .pb import pasteboard_read
 from .command import Command
+from .encoder import Encoder
 
 
 class TemplateCommand(Command):
@@ -21,7 +23,13 @@ class TemplateCommand(Command):
             project, developer, company = info
         else:
             project, developer, company = config_command.update_project_info()
-        project_info = ProjectInfo(project, developer, company)
+
+        token = config_command.project_token()
+        if token == '@project':
+            encoder = Encoder()
+            token = encoder.encode('md5', project)
+
+        project_info = ProjectInfo(project, developer, company, token)
         if self.template_name == Template.TemplateType.BASE:
             template = Template.BaseTemplate(
                 self.options,
