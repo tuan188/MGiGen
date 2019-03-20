@@ -96,10 +96,19 @@ class ConfigCommand(Command):
             print("The configuration file does not exist.")
 
     def output_path(self):
+        return self.read_config('output.path')
+
+    def project_token(self):
+        return self.read_config('project.token')
+
+    def read_config(self, name):
+        if name not in ConfigCommand.KEY_VALUES:
+            return None
         try:
+            (section, section_item) = name.split('.')
             config = configparser.ConfigParser()
             config.read(self.config_file_path)
-            return config['output']['path']
+            return config[section][section_item]
         except Exception:
             return None
 
