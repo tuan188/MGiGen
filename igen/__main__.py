@@ -10,6 +10,7 @@ from .json_cmd import JSONCommand
 from .test_cmd import UnitTestCommand
 from .bind_cmd import BindViewModelCommand
 from .template_cmd import TemplateCommand
+from .encoder import Encoder
 
 
 @subcmd('template', help='create template files for a scene')
@@ -253,6 +254,30 @@ To view the available configuration keys, run 'igen config keys'."""
         cmd.config(name, value)
     else:
         print('Invalid command, section and/or key.')
+
+
+@subcmd('encode', help='encode a string')
+def cmd_encode(parser, context, args):
+    parser.epilog = 'encode a string.'
+    parser.description = 'Encode a string.'
+    parser.add_argument(
+        'algorithm',
+        nargs=1,
+        choices=[
+            'md5'
+        ],
+        help="algorithm"
+    )
+    parser.add_argument(
+        'string',
+        nargs=1,
+        help='the input string'
+    )
+    args = parser.parse_args(args)
+    alg = args.algorithm[0]
+    string = args.string[0]
+    encoder = Encoder()
+    print(encoder.encode(alg, string))
 
 
 def main():

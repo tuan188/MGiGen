@@ -1,5 +1,4 @@
 # coding=utf-8
-import hashlib
 
 
 def lower_first_letter(st):
