@@ -11,6 +11,7 @@ from .test_cmd import UnitTestCommand
 from .bind_cmd import BindViewModelCommand
 from .template_cmd import TemplateCommand
 from .encoder import Encoder
+from .file_header_cmd import FileHeaderCommand
 
 
 @subcmd('template', help='create template files for a scene')
@@ -266,7 +267,7 @@ def cmd_encode(parser, context, args):
         choices=[
             'md5'
         ],
-        help="algorithm"
+        help='algorithm'
     )
     parser.add_argument(
         'string',
@@ -278,6 +279,67 @@ def cmd_encode(parser, context, args):
     string = args.string[0]
     encoder = Encoder()
     print(encoder.encode(alg, string))
+
+
+@subcmd('header', help="update files' headers")
+def cmd_file_header(parser, context, args):
+    parser.epilog = "update files' headers."
+    parser.description = "Update files' headers."
+    parser.add_argument(
+        'paths',
+        nargs='+',
+        help="files' paths"
+    )
+    parser.add_argument(
+        '--file-name',
+        required=False,
+        action='store_true',
+        help='update file name'
+    )
+    parser.add_argument(
+        '--project',
+        required=False,
+        action='store_true',
+        help='update project'
+    )
+    parser.add_argument(
+        '--developer',
+        required=False,
+        action='store_true',
+        help='update developer'
+    )
+    parser.add_argument(
+        '--created-date',
+        required=False,
+        action='store_true',
+        help='update created date'
+    )
+    parser.add_argument(
+        '--copyright-year',
+        required=False,
+        action='store_true',
+        help='update copyright year'
+    )
+    parser.add_argument(
+        '--company',
+        required=False,
+        action='store_true',
+        help='update company'
+    )
+    args = parser.parse_args(args)
+
+    options = {
+        'update_file_name': args.file_name,
+        'update_project': args.project,
+        'update_developer': args.developer,
+        'update_created_date': args.created_date,
+        'update_copyright_year': args.copyright_year,
+        'update_company': args.company,
+    }
+
+    paths = args.paths
+    cmd = FileHeaderCommand(paths, options)
+    cmd.update_header()
 
 
 def main():

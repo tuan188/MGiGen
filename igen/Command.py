@@ -1,7 +1,9 @@
 # coding=utf-8
 
+import collections
 
-class Command(object):
+
+class Command:
 
     TAB_LENGTH = "<15"
 
@@ -25,3 +27,17 @@ class Command(object):
     @classmethod
     def help(cls):
         return cls.long_description()
+
+
+class CommandOption:
+
+    def __init__(self, options):
+        self._options = options
+
+    def __getattr__(self, name):
+        cls = type(self)
+        if name in self._options:
+            return self._options[name]
+        else:
+            msg = '{.__name__!r} object has no attribute {!r}'
+            raise AttributeError(msg.format(cls, name))
