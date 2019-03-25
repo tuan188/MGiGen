@@ -113,4 +113,4 @@ class FileHeaderCommand(Command):
 
         with open(file_path, 'wt', encoding='utf-8') as f:
             f.write(file_content)
-            print('Success!')
+            print('Updated:', file_path)

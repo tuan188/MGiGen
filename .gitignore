@@ -112,4 +112,4 @@ dmypy.json
 
 # Others
 igen.config
-AppDelegate.swift
+test/
