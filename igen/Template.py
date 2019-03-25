@@ -167,8 +167,14 @@ class Template(object):
                 lstrip_blocks=True
             )
 
-        def _file_header(self, class_name):
-            template = self.env.get_template("FileHeader.swift")
+            self.file_header_env = Environment(
+                loader=PackageLoader('igen_templates', 'commands'),
+                trim_blocks=True,
+                lstrip_blocks=True
+            )
+
+        def _file_header(self, file_name):
+            template = self.file_header_env.get_template("FileHeader.swift")
             now = datetime.now()
             date = "{}/{}/{}".format(now.month, now.day, now.strftime("%y"))
 
@@ -178,7 +184,7 @@ class Template(object):
                 project = self.project
 
             header = template.render(
-                class_name=class_name,
+                file_name=file_name,
                 project=project,
                 developer=self.developer,
                 created_date=date,
@@ -230,8 +236,12 @@ class Template(object):
                     template_file = '{}.{}'.format(class_name, file_extension)
                 else:
                     template_file = class_name[len(self.name):]
+
+            file_name = '{}.{}'.format(class_name, file_extension) \
+                if file_extension is not None else class_name
+            content = self._file_header(file_name) if has_file_header else ''
+
             template = self.env.get_template(template_file)
-            content = self._file_header(class_name) if has_file_header else ''
             content += self._content_from_template(template)
             if folder:
                 folder = '{}/{}/{}'.format(self.output_path, self.name, folder)
@@ -492,7 +502,7 @@ class Template(object):
                 property.name_title
             )
             template = self.env.get_template('Cell.swift')
-            content = self._file_header(class_name)
+            content = self._file_header(class_name + '.swift')
             content += template.render(
                 model_name=self.model_name,
                 property=property
@@ -872,7 +882,7 @@ class Template(object):
         def _create_cell(self, property):
             class_name = '{}{}Cell'.format(self.name, property.name_title)
             template = self.env.get_template('Cell.swift')
-            content = self._file_header(class_name)
+            content = self._file_header(class_name + '.swift')
             content += template.render(
                 name=self.name,
                 model_name=self.model_name,
