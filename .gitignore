@@ -111,5 +111,5 @@ venv.bak/
 dmypy.json
 
 # Others
-igen_config.txt
+igen.config
 AppDelegate.swift

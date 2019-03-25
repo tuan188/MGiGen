@@ -29,12 +29,12 @@ class FileHeaderCommand(Command):
         else:
             project, developer, company = config_command.update_project_info()
 
-        token = config_command.project_token()
-        if token == '@project':
+        project_id = config_command.project_id()
+        if project_id == '@project':
             encoder = Encoder()
-            token = encoder.encode('md5', project)
+            project_id = encoder.encode('md5', project)
 
-        project_info = ProjectInfo(project, developer, company, token)
+        project_info = ProjectInfo(project, developer, company, project_id)
 
         for file_path in self.file_paths:
             self._update_header(file_path, project_info)
@@ -45,11 +45,11 @@ class FileHeaderCommand(Command):
         file_content = ''.join(data)
 
         header_regex_string = r"""//
-//  (.+)
-//  (.+)
+// +(.+)
+// +(.+)
 //
-//  Created by (.+?) on (\d+/\d+/\d+).
-//  Copyright © (\d{4}) (.+?). All rights reserved.
+// +Created by (.+?) on (\d+/\d+/\d+).
+// +Copyright © (\d{4}) (.+?). All rights reserved.
 //"""
 
         header_regex = re.compile(header_regex_string)
@@ -72,10 +72,10 @@ class FileHeaderCommand(Command):
         if update_all or self.options.update_file_name:
             file_name = os.path.basename(file_path)
         if update_all or self.options.update_project:
-            if project_info.token:
+            if project_info.project_id:
                 project = '{} ({})'.format(
                     project_info.project,
-                    project_info.token
+                    project_info.project_id
                 )
             else:
                 project = project_info.project

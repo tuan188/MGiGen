@@ -24,12 +24,12 @@ class TemplateCommand(Command):
         else:
             project, developer, company = config_command.update_project_info()
 
-        token = config_command.project_token()
-        if token == '@project':
+        project_id = config_command.project_id()
+        if project_id == '@project':
             encoder = Encoder()
-            token = encoder.encode('md5', project)
+            project_id = encoder.encode('md5', project)
 
-        project_info = ProjectInfo(project, developer, company, token)
+        project_info = ProjectInfo(project, developer, company, project_id)
         if self.template_name == Template.TemplateType.BASE:
             template = Template.BaseTemplate(
                 self.options,

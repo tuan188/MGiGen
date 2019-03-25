@@ -16,11 +16,11 @@ from .config_cmd import ConfigCommand
 
 class ProjectInfo:
 
-    def __init__(self, project, developer, company, token):
+    def __init__(self, project, developer, company, project_id):
         self.project = project
         self.developer = developer
         self.company = company
-        self.token = token
+        self.project_id = project_id
 
 
 class Template(object):
@@ -153,7 +153,7 @@ class Template(object):
             self.project = project_info.project
             self.developer = project_info.developer
             self.company = project_info.company
-            self.project_token = project_info.token
+            self.project_id = project_info.project_id
             self.use_window = options['window']
 
             output_path = ConfigCommand(global_config=None).output_path()
@@ -172,8 +172,8 @@ class Template(object):
             now = datetime.now()
             date = "{}/{}/{}".format(now.month, now.day, now.strftime("%y"))
 
-            if self.project_token:
-                project = '{} ({})'.format(self.project, self.project_token)
+            if self.project_id:
+                project = '{} ({})'.format(self.project, self.project_id)
             else:
                 project = self.project
 

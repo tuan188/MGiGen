@@ -13,7 +13,7 @@ class ConfigCommand(Command):
         'project.name': 'str',
         'project.developer': 'str',
         'project.company': 'str',
-        'project.token': 'str',
+        'project.id': 'str',
         'output.path': 'str'
     }
 
@@ -30,7 +30,7 @@ class ConfigCommand(Command):
 
     @property
     def local_config_file_path(self):
-        return './igen_config.txt'
+        return './igen.config'
 
     @property
     def local_config_exists(self):
@@ -99,8 +99,8 @@ class ConfigCommand(Command):
     def output_path(self):
         return self.read_config('output.path')
 
-    def project_token(self):
-        return self.read_config('project.token')
+    def project_id(self):
+        return self.read_config('project.id')
 
     def read_config(self, name):
         if name not in ConfigCommand.KEY_VALUES:
