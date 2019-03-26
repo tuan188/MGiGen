@@ -4,12 +4,16 @@
 		"selected_items":
 		[
 			[
-				"regex",
-				"header_regex_string"
+				"file",
+				"file_paths\tstatement"
 			],
 			[
 				"project",
-				"project_info"
+				"project_id"
+			],
+			[
+				"regex",
+				"header_regex_string"
 			],
 			[
 				"file_pa",
@@ -146,10 +150,6 @@
 			[
 				"type",
 				"type_name"
-			],
-			[
-				"file",
-				"file_length"
 			],
 			[
 				"index",
@@ -412,11 +412,27 @@
 	"buffers":
 	[
 		{
-			"file": "AppDelegate.swift",
+			"file": "igen/__main__.py",
 			"settings":
 			{
-				"buffer_size": 1274,
+				"buffer_size": 10166,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "igen/file_header_cmd.py",
+			"settings":
+			{
+				"buffer_size": 3825,
 				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "igen/config_cmd.py",
+			"settings":
+			{
+				"buffer_size": 5565,
 				"line_ending": "Unix"
 			}
 		}
@@ -552,27 +568,34 @@
 	[
 		"/Users/tuan/Documents/Git/MGiGen",
 		"/Users/tuan/Documents/Git/MGiGen/igen",
-		"/Users/tuan/Documents/Git/MGiGen/igen_templates"
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/commands",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/detail",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/form",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/login",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/setting",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton"
 	],
 	"file_history":
 	[
+		"/Users/tuan/Documents/Git/MGiGen/.gitignore",
+		"/Users/tuan/Documents/Git/MGiGen/igen/template_cmd.py",
+		"/Users/tuan/Documents/Git/MGiGen/igen/template.py",
+		"/Users/tuan/Documents/Git/MGiGen/AppDelegate.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/commands/FileHeader.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen/config_cmd.py",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/detail/FileHeader.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/FileHeader.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen/__main__.py",
-		"/Users/tuan/Documents/Git/MGiGen/igen_templates/detail/FileHeader.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/form/FileHeader.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list/FileHeader.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/login/FileHeader.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/setting/FileHeader.swift",
-		"/Users/tuan/Documents/Git/MGiGen/igen/template.py",
-		"/Users/tuan/Documents/Git/MGiGen/igen/template_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen_config.txt",
 		"/Users/tuan/Documents/Git/MGiGen/igen/file_header_cmd.py",
-		"/Users/tuan/Documents/Git/MGiGen/AppDelegate.swift",
-		"/Users/tuan/Documents/Git/MGiGen/igen_templates/commands/FileHeader.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen/command.py",
-		"/Users/tuan/Documents/Git/MGiGen/igen/config_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/base/FileHeader.swift",
-		"/Users/tuan/Documents/Git/MGiGen/.gitignore",
 		"/Users/tuan/Documents/Git/MGiGen/igen/str_helpers.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/encoder.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/constants.py",
@@ -688,6 +711,12 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"config_file_path",
+			"_file_header",
+			"token",
+			"project_token",
+			"project_info.id",
+			"token",
 			"content",
 			"cmd_project",
 			"ConfigCommand()",
@@ -721,32 +750,128 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "AppDelegate.swift",
+					"file": "igen/__main__.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1274,
+						"buffer_size": 10166,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								9653,
+								9653
 							]
 						],
 						"settings":
 						{
-							"SL.138.region_keys":
+							"SL.228.region_keys":
+							[
+								"sublime_linter.protected_regions"
+							],
+							"auto_complete_triggers":
+							[
+								{
+									"characters": ".",
+									"selector": "source.python - string - comment - constant.numeric"
+								},
+								{
+									"characters": ".",
+									"selector": "source.python - string - constant.numeric"
+								}
+							],
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 4223.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "igen/file_header_cmd.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3825,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3823,
+								3823
+							]
+						],
+						"settings":
+						{
+							"SL.14.region_keys":
 							[
 							],
-							"syntax": "Packages/Swift/Syntaxes/Swift.tmLanguage",
+							"SL.235.region_keys":
+							[
+								"sublime_linter.protected_regions"
+							],
+							"auto_complete_triggers":
+							[
+								{
+									"characters": ".",
+									"selector": "source.python - string - comment - constant.numeric"
+								},
+								{
+									"characters": ".",
+									"selector": "source.python - string - constant.numeric"
+								}
+							],
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1003.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "igen/config_cmd.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5565,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4959,
+								4959
+							]
+						],
+						"settings":
+						{
+							"SL.15.region_keys":
+							[
+							],
+							"SL.250.region_keys":
+							[
+							],
+							"syntax": "Packages/Python/Python.sublime-syntax",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
@@ -754,7 +879,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				}
 			]

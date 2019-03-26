@@ -3,11 +3,15 @@
 import os.path
 import os
 import configparser
+import itertools
 
 from .command import Command
 
 
 class ConfigCommand(Command):
+
+    GLOBAL_CONFIG_FILE = '.igen'
+    LOCAL_CONFIG_FILE = 'igen.config'
 
     KEY_VALUES = {
         'project.name': 'str',
@@ -21,32 +25,57 @@ class ConfigCommand(Command):
         self.global_config = global_config
 
     @property
-    def global_config_file_path(self):
-        return os.path.join(os.path.expanduser("~"), '.igen')
+    def default_global_config_file_path(self):
+        return os.path.join(os.path.expanduser("~"), self.GLOBAL_CONFIG_FILE)
 
     @property
     def global_config_exists(self):
-        return os.path.isfile(self.global_config_file_path)
+        return os.path.isfile(self.default_global_config_file_path)
 
     @property
-    def local_config_file_path(self):
-        return './igen.config'
+    def default_local_config_file_path(self):
+        return './{}'.format(self.LOCAL_CONFIG_FILE)
 
     @property
     def local_config_exists(self):
-        return os.path.isfile(self.local_config_file_path)
+        return os.path.isfile(self.default_local_config_file_path)
+
+    def get_local_config_file_path(self):
+        current_folder = os.getcwd()
+        folders = current_folder.split('/')
+
+        # remove empty path
+        folders = [f for f in folders if f != '']
+        paths = list(itertools.accumulate(
+            folders,
+            lambda x, y: '{}/{}'.format(x, y))
+        )
+        paths = ['/'] + ['/{}/'.format(p) for p in paths]
+
+        file_paths = [p + self.LOCAL_CONFIG_FILE for p in reversed(paths)]
+
+        for file_path in file_paths:
+            if os.path.isfile(file_path):
+                return file_path
+        return None
 
     @property
     def config_file_path(self):
-        if self.global_config is None:
-            if self.local_config_exists:
-                return self.local_config_file_path
+        if self.global_config is None:  # for template command
+            file_path = self.get_local_config_file_path()
+            if file_path is not None:
+                return file_path
             elif self.global_config_exists:
-                return self.global_config_file_path
+                return self.default_global_config_file_path
             else:
-                return self.local_config_file_path
-        return self.global_config_file_path if self.global_config \
-            else self.local_config_file_path
+                return self.default_local_config_file_path
+        elif self.global_config:  # for config command
+            return self.default_global_config_file_path
+        else:
+            file_path = self.get_local_config_file_path()
+            if file_path is not None:
+                return file_path
+            return self.default_local_config_file_path
 
     def update_project_info(self):
         project = input('Enter project name: ')
