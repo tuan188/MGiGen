@@ -619,6 +619,7 @@ class Template(object):
             print('Successfully created files:')
             output_path = self._make_dirs()
             self._create_podfile()
+            self._create_gitignore()
             self._create_localizable()
             self._create_swiftlint()
             self._create_UnitTestViewController()
@@ -650,6 +651,14 @@ class Template(object):
                 class_name='Podfile',
                 file_extension=None,
                 template_file='Podfile.txt',
+                has_file_header=False
+            )
+
+        def _create_gitignore(self):
+            self._create_file_from_template(
+                class_name='gitignore',
+                file_extension=None,
+                template_file='gitignore.txt',
                 has_file_header=False
             )
 

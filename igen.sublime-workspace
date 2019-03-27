@@ -4,8 +4,28 @@
 		"selected_items":
 		[
 			[
+				"defaul",
+				"default_local_config_file_path"
+			],
+			[
+				"filep",
+				"file_paths"
+			],
+			[
 				"file",
-				"file_paths\tstatement"
+				"file_path"
+			],
+			[
+				"filePa",
+				"file_paths"
+			],
+			[
+				"rever",
+				"reversed\tclass"
+			],
+			[
+				"gloga",
+				"global_config_exists\tfunction"
 			],
 			[
 				"project",
@@ -332,10 +352,6 @@
 				"sorted_names"
 			],
 			[
-				"rever",
-				"reversed_lines"
-			],
-			[
 				"rev",
 				"reverse\tfunc *"
 			],
@@ -420,11 +436,18 @@
 			}
 		},
 		{
-			"file": "igen/file_header_cmd.py",
+			"file": "igen/template.py",
 			"settings":
 			{
-				"buffer_size": 3825,
-				"encoding": "UTF-8",
+				"buffer_size": 36750,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "igen_templates/skeleton/Podfile.txt",
+			"settings":
+			{
+				"buffer_size": 1090,
 				"line_ending": "Unix"
 			}
 		},
@@ -432,7 +455,8 @@
 			"file": "igen/config_cmd.py",
 			"settings":
 			{
-				"buffer_size": 5565,
+				"buffer_size": 6588,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		}
@@ -567,20 +591,14 @@
 	"expanded_folders":
 	[
 		"/Users/tuan/Documents/Git/MGiGen",
-		"/Users/tuan/Documents/Git/MGiGen/igen",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates",
-		"/Users/tuan/Documents/Git/MGiGen/igen_templates/commands",
-		"/Users/tuan/Documents/Git/MGiGen/igen_templates/detail",
-		"/Users/tuan/Documents/Git/MGiGen/igen_templates/form",
-		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list",
-		"/Users/tuan/Documents/Git/MGiGen/igen_templates/login",
-		"/Users/tuan/Documents/Git/MGiGen/igen_templates/setting",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton"
 	],
 	"file_history":
 	[
-		"/Users/tuan/Documents/Git/MGiGen/.gitignore",
+		"/Users/tuan/Documents/Git/MGiGen/igen/file_header_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/template_cmd.py",
+		"/Users/tuan/Documents/Git/MGiGen/.gitignore",
 		"/Users/tuan/Documents/Git/MGiGen/igen/template.py",
 		"/Users/tuan/Documents/Git/MGiGen/AppDelegate.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/commands/FileHeader.swift",
@@ -593,7 +611,6 @@
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/login/FileHeader.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/setting/FileHeader.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen_config.txt",
-		"/Users/tuan/Documents/Git/MGiGen/igen/file_header_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/command.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/base/FileHeader.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen/str_helpers.py",
@@ -711,6 +728,10 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"print",
+			"is None",
+			"local_config_file_path",
+			"global_config_file_path",
 			"config_file_path",
 			"_file_header",
 			"token",
@@ -750,7 +771,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -772,6 +793,9 @@
 						],
 						"settings":
 						{
+							"SL.104.region_keys":
+							[
+							],
 							"SL.228.region_keys":
 							[
 								"sublime_linter.protected_regions"
@@ -792,7 +816,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 4223.0,
+						"translation.y": 3241.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 2,
@@ -800,29 +824,95 @@
 				},
 				{
 					"buffer": 1,
-					"file": "igen/file_header_cmd.py",
+					"file": "igen/template.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3825,
+						"buffer_size": 36750,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3823,
-								3823
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"SL.14.region_keys":
+							"SL.111.region_keys":
 							[
 							],
-							"SL.235.region_keys":
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 9228.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "igen_templates/skeleton/Podfile.txt",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 1090,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "igen/config_cmd.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6588,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2105,
+								2105
+							]
+						],
+						"settings":
+						{
+							"SL.106.region_keys":
 							[
 								"sublime_linter.protected_regions"
+							],
+							"SL.15.region_keys":
+							[
+							],
+							"SL.250.region_keys":
+							[
 							],
 							"auto_complete_triggers":
 							[
@@ -840,46 +930,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1003.0,
+						"translation.y": 597.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "igen/config_cmd.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 5565,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4959,
-								4959
-							]
-						],
-						"settings":
-						{
-							"SL.15.region_keys":
-							[
-							],
-							"SL.250.region_keys":
-							[
-							],
-							"syntax": "Packages/Python/Python.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
+					"stack_index": 3,
 					"type": "text"
 				}
 			]
@@ -970,7 +1024,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 234.0,
+	"side_bar_width": 301.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
