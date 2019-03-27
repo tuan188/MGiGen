@@ -208,17 +208,17 @@ def cmd_config(parser, context, args):
     parser.epilog = """To configure the project information, run 'igen config project'. \
 To view the configuration file, run 'igen config info'. \
 To delete the configuration file, run 'igen config delete. \
-To view the available configuration keys, run 'igen config keys'."""
+To view the available configurations, run 'igen config keys'."""
 
     parser.add_argument(
-        'name',
-        nargs=1,
-        help='section [and its key separated by a dot]'
+        'key',
+        nargs='?',
+        help='configuration key'
     )
     parser.add_argument(
         'value',
-        nargs='*',
-        help='section value'
+        nargs='?',
+        help='configuration value'
     )
     parser.add_argument(
         '--global',
@@ -236,25 +236,24 @@ To view the available configuration keys, run 'igen config keys'."""
     global_config = vars(args)['global']
 
     cmd = ConfigCommand(global_config)
-    name = args.name[0]
-    values = args.value
+    key = args.key
+    value = args.value
     unset = args.unset
 
-    if name == 'info':
+    if key is None:
         cmd.info()
-    elif name == 'project':
+    elif key == 'project':
         cmd.update_project_info()
-    elif name == 'delete':
+    elif key == 'delete':
         cmd.delete_config()
-    elif name == 'keys':
+    elif key == 'keys':
         cmd.keys()
     elif unset:
-        cmd.unset(name)
-    elif values:
-        value = values[0]
-        cmd.config(name, value)
+        cmd.unset(key)
+    elif value:
+        cmd.config(key, value)
     else:
-        print('Invalid command, section and/or key.')
+        print('Invalid configuration key.')
 
 
 @subcmd('encode', help='encode a string')
