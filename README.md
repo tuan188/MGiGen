@@ -1,4 +1,4 @@
-# igen - Code Generation Tools for iOS
+# igen - A code generator for iOS app
 
 ## Installation:
 ### Install using pip:
@@ -299,7 +299,7 @@ Copy the enum:
 
 ```swift
 enum SettingMenu {
-      case about
+    case about
     case support
     case facebook
     case email
@@ -605,68 +605,167 @@ extension Notice: Mappable {
 }
 ```
 
-## 6. Configuration:
-### 6.1. Configure the project information:
+## 6. File header command:
+To update files’ headers, run:
+
+```
+$ igen header [--file-name] [--project] [--developer] [--created-date] [--copyright-year] [--company] <File_Paths>
+```
+
+#### Options:
+`—file-name`: update file name.
+`—project`: update project.
+`—developer`: update developer.
+`—created-date`: update created date.
+`—copyright-year`: update copyright year.
+`—company`: update company.
+
+If you don’t set any options, the tool will update all header information base on its configuration file.
+
+#### Example:
+
+Update the company and the developer in AppDelegate’s header.
+
+```
+$ igen header AppDelegate.swift --company --developer
+```
+
+You can use wildcard as well:
+
+Update all Swift files:
+
+```
+$ igen header *.swift
+```
+
+Update all Swift files in the Domain folder and its child folders (recursive) :
+
+```
+$ igen header Domain/**/*.swift
+```
+
+## 7. Configuration:
+### 7.1. Configure the project information:
 To update the project information, run:
 
 ```
-$ igen config project
+$ igen config project [--global]
 ```
 
-If you want to update the project name only, run:
+#### Options:
+
+`--global`: global configuration.
+
+### 7.2. View the configuration:
+To view the configuration, run:
 
 ```
-$ igen config project.name <Project_Name>
+$ igen config [--global]
 ```
 
-Update the developer name:
+#### Options:
+
+`--global`: global configuration.
+
+### 7.3. Update a configuration:
 
 ```
-$ igen config project.developer <Developer_Name>
+$ igen config key value [--global] [--unset]
 ```
 
-Update the company name:
+#### Options:
+`--global`: global configuration.
+`--unset`: delete a configuration.
+
+#### Configure the project id:
 
 ```
-$ igen config project.company <Company_Name>
+$ igen config project.id <Project_ID>
 ```
 
-### 6.2. Configure the output path:
-To configure the path for the output files, run:
+Use the special value `@project` if you want to use the MD5 encoded project name as the project id.
 
 ```
-$igen config output.path <Path>
+$ igen config project.id @project
 ```
 
-#### Example:
+The project id will be used in file headers.
+
+```swift
+//
+//  AppDelegate.swift
+//  MGiGen (d18ea2a2902863a858af4f0e0911ed35)
+//
+//  Created by Tuan Truong on 3/27/19.
+//  Copyright © 2019 Sun Asterisk. All rights reserved.
+//
+```
+
+#### Configure the output path:
+
+```
+$ igen config output.path <Path>
+```
+
+Example:
+
 Set the current working directory as the output path (relative path):
 
 ```
-$igen config output.path .
+$ igen config output.path .
 ```
 
 Set the desktop as the output path:
 
 ```
-$igen config output.path /Users/<Your_Name>/Desktop
+$ igen config output.path /Users/<Your_Name>/Desktop/
 ```
 
 You can use a special value `@here`  to set the current working directory as the output path (absolute path):
 
 ```
-$igen config output.path @here
+$ igen config output.path @here
 ```
 
-### 6.3. View the configuration:
-To view the configuration, run:
+Other special values: `@desktop`, `@downloads`, `@documents`
+
+### 7.4. View the available configurations:
+To view the available configurations, run:
 
 ```
-$ igen config info
+$ igen config keys
 ```
 
-## 7. Other commands:
+Output:
+
+```
+Available configuration keys:
+    project.name
+    project.developer
+    project.company
+    project.id
+    output.path
+```
+
+### 7.5. Delete the configuration file:
+To delete the configuration file, run:
+
+```
+$ igen config delete [--global]
+```
+
+#### Options:
+
+`--global`: global configuration.
+
+## 8. Other commands:
 Run:
 
 ```
 $ igen -h
 ```
+
+## Links:
+* [Clean Architecture](https://github.com/tuan188/MGCleanArchitecture)
+
+
