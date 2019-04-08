@@ -428,10 +428,19 @@
 	"buffers":
 	[
 		{
-			"file": "igen/__init__.py",
+			"file": "igen/__main__.py",
 			"settings":
 			{
-				"buffer_size": 47,
+				"buffer_size": 10095,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "igen/api_cmd.py",
+			"settings":
+			{
+				"buffer_size": 1190,
 				"line_ending": "Unix"
 			}
 		}
@@ -572,13 +581,20 @@
 	],
 	"file_history":
 	[
+		"/Users/tuan/Documents/Git/MGArchitecture/MGArchitecture.podspec",
+		"/Users/tuan/Documents/Git/MGLoadMore/Podfile",
+		"/Users/tuan/Documents/Git/MGiGen/igen/__init__.py",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/Storyboards.swift",
+		"/Users/tuan/Downloads/test_view/SASW/JSW_MCAL/XPC56xx/tools/ram_size_report/ram_size_report.pl",
 		"/Users/tuan/Documents/Git/MGiGen/igen/__main__.py",
+		"/Users/tuan/Documents/Git/MGiGen/igen/file_header_cmd.py",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/APIError.swift",
+		"/Users/tuan/Documents/Git/MGiGen/README.md",
 		"/Users/tuan/Documents/Git/MGiGen/igen/config_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/template.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/mock_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/gitignore.txt",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/commands/Mock.swift",
-		"/Users/tuan/Documents/Git/MGiGen/igen/file_header_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/template_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/.gitignore",
 		"/Users/tuan/Documents/Git/MGiGen/AppDelegate.swift",
@@ -596,10 +612,8 @@
 		"/Users/tuan/Documents/Git/MGiGen/igen/encoder.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/constants.py",
 		"/Users/tuan/Documents/Git/MGiGen/build/lib/igen/__main__.py",
-		"/Users/tuan/Documents/Git/MGiGen/igen/__init__.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/model.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/api_cmd.py",
-		"/Users/tuan/Documents/Git/MGiGen/README.md",
 		"/Users/tuan/Documents/Git/MGiGen/igen/pb.py",
 		"/Users/tuan/Documents/Git/MGiGen/setup.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/bind_cmd.py",
@@ -705,6 +719,8 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"%symbols",
+			"process_ram_records_detail",
 			"name",
 			"print",
 			"is None",
@@ -754,11 +770,44 @@
 			[
 				{
 					"buffer": 0,
-					"file": "igen/__init__.py",
+					"file": "igen/__main__.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 47,
+						"buffer_size": 10095,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2170,
+								2170
+							]
+						],
+						"settings":
+						{
+							"SL.85.region_keys":
+							[
+							],
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 683.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "igen/api_cmd.py",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 1190,
 						"regions":
 						{
 						},
@@ -771,16 +820,18 @@
 						],
 						"settings":
 						{
-							"SL.169.region_keys":
+							"SL.89.region_keys":
 							[
 							],
-							"syntax": "Packages/Python/Python.sublime-syntax"
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
@@ -871,7 +922,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 301.0,
+	"side_bar_width": 255.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

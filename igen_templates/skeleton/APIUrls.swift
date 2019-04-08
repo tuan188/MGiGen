@@ -1,5 +1,5 @@
 extension API {
-    struct Urls {
+    enum Urls {
 
     }
 }

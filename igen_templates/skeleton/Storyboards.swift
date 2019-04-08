@@ -1,5 +1,5 @@
 import UIKit
 
-struct Storyboards {
+enum Storyboards {
 
 }
