@@ -25,7 +25,7 @@ def pods
 end
 
 def test_pods
-    pod 'RxBlocking', '4.3'
+    pod 'RxBlocking', '4.5'
 end
 
 target '{{ project }}' do

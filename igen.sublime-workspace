@@ -432,7 +432,6 @@
 			"settings":
 			{
 				"buffer_size": 10095,
-				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -513,6 +512,10 @@
 		"selected_items":
 		[
 			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
 				"instal",
 				"Package Control: Install Package"
 			],
@@ -523,10 +526,6 @@
 			[
 				"remove",
 				"Package Control: Remove Package"
-			],
-			[
-				"insta",
-				"Package Control: Install Package"
 			],
 			[
 				"install",
@@ -577,16 +576,23 @@
 		"/Users/tuan/Documents/Git/MGiGen",
 		"/Users/tuan/Documents/Git/MGiGen/igen",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/base",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton"
 	],
 	"file_history":
 	[
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/APIInput.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen/__init__.py",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/APIOutput.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/Podfile.txt",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/APIUrls.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen/__main__.py",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/UIViewController+.swift",
+		"/Users/tuan/Documents/Git/MGAPIService/MGAPIService.podspec",
 		"/Users/tuan/Documents/Git/MGArchitecture/MGArchitecture.podspec",
 		"/Users/tuan/Documents/Git/MGLoadMore/Podfile",
-		"/Users/tuan/Documents/Git/MGiGen/igen/__init__.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/Storyboards.swift",
 		"/Users/tuan/Downloads/test_view/SASW/JSW_MCAL/XPC56xx/tools/ram_size_report/ram_size_report.pl",
-		"/Users/tuan/Documents/Git/MGiGen/igen/__main__.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/file_header_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/APIError.swift",
 		"/Users/tuan/Documents/Git/MGiGen/README.md",
@@ -765,7 +771,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -781,13 +787,19 @@
 						"selection":
 						[
 							[
-								2170,
-								2170
+								7832,
+								7832
 							]
 						],
 						"settings":
 						{
-							"SL.85.region_keys":
+							"SL.207.region_keys":
+							[
+							],
+							"SL.230.region_keys":
+							[
+							],
+							"SL.259.region_keys":
 							[
 							],
 							"syntax": "Packages/Python/Python.sublime-syntax",
@@ -795,10 +807,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 683.0,
+						"translation.y": 3686.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
@@ -820,7 +832,10 @@
 						],
 						"settings":
 						{
-							"SL.89.region_keys":
+							"SL.239.region_keys":
+							[
+							],
+							"SL.260.region_keys":
 							[
 							],
 							"syntax": "Packages/Python/Python.sublime-syntax",
@@ -831,7 +846,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 0,
 					"type": "text"
 				}
 			]

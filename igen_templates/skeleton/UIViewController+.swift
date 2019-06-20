@@ -12,7 +12,7 @@ extension UIViewController {
         ac.addAction(okAction)
         present(ac, animated: true, completion: nil)
     }
-    
+
     func showAutoCloseMessage(image: UIImage?,
                               title: String?,
                               message: String?,
@@ -29,7 +29,8 @@ extension UIViewController {
                 completion?()
             }
         } else {
-            let ac = UIAlertController(title: title, message: message,
+            let ac = UIAlertController(title: title,
+                                       message: message,
                                        preferredStyle: .alert)
             after(interval: interval) {
                 ac.dismiss(animated: true, completion: completion)
@@ -37,26 +38,26 @@ extension UIViewController {
             present(ac, animated: true, completion: nil)
         }
     }
-    
+
     func removeBackButtonTitle() {
         if let topItem = self.navigationController?.navigationBar.topItem {
             topItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         }
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
     }
-    
+
     func topMostViewController() -> UIViewController? {
         if let navigation = self as? UINavigationController {
             return navigation.visibleViewController?.topMostViewController()
         }
-        
+
         if let tab = self as? UITabBarController {
             if let selectedTab = tab.selectedViewController {
                 return selectedTab.topMostViewController()
             }
             return tab.topMostViewController()
         }
-        
+
         if self.presentedViewController == nil {
             return self
         }

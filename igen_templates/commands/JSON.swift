@@ -1,17 +1,7 @@
 struct {{ name }} {
 {% for p in properties %}
-    var {{ p.name }}: {{ p.type_name }}
+    var {{ p.name }} = {{ p.value }}
 {% endfor %}
-}
-
-extension {{ name }} {
-    init() {
-        self.init(
-        {% for p in properties %}
-            {{ p.name }}: {{ p.value }}{{ "," if not loop.last }}
-        {% endfor %}
-        )
-    }
 }
 
 extension {{ name }}: Then { }
