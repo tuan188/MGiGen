@@ -621,6 +621,7 @@ class Template(object):
             self._create_podfile()
             self._create_gitignore()
             self._create_localizable()
+            self._create_pull_request_template()
             self._create_swiftlint()
             self._create_UnitTestViewController()
             self._create_AppDelegate()
@@ -667,6 +668,14 @@ class Template(object):
                 class_name='Localizable',
                 file_extension='strings',
                 template_file='Localizable.strings'
+            )
+
+        def _create_pull_request_template(self):
+            self._create_file_from_template(
+                class_name='pull_request_template',
+                file_extension='md',
+                template_file='pull_request_template.md',
+                has_file_header=False
             )
 
         def _create_swiftlint(self):

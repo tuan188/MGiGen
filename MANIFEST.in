@@ -3,3 +3,4 @@ recursive-include igen_templates *.strings
 recursive-include igen_templates *.yml
 recursive-include igen_templates *.h
 recursive-include igen_templates *.txt
+recursive-include igen_templates *.md
