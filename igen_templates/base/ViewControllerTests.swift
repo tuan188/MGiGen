@@ -12,7 +12,6 @@ final class {{ name }}ViewControllerTests: XCTestCase {
 
     func test_ibOutlets() {
         _ = viewController.view
-        XCTAssert(true)
 //        XCTAssertNotNil(viewController.tableView)
     }
 }

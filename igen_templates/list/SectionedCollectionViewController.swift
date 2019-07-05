@@ -3,19 +3,19 @@ import Reusable
 import RxDataSources
 
 final class {{ name }}ViewController: UIViewController, BindableType {
-    
+
     // MARK: - IBOutlets
-    
+
     @IBOutlet weak var collectionView: LoadMoreCollectionView!
 
     // MARK: - Properties
-    
+
     var viewModel: {{ name }}ViewModel!
 
-    fileprivate typealias {{ model_name }}SectionModel = SectionModel<String, {{ model_name }}>
-    fileprivate var dataSource: RxCollectionViewSectionedReloadDataSource<{{ model_name }}SectionModel>!
+    private typealias {{ model_name }}SectionModel = SectionModel<String, {{ model_name }}>
+    private var dataSource: RxCollectionViewSectionedReloadDataSource<{{ model_name }}SectionModel>!
 
-    fileprivate struct Options {
+    private struct LayoutOptions {
         var itemSpacing: CGFloat = 8
         var lineSpacing: CGFloat = 8
         var itemsPerRow: Int = 2
@@ -27,19 +27,19 @@ final class {{ name }}ViewController: UIViewController, BindableType {
         )
     }
 
-    fileprivate var options = Options()
+    private var layoutOptions = LayoutOptions()
 
     // MARK: - Life Cycle
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         configView()
     }
-    
+
     deinit {
         logDeinit()
     }
-    
+
     // MARK: - Methods
 
     private func configView() {
@@ -47,6 +47,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             $0.register(cellType: {{ model_name }}Cell.self)
             $0.alwaysBounceVertical = true
         }
+
         collectionView.rx
             .setDelegate(self)
             .disposed(by: rx.disposeBag)
@@ -71,7 +72,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             configureSupplementaryView: { dataSource, collectionView, kind, indexPath in
                 return UICollectionReusableView()
             })
-        
+
         output.{{ model_variable }}Sections
             .map {
                 $0.map { section in
@@ -80,24 +81,31 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             }
             .drive(collectionView.rx.items(dataSource: dataSource))
             .disposed(by: rx.disposeBag)
+
         output.error
             .drive(rx.error)
             .disposed(by: rx.disposeBag)
+
         output.loading
             .drive(rx.isLoading)
             .disposed(by: rx.disposeBag)
+
         output.refreshing
             .drive(collectionView.refreshing)
             .disposed(by: rx.disposeBag)
+
         output.loadingMore
             .drive(collectionView.loadingMore)
             .disposed(by: rx.disposeBag)
+
         output.fetchItems
             .drive()
             .disposed(by: rx.disposeBag)
+
         output.selected{{ model_name }}
             .drive()
             .disposed(by: rx.disposeBag)
+
         output.isEmptyData
             .drive()
             .disposed(by: rx.disposeBag)
@@ -115,31 +123,34 @@ extension {{ name }}ViewController: UICollectionViewDelegate, UICollectionViewDe
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         let screenSize = UIScreen.main.bounds
-        let paddingSpace = options.sectionInsets.left
-            + options.sectionInsets.right
-            + CGFloat(options.itemsPerRow - 1) * options.itemSpacing
+
+        let paddingSpace = layoutOptions.sectionInsets.left
+            + layoutOptions.sectionInsets.right
+            + CGFloat(layoutOptions.itemsPerRow - 1) * layoutOptions.itemSpacing
+
         let availableWidth = screenSize.width - paddingSpace
-        let widthPerItem = availableWidth / CGFloat(options.itemsPerRow)
+        let widthPerItem = availableWidth / CGFloat(layoutOptions.itemsPerRow)
         let heightPerItem = widthPerItem
+
         return CGSize(width: widthPerItem, height: heightPerItem)
     }
 
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         insetForSectionAt section: Int) -> UIEdgeInsets {
-        return options.sectionInsets
+        return layoutOptions.sectionInsets
     }
 
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return options.lineSpacing
+        return layoutOptions.lineSpacing
     }
 
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return options.itemSpacing
+        return layoutOptions.itemSpacing
     }
 }
 

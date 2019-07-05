@@ -1,6 +1,6 @@
 final class {{ name }}: Mappable {
 {% for p in properties %}
-    var {{ p.name }}: {{ p.type_name }}
+    var {{ p.name }} = {{ p.value }}
 {% endfor %}
 
     init(
@@ -12,19 +12,11 @@ final class {{ name }}: Mappable {
         self.{{ p.name }} = {{ p.name }}
     {% endfor %}
     }
-    
-    convenience init() {
-        self.init(
-        {% for p in properties %}
-            {{ p.name }}: {{ p.value }}{{ "," if not loop.last }}
-        {% endfor %}
-        )
-    }
-    
+
     required convenience init?(map: Map) {
         self.init()
     }
-    
+
     func mapping(map: Map) {
 {% for p in properties %}
     {% if p.is_date %}
