@@ -15,16 +15,31 @@ final class {{ name }}ViewController: UIViewController, BindableType {
     private typealias {{ model_name }}SectionModel = SectionModel<String, {{ model_name }}>
     private var dataSource: RxCollectionViewSectionedReloadDataSource<{{ model_name }}SectionModel>!
 
-    private struct LayoutOptions {
-        var itemSpacing: CGFloat = 8
-        var lineSpacing: CGFloat = 8
+    struct LayoutOptions {
+        var itemSpacing: CGFloat = 16
+        var lineSpacing: CGFloat = 16
         var itemsPerRow: Int = 2
-        var sectionInsets: UIEdgeInsets = UIEdgeInsets(
-            top: 10.0,
-            left: 10.0,
-            bottom: 10.0,
-            right: 10.0
+
+        var sectionInsets = UIEdgeInsets(
+            top: 16.0,
+            left: 16.0,
+            bottom: 16.0,
+            right: 16.0
         )
+
+        var itemSize: CGSize {
+            let screenSize = UIScreen.main.bounds
+
+            let paddingSpace = sectionInsets.left
+                + sectionInsets.right
+                + CGFloat(itemsPerRow - 1) * itemSpacing
+
+            let availableWidth = screenSize.width - paddingSpace
+            let widthPerItem = availableWidth / CGFloat(itemsPerRow)
+            let heightPerItem = widthPerItem
+
+            return CGSize(width: widthPerItem, height: heightPerItem)
+        }
     }
 
     private var layoutOptions = LayoutOptions()
@@ -86,16 +101,16 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             .drive(rx.error)
             .disposed(by: rx.disposeBag)
 
-        output.loading
+        output.isLoading
             .drive(rx.isLoading)
             .disposed(by: rx.disposeBag)
 
-        output.refreshing
-            .drive(collectionView.refreshing)
+        output.isReloading
+            .drive(collectionView.isRefreshing)
             .disposed(by: rx.disposeBag)
 
-        output.loadingMore
-            .drive(collectionView.loadingMore)
+        output.isLoadingMore
+            .drive(collectionView.isLoadingMore)
             .disposed(by: rx.disposeBag)
 
         output.fetchItems
@@ -106,7 +121,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             .drive()
             .disposed(by: rx.disposeBag)
 
-        output.isEmptyData
+        output.isEmpty
             .drive()
             .disposed(by: rx.disposeBag)
     }
@@ -122,17 +137,7 @@ extension {{ name }}ViewController: UICollectionViewDelegate, UICollectionViewDe
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let screenSize = UIScreen.main.bounds
-
-        let paddingSpace = layoutOptions.sectionInsets.left
-            + layoutOptions.sectionInsets.right
-            + CGFloat(layoutOptions.itemsPerRow - 1) * layoutOptions.itemSpacing
-
-        let availableWidth = screenSize.width - paddingSpace
-        let widthPerItem = availableWidth / CGFloat(layoutOptions.itemsPerRow)
-        let heightPerItem = widthPerItem
-
-        return CGSize(width: widthPerItem, height: heightPerItem)
+        return layoutOptions.itemSize
     }
 
     func collectionView(_ collectionView: UICollectionView,

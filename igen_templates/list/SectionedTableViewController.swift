@@ -73,16 +73,16 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             .drive(rx.error)
             .disposed(by: rx.disposeBag)
 
-        output.loading
+        output.isLoading
             .drive(rx.isLoading)
             .disposed(by: rx.disposeBag)
 
-        output.refreshing
-            .drive(tableView.refreshing)
+        output.isReloading
+            .drive(tableView.isRefreshing)
             .disposed(by: rx.disposeBag)
 
-        output.loadingMore
-            .drive(tableView.loadingMore)
+        output.isLoadingMore
+            .drive(tableView.isLoadingMore)
             .disposed(by: rx.disposeBag)
 
         output.fetchItems
@@ -93,7 +93,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             .drive()
             .disposed(by: rx.disposeBag)
 
-        output.isEmptyData
+        output.isEmpty
             .drive()
             .disposed(by: rx.disposeBag)
     }

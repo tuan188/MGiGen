@@ -2,28 +2,28 @@ import UIKit
 import Reusable
 
 final class {{ name }}ViewController: UIViewController, BindableType {
-    
+
     // MARK: - IBOutlets
-    
+
     @IBOutlet weak var tableView: LoadMoreTableView!
 
     // MARK: - Properties
-    
+
     var viewModel: {{ name }}ViewModel!
 
     // MARK: - Life Cycle
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         configView()
     }
-    
+
     deinit {
         logDeinit()
     }
 
     // MARK: - Methods
-    
+
     private func configView() {
         tableView.do {
             $0.estimatedRowHeight = 550
@@ -44,7 +44,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
         )
 
         let output = viewModel.transform(input)
-        
+
         output.{{ model_variable }}List
             .drive(tableView.rx.items) { tableView, index, {{ model_variable }} in
                 return tableView.dequeueReusableCell(
@@ -55,25 +55,32 @@ final class {{ name }}ViewController: UIViewController, BindableType {
                     }
             }
             .disposed(by: rx.disposeBag)
+
         output.error
             .drive(rx.error)
             .disposed(by: rx.disposeBag)
-        output.loading
+
+        output.isLoading
             .drive(rx.isLoading)
             .disposed(by: rx.disposeBag)
-        output.refreshing
-            .drive(tableView.refreshing)
+
+        output.isReloading
+            .drive(tableView.isRefreshing)
             .disposed(by: rx.disposeBag)
-        output.loadingMore
-            .drive(tableView.loadingMore)
+
+        output.isLoadingMore
+            .drive(tableView.isLoadingMore)
             .disposed(by: rx.disposeBag)
+
         output.fetchItems
             .drive()
             .disposed(by: rx.disposeBag)
+
         output.selected{{ model_name }}
             .drive()
             .disposed(by: rx.disposeBag)
-        output.isEmptyData
+
+        output.isEmpty
             .drive()
             .disposed(by: rx.disposeBag)
     }

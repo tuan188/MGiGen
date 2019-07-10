@@ -7,7 +7,7 @@ final class {{ name }}ViewModelTests: XCTestCase {
     private var viewModel: {{ name }}ViewModel!
     private var navigator: {{ name }}NavigatorMock!
     private var useCase: {{ name }}UseCaseMock!
-    
+
     private var input: {{ name }}ViewModel.Input!
     private var output: {{ name }}ViewModel.Output!
 
@@ -20,7 +20,7 @@ final class {{ name }}ViewModelTests: XCTestCase {
         navigator = {{ name }}NavigatorMock()
         useCase = {{ name }}UseCaseMock()
         viewModel = {{ name }}ViewModel(navigator: navigator, useCase: useCase, {{ model_variable }}: {{ model_name }}())
-        
+
         input = {{ name }}ViewModel.Input(
             loadTrigger: loadTrigger.asDriverOnErrorJustComplete()
         )
@@ -28,7 +28,7 @@ final class {{ name }}ViewModelTests: XCTestCase {
         output = viewModel.transform(input)
 
         disposeBag = DisposeBag()
-        
+
         output.cells.drive().disposed(by: disposeBag)
     }
 
@@ -38,6 +38,6 @@ final class {{ name }}ViewModelTests: XCTestCase {
         let cells = try? output.cells.toBlocking(timeout: 1).first()
 
         // assert
-        XCTAssertNotEqual(cells??.count, 0)
+        XCTAssertNotEqual(cells?.count, 0)
     }
 }

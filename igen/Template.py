@@ -243,16 +243,23 @@ class Template(object):
 
             template = self.env.get_template(template_file)
             content += self._content_from_template(template)
+
+            output_path = self.output_path
+            if output_path.endswith('/'):
+                output_path = output_path[:-1]
+
             if folder:
-                folder = '{}/{}/{}'.format(self.output_path, self.name, folder)
+                folder = '{}/{}/{}'.format(output_path, self.name, folder)
             else:
-                folder = '{}/{}'.format(self.output_path, self.name)
+                folder = '{}/{}'.format(output_path, self.name)
+
             file_path = create_file(
                 content=content,
                 file_name=class_name,
                 file_extension=file_extension,
                 folder=folder
             )
+
             if file_path is not None:
                 print('    {}'.format(file_path))
 
@@ -796,11 +803,16 @@ class Template(object):
                 name,
                 project_info
             )
+
             self.model = model
             self.model_name = self.model.name
             self.model_variable = lower_first_letter(self.model_name)
+
             self.submit = lower_first_letter(options['submit']) \
                 if options['submit'] else 'submit'
+
+            self.submit_title = upper_first_letter(self.submit)
+
             self.env = Environment(
                 loader=PackageLoader('igen_templates', 'form'),
                 trim_blocks=True,
@@ -809,17 +821,21 @@ class Template(object):
 
         def create_files(self):
             print('Successfully created files:')
+
             output_path = self._make_dirs()
+
             self._create_assembler()
             self._create_navigator()
             self._create_view_model()
             self._create_use_case()
             self._create_view_controller()
+
             # Test
             self._create_use_case_mock()
             self._create_navigator_mock()
             self._create_view_model_tests()
             self._create_view_controller_tests()
+
             return output_path
 
         def _content_from_template(self, template):
@@ -830,7 +846,8 @@ class Template(object):
                 model_name=self.model_name,
                 model_variable=self.model_variable,
                 properties=self.model.properties,
-                submit=self.submit
+                submit=self.submit,
+                submit_title=self.submit_title
             )
 
     # =============== DynamicFormTemplate ===============
@@ -842,11 +859,16 @@ class Template(object):
                 name,
                 project_info
             )
+
             self.model = model
             self.model_name = self.model.name
             self.model_variable = lower_first_letter(self.model_name)
+
             self.submit = lower_first_letter(options['submit']) \
                 if options['submit'] else 'submit'
+
+            self.submit_title = upper_first_letter(self.submit)
+
             self.env = Environment(
                 loader=PackageLoader('igen_templates', 'form'),
                 trim_blocks=True,
@@ -855,19 +877,24 @@ class Template(object):
 
         def create_files(self):
             print('Successfully created files:')
+
             output_path = self._make_dirs()
+
             self._create_assembler()
             self._create_navigator()
             self._create_view_model()
             self._create_use_case()
             self._create_view_controller()
             self._create_cells()
+            self._create_validationResultViewModel()
+
             # Test
             self._create_use_case_mock()
             self._create_navigator_mock()
             self._create_view_model_tests()
             self._create_view_controller_tests()
             self._create_cells_tests()
+
             return output_path
 
         def _content_from_template(self, template):
@@ -878,7 +905,8 @@ class Template(object):
                 model_name=self.model_name,
                 model_variable=self.model_variable,
                 properties=self.model.properties,
-                submit=self.submit
+                submit=self.submit,
+                submit_title=self.submit_title
             )
 
         def _create_view_model(self):
@@ -914,6 +942,12 @@ class Template(object):
             )
             if file_path is not None:
                 print('    {}'.format(file_path))
+
+        def _create_validationResultViewModel(self):
+            self._create_file_from_template(
+                class_name='ValidationResultViewModel',
+                template_file='ValidationResultViewModel.swift'
+            )
 
         # =============== UnitTests ===============
 

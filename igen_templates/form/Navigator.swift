@@ -11,6 +11,8 @@ struct {{ name }}Navigator: {{ name }}NavigatorType {
     {% endif %}
 
     func dismiss() {
+        {% if not use_window %}
         navigationController.dismiss(animated: true, completion: nil)
+        {% endif %}
     }
 }

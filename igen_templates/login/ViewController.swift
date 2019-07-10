@@ -2,20 +2,20 @@ import UIKit
 import Reusable
 
 final class {{ name }}ViewController: UIViewController, BindableType {
-    
+
     // MARK: - IBOutlets
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var usernameValidationLabel: UILabel!
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var passwordValidationLabel: UILabel!
     @IBOutlet weak var loginButton: UIButton!
-    
+
     // MARK: - Properties
-    
+
     var viewModel: {{ name }}ViewModel!
 
     // MARK: - Life Cycle
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         configView()
@@ -24,7 +24,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
     deinit {
         logDeinit()
     }
-    
+
     // MARK: - Methods
 
     private func configView() {
@@ -38,24 +38,29 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             passwordTrigger: passwordTextField.rx.text.orEmpty.asDriver(),
             loginTrigger: loginButton.rx.tap.asDriver()
         )
-        
+
         let output = viewModel.transform(input)
-        
+
         output.usernameValidation
             .drive(usernameValidationBinder)
             .disposed(by: rx.disposeBag)
+
         output.passwordValidation
             .drive(passwordValidationBinder)
             .disposed(by: rx.disposeBag)
+
         output.login
             .drive()
             .disposed(by: rx.disposeBag)
-        output.loginEnabled
+
+        output.isLoginEnabled
             .drive(loginButton.rx.isEnabled)
             .disposed(by: rx.disposeBag)
-        output.loading
+
+        output.isLoading
             .drive(rx.isLoading)
             .disposed(by: rx.disposeBag)
+
         output.error
             .drive(rx.error)
             .disposed(by: rx.disposeBag)
@@ -74,7 +79,7 @@ extension {{ name }}ViewController {
             }
         }
     }
-    
+
     var passwordValidationBinder: Binder<ValidationResult> {
         return Binder(self) { vc, result in
             switch result {

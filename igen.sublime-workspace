@@ -437,53 +437,10 @@
 			}
 		},
 		{
-			"file": "igen/template.py",
+			"file": "igen_templates/list/ViewModel.swift",
 			"settings":
 			{
-				"buffer_size": 37046,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "igen_templates/base/ViewController.swift",
-			"settings":
-			{
-				"buffer_size": 778,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "igen_templates/list/CollectionViewController.swift",
-			"settings":
-			{
-				"buffer_size": 4526,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "igen_templates/list/SectionedCollectionViewController.swift",
-			"settings":
-			{
-				"buffer_size": 5197,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "igen_templates/list/SectionedViewModel.swift",
-			"settings":
-			{
-				"buffer_size": 3001,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "igen_templates/list/SectionedTableViewController.swift",
-			"settings":
-			{
-				"buffer_size": 3408,
+				"buffer_size": 2587,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -621,24 +578,38 @@
 		"/Users/tuan/Documents/Git/MGiGen",
 		"/Users/tuan/Documents/Git/MGiGen/igen",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates",
-		"/Users/tuan/Documents/Git/MGiGen/igen_templates/base",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/commands",
-		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list"
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/detail",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton"
 	],
 	"file_history":
 	[
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/Podfile.txt",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/swiftlint.yml",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/Bridging-Header.h",
+		"/Users/tuan/Documents/Git/MGiGen/igen/template.py",
+		"/Users/tuan/Documents/Git/MGiGen/MANIFEST.in",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/pull_request_template.md",
+		"/Users/tuan/Documents/Git/MGiGen/igen/json_cmd.py",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/commands/JSON.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/commands/JSONClass.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/base/ViewController.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/base/ViewControllerTests.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list/SectionedTableViewController.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list/SectionedViewModel.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list/SectionedCollectionViewController.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list/CollectionViewController.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen/config_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/command.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/file_header_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/commands/BindViewModel.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen/bind_cmd.py",
-		"/Users/tuan/Documents/Git/MGiGen/igen_templates/commands/JSON.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/commands/Init.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen/template_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/__init__.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/APIInput.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/APIOutput.swift",
-		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/Podfile.txt",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/APIUrls.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen/__main__.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/UIViewController+.swift",
@@ -649,7 +620,6 @@
 		"/Users/tuan/Downloads/test_view/SASW/JSW_MCAL/XPC56xx/tools/ram_size_report/ram_size_report.pl",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/APIError.swift",
 		"/Users/tuan/Documents/Git/MGiGen/README.md",
-		"/Users/tuan/Documents/Git/MGiGen/igen/template.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/mock_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/gitignore.txt",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/commands/Mock.swift",
@@ -675,7 +645,6 @@
 		"/Users/tuan/Documents/Git/MGiGen/igen/init_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/vm.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/test_cmd.py",
-		"/Users/tuan/Documents/Git/MGiGen/igen/json_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen.sublime-project",
 		"/Users/tuan/Library/Application Support/Sublime Text 3/Packages/User/Anaconda.sublime-settings",
 		"/Users/tuan/Desktop/learning.pl",
@@ -743,18 +712,7 @@
 		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen/json_cmd.py",
 		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen/mock_cmd.py",
 		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen/test_cmd.py",
-		"/Users/tuan/Documents/Git/MGiOSTools/igen/str_helpers.py",
-		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen/template_cmd.py",
-		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen/model.py",
-		"/Users/tuan/Desktop/backup.sh",
-		"/Users/tuan/Desktop/python/practice.py",
-		"/Users/tuan/Documents/Git/MGiOSTools/igen_templates/detail/CellsTests.swift",
-		"/Users/tuan/Desktop/python/igen/igen/__main__.py",
-		"/Users/tuan/Desktop/python/igen/igen/__init__.py",
-		"/Users/tuan/Desktop/python/igen/setup.py",
-		"/Users/tuan/Desktop/python/igen/MANIFEST.in",
-		"/Users/tuan/Desktop/python/igen/igen/igen.py",
-		"/Users/tuan/Desktop/python/igen/install.sh"
+		"/Users/tuan/Documents/Git/MGiOSTools/igen/str_helpers.py"
 	],
 	"find":
 	{
@@ -773,6 +731,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"refresh",
 			"isEmptyData",
 			"refreshing",
 			"loading",
@@ -826,7 +785,7 @@
 	"groups":
 	[
 		{
-			"selected": 5,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -842,12 +801,15 @@
 						"selection":
 						[
 							[
-								2376,
-								2376
+								5508,
+								5508
 							]
 						],
 						"settings":
 						{
+							"SL.14.region_keys":
+							[
+							],
 							"SL.207.region_keys":
 							[
 							],
@@ -861,158 +823,36 @@
 							[
 								"sublime_linter.protected_regions"
 							],
-							"syntax": "Packages/Python/Python.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 752.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "igen/template.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 37046,
-						"regions":
-						{
-						},
-						"selection":
-						[
+							"SL.33.region_keys":
 							[
-								4767,
-								4767
-							]
-						],
-						"settings":
-						{
-							"SL.87.region_keys":
-							[
+								"sublime_linter.protected_regions"
 							],
 							"syntax": "Packages/Python/Python.sublime-syntax",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1700.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "igen_templates/base/ViewController.swift",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 778,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Swift/Syntaxes/Swift.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 145.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "igen_templates/list/CollectionViewController.swift",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4526,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								570,
-								570
-							]
-						],
-						"settings":
-						{
-							"SL.94.region_keys":
-							[
-							],
-							"syntax": "Packages/Swift/Syntaxes/Swift.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "igen_templates/list/SectionedCollectionViewController.swift",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 5197,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4180,
-								4180
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Swift/Syntaxes/Swift.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1856.0,
+						"translation.y": 2291.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "igen_templates/list/SectionedViewModel.swift",
+					"buffer": 1,
+					"file": "igen_templates/list/ViewModel.swift",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3001,
+						"buffer_size": 2587,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								392,
-								392
+								844,
+								844
 							]
 						],
 						"settings":
@@ -1022,40 +862,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 51.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "igen_templates/list/SectionedTableViewController.swift",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3408,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2864,
-								2864
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Swift/Syntaxes/Swift.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1273.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
 					"type": "text"
 				}
 			]
@@ -1146,7 +956,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 365.0,
+	"side_bar_width": 296.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

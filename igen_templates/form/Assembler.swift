@@ -4,7 +4,7 @@ protocol {{ name }}Assembler {
     {% if use_window %}
     func resolve(window: UIWindow, {{ model_variable }}: {{ model_name }}) -> {{ name }}ViewController
     func resolve(window: UIWindow, {{ model_variable }}: {{ model_name }}) -> {{ name }}ViewModel
-    func resolve(window: UIWindow, {{ model_variable }}: {{ model_name }}) -> {{ name }}NavigatorType
+    func resolve(window: UIWindow) -> {{ name }}NavigatorType
     {% else %}
     func resolve(navigationController: UINavigationController, {{ model_variable }}: {{ model_name }}) -> {{ name }}ViewController
     func resolve(navigationController: UINavigationController, {{ model_variable }}: {{ model_name }}) -> {{ name }}ViewModel

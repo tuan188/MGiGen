@@ -4,47 +4,47 @@ import RxSwift
 import RxBlocking
 
 final class {{ name }}ViewModelTests: XCTestCase {
-    
+
     private var viewModel: {{ name }}ViewModel!
     private var navigator: {{ name }}NavigatorMock!
     private var useCase: {{ name }}UseCaseMock!
-    
+
     private var input: {{ name }}ViewModel.Input!
     private var output: {{ name }}ViewModel.Output!
-    
+
     private var disposeBag: DisposeBag!
-    
+
     private let loadTrigger = PublishSubject<Void>()
     private let select{{ enum.name }}Trigger = PublishSubject<IndexPath>()
-    
+
     override func setUp() {
         super.setUp()
         navigator = {{ name }}NavigatorMock()
         useCase = {{ name }}UseCaseMock()
         viewModel = {{ name }}ViewModel(navigator: navigator, useCase: useCase)
-        
+
         input = {{ name }}ViewModel.Input(
             loadTrigger: loadTrigger.asDriverOnErrorJustComplete(),
             select{{ enum.name }}Trigger: select{{ enum.name }}Trigger.asDriverOnErrorJustComplete()
         )
-        
+
         output = viewModel.transform(input)
-        
+
         disposeBag = DisposeBag()
-        
+
         output.{{ enum.name_variable }}Sections.drive().disposed(by: disposeBag)
         output.selected{{ enum.name }}.drive().disposed(by: disposeBag)
     }
-    
+
     func test_loadTriggerInvoked_load{{ enum.name }}List() {
         // act
         loadTrigger.onNext(())
         let {{ enum.name_variable }}Sections = try? output.{{ enum.name_variable }}Sections.toBlocking(timeout: 1).first()
-        
+
         // assert
-        XCTAssertEqual({{ enum.name_variable }}Sections??.count, 1)
+        XCTAssertEqual({{ enum.name_variable }}Sections?.count, 1)
     }
-    
+
     private func indexPath(of {{ enum.name_variable }}: {{ name }}ViewModel.{{ enum.name }}) -> IndexPath? {
         let {{ enum.name_variable }}Sections = viewModel.{{ enum.name_variable }}Sections()
         for (section, {{ enum.name_variable }}Section) in {{ enum.name_variable }}Sections.enumerated() {
@@ -66,7 +66,7 @@ final class {{ name }}ViewModelTests: XCTestCase {
             return
         }
         select{{ enum.name }}Trigger.onNext(indexPath)
-        
+
         // assert
         XCTAssert(navigator.to{{ menu_case }}Called)
     }{{ '\n' if not loop.last }}

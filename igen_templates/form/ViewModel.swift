@@ -22,16 +22,19 @@ extension {{ name }}ViewModel: ViewModelType {
         {% for p in properties %}
         let {{ p.name }}Validation: Driver<ValidationResult>
         {% endfor %}
-        let {{ submit }}Enabled: Driver<Bool>
+        let is{{ submit_title }}Enabled: Driver<Bool>
         let {{ submit }}: Driver<Void>
         let cancel: Driver<Void>
         let error: Driver<Error>
-        let loading: Driver<Bool>
+        let isLoading: Driver<Bool>
     }
 
     func transform(_ input: Input) -> Output {
         let errorTracker = ErrorTracker()
+        let error = errorTracker.asDriver()
+
         let activityIndicator = ActivityIndicator()
+        let isLoading = activityIndicator.asDriver()
 
         // Properties
         {% for p in properties %}
@@ -45,13 +48,14 @@ extension {{ name }}ViewModel: ViewModelType {
                 input.{{ p.name }}Trigger,
                 input.{{ submit }}Trigger
             )
-            .map { $0.0 }    
+            .map { $0.0 }
             .map { {{ p.name }} -> ValidationResult in
                 self.useCase.validate({{ p.name }}: {{ p.name }})
             }{{ '\n' if not loop.last }}
         {% endfor %}
 
-        let {{ submit }}Enabled = Driver.combineLatest([
+        let is{{ submit_title }}Enabled = Driver
+            .combineLatest([
                 {% for p in properties %}
                 {{ p.name }}Validation{{ ',' if not loop.last }}
                 {% endfor %}
@@ -64,7 +68,7 @@ extension {{ name }}ViewModel: ViewModelType {
             .startWith(true)
 
         let {{ submit }} = input.{{ submit }}Trigger
-            .withLatestFrom({{ submit }}Enabled)
+            .withLatestFrom(is{{ submit_title }}Enabled)
             .filter { $0 }
             .withLatestFrom(Driver.combineLatest(
                 {% for p in properties %}
@@ -89,12 +93,9 @@ extension {{ name }}ViewModel: ViewModelType {
                 self.navigator.dismiss()
             })
             .mapToVoid()
-        
+
         let cancel = input.cancelTrigger
             .do(onNext: navigator.dismiss)
-        
-        let error = errorTracker.asDriver()
-        let loading = activityIndicator.asDriver()
 
         return Output(
             {% for p in properties %}
@@ -103,11 +104,11 @@ extension {{ name }}ViewModel: ViewModelType {
             {% for p in properties %}
             {{ p.name }}Validation: {{ p.name }}Validation,
             {% endfor %}
-            {{ submit }}Enabled: {{ submit }}Enabled,
+            is{{ submit_title }}Enabled: is{{ submit_title }}Enabled,
             {{ submit }}: {{ submit }},
             cancel: cancel,
             error: error,
-            loading: loading
+            isLoading: isLoading
         )
     }
 }

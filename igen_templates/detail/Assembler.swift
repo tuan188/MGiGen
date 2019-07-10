@@ -24,7 +24,7 @@ extension {{ name }}Assembler {
 
     func resolve(window: UIWindow, {{ model_variable }}: {{ model_name }}) -> {{ name }}ViewModel {
         return {{ name }}ViewModel(
-            navigator: resolve(window: window),
+            navigator: resolve(window: window, {{ model_variable }}: {{ model_variable }}),
             useCase: resolve(),
             {{ model_variable }}: {{ model_variable }}
         )
