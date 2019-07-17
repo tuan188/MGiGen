@@ -4,6 +4,58 @@
 		"selected_items":
 		[
 			[
+				"enumre",
+				"ENUM_REGEX\tstatement"
+			],
+			[
+				"enm",
+				"enum_string\tabc"
+			],
+			[
+				"from",
+				"from_string"
+			],
+			[
+				"fro",
+				"from_string\tfunction"
+			],
+			[
+				"lowe",
+				"lower_first_letter\tabc"
+			],
+			[
+				"In",
+				"Int\t(json_cmd.py)"
+			],
+			[
+				"en",
+				"endswith\tfunction"
+			],
+			[
+				"oup",
+				"output_path"
+			],
+			[
+				"Test",
+				"TestError\tabc"
+			],
+			[
+				"sub",
+				"submit_title\tstatement"
+			],
+			[
+				"submit",
+				"submit_title\tabc"
+			],
+			[
+				"isLoading",
+				"isLoadingMore\t(SectionedViewModelTests.swift)"
+			],
+			[
+				"model",
+				"model_variable\tabc"
+			],
+			[
 				"defaul",
 				"default_local_config_file_path"
 			],
@@ -431,16 +483,7 @@
 			"file": "igen/__main__.py",
 			"settings":
 			{
-				"buffer_size": 10095,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "igen_templates/list/ViewModel.swift",
-			"settings":
-			{
-				"buffer_size": 2587,
+				"buffer_size": 10099,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -579,34 +622,69 @@
 		"/Users/tuan/Documents/Git/MGiGen/igen",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/commands",
-		"/Users/tuan/Documents/Git/MGiGen/igen_templates/detail",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/form",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/login",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/setting",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton"
 	],
 	"file_history":
 	[
-		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/Podfile.txt",
-		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/swiftlint.yml",
-		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/Bridging-Header.h",
+		"/Users/tuan/Documents/Git/MGiGen/igen/template_cmd.py",
+		"/Users/tuan/Documents/Git/MGiGen/igen/constants.py",
+		"/Users/tuan/Documents/Git/MGiGen/igen/init_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/template.py",
+		"/Users/tuan/Documents/Git/MGiGen/igen/model.py",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/swiftlint.yml",
+		"/Users/tuan/Documents/Git/MGiGen/igen/json_cmd.py",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/commands/Init.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen/mock_cmd.py",
+		"/Users/tuan/Documents/Git/MGiGen/igen/str_helpers.py",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/AppDelegate.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/Bridging-Header.h",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/login/ViewController.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/login/ViewModel.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/login/ViewControllerTests.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/login/ViewModelTests.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/form/DynamicViewController.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/setting/SectionedViewModelTests.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/setting/ViewModelTests.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/form/ViewController.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/form/DynamicViewModel.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/form/DynamicViewModelTests.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/form/ViewModel.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/form/ViewModelTests.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/form/Assembler.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/form/Navigator.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/Podfile.txt",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/form/ValidationResultViewModel.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/detail/ViewModelTests.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/detail/StaticViewController.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/detail/Navigator.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/detail/Assembler.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list/CollectionViewController.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list/SectionedCollectionViewController.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list/SectionedViewModelTests.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list/ViewModelTests.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list/CollectionViewControllerTests.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list/TableViewController.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list/SectionedTableViewController.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list/SectionedViewModel.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list/TableViewControllerTests.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list/ViewModel.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list/UseCaseMock.swift",
+		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list/UseCase.swift",
 		"/Users/tuan/Documents/Git/MGiGen/MANIFEST.in",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/pull_request_template.md",
-		"/Users/tuan/Documents/Git/MGiGen/igen/json_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/commands/JSON.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/commands/JSONClass.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/base/ViewController.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/base/ViewControllerTests.swift",
-		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list/SectionedTableViewController.swift",
-		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list/SectionedViewModel.swift",
-		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list/SectionedCollectionViewController.swift",
-		"/Users/tuan/Documents/Git/MGiGen/igen_templates/list/CollectionViewController.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen/config_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/command.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/file_header_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/commands/BindViewModel.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen/bind_cmd.py",
-		"/Users/tuan/Documents/Git/MGiGen/igen_templates/commands/Init.swift",
-		"/Users/tuan/Documents/Git/MGiGen/igen/template_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/__init__.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/APIInput.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/APIOutput.swift",
@@ -620,7 +698,6 @@
 		"/Users/tuan/Downloads/test_view/SASW/JSW_MCAL/XPC56xx/tools/ram_size_report/ram_size_report.pl",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/APIError.swift",
 		"/Users/tuan/Documents/Git/MGiGen/README.md",
-		"/Users/tuan/Documents/Git/MGiGen/igen/mock_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/skeleton/gitignore.txt",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/commands/Mock.swift",
 		"/Users/tuan/Documents/Git/MGiGen/.gitignore",
@@ -634,15 +711,11 @@
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/setting/FileHeader.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen_config.txt",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/base/FileHeader.swift",
-		"/Users/tuan/Documents/Git/MGiGen/igen/str_helpers.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/encoder.py",
-		"/Users/tuan/Documents/Git/MGiGen/igen/constants.py",
 		"/Users/tuan/Documents/Git/MGiGen/build/lib/igen/__main__.py",
-		"/Users/tuan/Documents/Git/MGiGen/igen/model.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/api_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/pb.py",
 		"/Users/tuan/Documents/Git/MGiGen/setup.py",
-		"/Users/tuan/Documents/Git/MGiGen/igen/init_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/vm.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen/test_cmd.py",
 		"/Users/tuan/Documents/Git/MGiGen/igen.sublime-project",
@@ -652,7 +725,6 @@
 		"/Users/tuan/Desktop/test.pl",
 		"/Users/tuan/Desktop/test.py",
 		"/Users/tuan/Documents/Git/MGCleanArchitecture/.swiftlint.yml",
-		"/Users/tuan/Documents/Git/MGiGen/igen_templates/setting/ViewModelTests.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/setting/CellTests.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/setting/Cell.swift",
 		"/Users/tuan/Documents/Git/MGiGen/igen_templates/setting/NavigatorMock.swift",
@@ -685,34 +757,7 @@
 		"/Users/tuan/Documents/Git/MGiOSTools/igen_templates/list/NavigatorMock.swift",
 		"/Users/tuan/Documents/Git/MGiOSTools/igen_templates/list/SectionedViewModelTests.swift",
 		"/Users/tuan/Documents/Git/MGiOSTools/igen_templates/list/ViewModelTests.swift",
-		"/Users/tuan/Documents/Git/MGiOSTools/igen_templates/list/UseCaseMock.swift",
-		"/Users/tuan/Downloads/cwe/cwe.pl",
-		"/Users/tuan/Desktop/tuan.pl",
-		"/Users/tuan/Desktop/test.perl",
-		"/Users/tuan/Desktop/huyen.perl",
-		"/Users/tuan/Library/Application Support/Sublime Text 3/Packages/User/Perl.sublime-build",
-		"/Users/tuan/Desktop/TDD plan.txt",
-		"/Users/tuan/Desktop/swift.Login",
-		"/Users/tuan/Library/Application Support/Sublime Text 3/Packages/User/Python 3.sublime-build",
-		"/Users/tuan/Desktop/tuan.py",
-		"/Users/tuan/Desktop/Eth.xdm",
-		"/Users/tuan/Library/Application Support/Sublime Text 3/Packages/User/python3.sublime-build",
-		"/Users/tuan/Library/Application Support/Sublime Text 3/Packages/User/Python3.sublime-build",
-		"/Users/tuan/Documents/Git/MGiOSTools/igen/__init__.py",
-		"/Users/tuan/Documents/Git/MGiOSTools/igen/api_cmd.py",
-		"/Users/tuan/Documents/Git/MGiOSTools/igen/bind_cmd.py",
-		"/Users/tuan/Documents/Git/MGiOSTools/igen/init_cmd.py",
-		"/Users/tuan/Documents/Git/MGiOSTools/igen/constants.py",
-		"/Users/tuan/Documents/Git/MGiOSTools/igen/json_cmd.py",
-		"/Users/tuan/Documents/Git/MGiOSTools/igen/model.py",
-		"/Users/tuan/Documents/Git/MGiOSTools/igen/test_cmd.py",
-		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen/api_cmd.py",
-		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen/bind_cmd.py",
-		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen/init_cmd.py",
-		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen/json_cmd.py",
-		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen/mock_cmd.py",
-		"/Users/tuan/Documents/Git/MGiOSTools/build/lib/igen/test_cmd.py",
-		"/Users/tuan/Documents/Git/MGiOSTools/igen/str_helpers.py"
+		"/Users/tuan/Documents/Git/MGiOSTools/igen_templates/list/UseCaseMock.swift"
 	],
 	"find":
 	{
@@ -731,6 +776,17 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"Model",
+			"from .model",
+			"Model(object)",
+			"Property(object)",
+			"{}/{}/{}",
+			"{{ name }}",
+			"}}Enabled",
+			"form",
+			"??",
+			"isRefreshing",
+			"??",
 			"refresh",
 			"isEmptyData",
 			"refreshing",
@@ -785,7 +841,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -794,19 +850,23 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 10095,
+						"buffer_size": 10099,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5508,
-								5508
+								4801,
+								4801
 							]
 						],
 						"settings":
 						{
+							"SL.13.region_keys":
+							[
+								"sublime_linter.protected_regions"
+							],
 							"SL.14.region_keys":
 							[
 							],
@@ -832,37 +892,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2291.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "igen_templates/list/ViewModel.swift",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2587,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								844,
-								844
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Swift/Syntaxes/Swift.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 51.0,
+						"translation.y": 1960.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,

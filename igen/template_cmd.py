@@ -7,6 +7,7 @@ from .template import Template, ProjectInfo
 from .pb import pasteboard_read
 from .command import Command
 from .encoder import Encoder
+from .model import Model, Enum
 
 
 class TemplateCommand(Command):
@@ -38,9 +39,9 @@ class TemplateCommand(Command):
             )
             output_path = template.create_files()
         elif self.template_name == Template.TemplateType.LIST:
-            model_text = pasteboard_read()
+            model_string = pasteboard_read()
             try:
-                model = Template().parse_model(model_text)
+                model = Model.from_string(model_string)
             except Exception:
                 print("The model in the pasteboard is invalid.")
                 exit(1)
@@ -52,9 +53,9 @@ class TemplateCommand(Command):
             )
             output_path = template.create_files()
         elif self.template_name == Template.TemplateType.DETAIL:
-            model_text = pasteboard_read()
+            model_string = pasteboard_read()
             try:
-                model = Template().parse_model(model_text)
+                model = Model.from_string(model_string)
             except Exception:
                 print("The model in the pasteboard is invalid.")
                 exit(1)
@@ -81,9 +82,9 @@ class TemplateCommand(Command):
             )
             output_path = template.create_files()
         elif self.template_name == Template.TemplateType.FORM:
-            model_text = pasteboard_read()
+            model_string = pasteboard_read()
             try:
-                model = Template().parse_model(model_text)
+                model = Model.from_string(model_string)
             except Exception:
                 print("The model in the pasteboard is invalid.")
                 exit(1)
@@ -110,9 +111,9 @@ class TemplateCommand(Command):
             )
             output_path = template.create_files()
         elif self.template_name == Template.TemplateType.SETTING:
-            enum_text = pasteboard_read()
+            enum_string = pasteboard_read()
             try:
-                enum = Template().parse_enum(enum_text)
+                enum = Enum.from_string(enum_string)
             except Exception:
                 print("The enum in the pasteboard is invalid.")
                 exit(1)

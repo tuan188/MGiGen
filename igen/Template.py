@@ -1,15 +1,11 @@
 # coding=utf-8
 
-import re
 import os
 from datetime import datetime
 
 from jinja2 import Environment, PackageLoader
 
 from .str_helpers import upper_first_letter, lower_first_letter
-from .constants import (SWIFT_TYPES_DEFAULT_VALUES,
-                        SWIFT_TYPES_MOCK_VALUES,
-                        SWIFT_TYPES)
 from .file_helpers import create_file
 from .config_cmd import ConfigCommand
 
@@ -25,87 +21,6 @@ class ProjectInfo:
 
 class Template(object):
 
-    class Model(object):
-        def __init__(self, name, properties):
-            self.name = name
-            self.properties = properties
-
-    class Property(object):
-        def __init__(self, property):
-            self.property = property
-            property_regex = re.compile(r'(?:let|var) (\w+): (.*)')
-            mo = property_regex.search(property)
-            self.name = mo.group(1)
-            self.name_title = upper_first_letter(self.name)
-            self.type = Template.PropertyType(mo.group(2))
-
-        @property
-        def is_url(self):
-            lowered_name = self.name.lower()
-            if lowered_name.endswith("id"):
-                return False
-            return "image" in lowered_name or "url" in lowered_name
-
-    class PropertyType(object):
-        def __init__(self, name):
-            self.name = name
-
-        @property
-        def is_optional(self):
-            return self.name.endswith("?")
-
-        @property
-        def is_array(self):
-            return self.name.endswith("]") and ':' not in self.name
-
-        @property
-        def is_dictionary(self):
-            return self.name.endswith("]") and ':' in self.name
-
-        @property
-        def is_observable(self):
-            return self.name.startswith('Observable')
-
-        @property
-        def is_driver(self):
-            return self.name.startswith('Driver')
-
-        @property
-        def default_value(self):
-            if self.is_optional:
-                value = "nil"
-            elif self.is_array:
-                value = "[]"
-            elif self.is_dictionary:
-                value = "[:]"
-            elif self.name in SWIFT_TYPES:
-                value = SWIFT_TYPES_DEFAULT_VALUES[self.name]
-            elif self.is_observable:
-                value = 'Observable.empty()'
-            elif self.is_driver:
-                value = 'Driver.empty()'
-            else:
-                value = "{}()".format(self.name)
-            return value
-
-        @property
-        def mock_value(self):
-            if self.is_optional:
-                value = "nil"
-            elif self.is_array:
-                value = "[]"
-            elif self.is_dictionary:
-                value = "[:]"
-            elif self.name in SWIFT_TYPES:
-                value = SWIFT_TYPES_MOCK_VALUES[self.name]
-            elif self.is_observable:
-                value = 'Observable.empty()'
-            elif self.is_driver:
-                value = 'Driver.empty()'
-            else:
-                value = "{}()".format(self.name)
-            return value
-
     class TemplateType:
         BASE = 'base'
         LIST = 'list'
@@ -114,36 +29,6 @@ class Template(object):
         FORM = 'form'
         LOGIN = 'login'
         SETTING = 'setting'
-
-    class Enum(object):
-        def __init__(self, name, cases):
-            super(Template.Enum, self).__init__()
-            self.name = name
-            self.name_variable = lower_first_letter(name)
-            self.cases = cases
-            self.cases_title = [upper_first_letter(c) for c in cases]
-            self.case_count = len(cases)
-
-    def parse_model(self, model_text):
-        model_regex = re.compile(
-            r'(?:struct|class|extension) (\w+)(?::\s)*(?:\w+,?\s?)* {([^}]+)'
-        )
-        match = model_regex.search(model_text)
-        model_name = match.group(1)
-        property_block = match.group(2)
-        property_regex = re.compile(r'(?:let|var) (\w+): (.*)')
-        properties = [Template.Property(m.group())
-                      for m in property_regex.finditer(property_block)]
-        return Template.Model(model_name, properties)
-
-    def parse_enum(self, enum_text):
-        enum_regex = re.compile(r'enum (\w+)[^{]* {([\d\D]*)}')
-        match = enum_regex.search(enum_text)
-        enum_name = match.group(1)
-        enum_block = match.group(2)
-        regex = re.compile(r'case (\w+)')
-        cases = [m.group(1) for m in regex.finditer(enum_block)]
-        return Template.Enum(enum_name, cases)
 
     # =============== BaseTemplate ===============
 

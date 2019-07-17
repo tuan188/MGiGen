@@ -30,3 +30,20 @@ def plural_to_singular(st):
         if len(st) > 3:
             return st[:-1]
     return st
+
+
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        pass
+
+    try:
+        import unicodedata
+        unicodedata.numeric(s)
+        return True
+    except (TypeError, ValueError):
+        pass
+
+    return False

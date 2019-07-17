@@ -7,15 +7,22 @@ from .command import Command
 
 class InitCommand(Command):
 
-    def __init__(self, model_text):
+    def __init__(self, model_string):
         super(InitCommand, self).__init__()
-        self.model_text = model_text
+        self.model_string = model_string
 
     def create_init(self, print_result):
-        output = InitModel(self.model_text).create_init()
+        try:
+            model = InitModel.from_string(self.model_string)
+        except Exception:
+            print("The model in the pasteboard is invalid.")
+            exit(1)
+
+        output = model.create_init()
         if print_result:
             print()
             print(output)
             print()
+
         pasteboard_write(output)
         print('The result has been copied to the pasteboard.')

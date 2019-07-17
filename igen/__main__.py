@@ -152,8 +152,8 @@ igen init [-h] [-p]'''
         help="print the result"
     )
     args = parser.parse_args(args)
-    model_text = pasteboard_read()
-    InitCommand(model_text).create_init(args.print)
+    model_string = pasteboard_read()
+    InitCommand(model_string).create_init(args.print)
 
 
 @subcmd('json', help='create a model from JSON')
