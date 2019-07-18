@@ -282,7 +282,7 @@ Successfully created files:
 ```
 
 ### 1.6. Setting Template:
-Copy the enum then run:
+To create a setting template, copy the setting enum then run:
 
 ```
 $ igen template setting <Scene_Name> [--section] [--window]
@@ -329,6 +329,40 @@ Successfully created files:
     Setting/Test/SettingViewControllerTests.swift
     Setting/Test/SettingMenuCellTests.swift
 ```
+
+### 1.7. Login template:
+To create a login template, run:
+
+```
+$ igen template login <Scene_Name> [--window]
+```
+
+#### Options:
+
+`--window`: use UIWindow instead of UINavigationController in the Navigator.
+
+#### Example:
+Run:
+
+```
+$ igen template login Login
+```
+
+Output:
+
+```
+Successfully created files:
+    Login/LoginAssembler.swift
+    Login/LoginNavigator.swift
+    Login/LoginViewModel.swift
+    Login/LoginUseCase.swift
+    Login/LoginViewController.swift
+    Login/Test/LoginUseCaseMock.swift
+    Login/Test/LoginNavigatorMock.swift
+    Login/Test/LoginViewModelTests.swift
+    Login/Test/LoginViewControllerTests.swift
+```
+
 
 ## 2. Create a mock class for a protocol/function:
 Copy the protocol/function then run:
@@ -482,7 +516,7 @@ final class AppViewModelTests: XCTestCase {
 }
 ```
 
-## 4. Create a initialize method for a class/struct:
+## 4. Create an initialize method for a class/struct:
 Copy the class/struct then run the command:
 
 ```
@@ -540,7 +574,7 @@ $ igen json <Model_Name> [-p]
 
 #### Options:
 
-`—return-classes`: return classes instead of structs.
+`—-return-classes`: return classes instead of structs.
 
 `-p`, `--print`: print the result.
 
@@ -572,21 +606,10 @@ Content in the pasteboard:
 
 ```swift
 struct Notice {
-    var id: Int
-    var content: String
-    var isRead: Bool
-    var createdAt: Date
-}
-
-extension Notice {
-    init() {
-        self.init(
-            id: 0,
-            content: "",
-            isRead: false,
-            createdAt: Date()
-        )
-    }
+    var id = 0
+    var content = ""
+    var isRead = false
+    var createdAt = Date()
 }
 
 extension Notice: Then { }
@@ -767,5 +790,3 @@ $ igen -h
 
 ## Links:
 * [Clean Architecture](https://github.com/tuan188/MGCleanArchitecture)
-
-
