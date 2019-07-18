@@ -10,14 +10,15 @@ from .str_helpers import upper_first_letter, lower_first_letter, is_number
 
 class Model(object):
 
-    PROPERTY_REGEX = r'(?:let|var) (\w+)(?:: ([^=\s]*))?(?: = (.+))?'
-    STRUCT_REGEX = r'(?:struct|class|extension) (\w+)(?::\s)*(?:\w+,?\s?)* {([^}]+)'
-    ENUM_REGEX = r'(\w+)\.(\w+)'
+    PROPERTY_PATTERN = r'(?:let|var) (\w+)(?:: ([^=\s]*))?(?: = ([^/\n]+))?(?:\s*//.*)?'
+    MODEL_PATTERN = r'(?:struct|class|extension) (\w+)(?::\s)*(?:\w+,?\s?)* {([^}]+)'
+    ENUM_PATTERN = r'(\w+)\.(\w+)'
+    DIC_PATTERN = r'^\[\w*:\s?.*\]$'
 
     class Property(object):
         def __init__(self, property):
             self.property = property
-            property_regex = re.compile(Model.PROPERTY_REGEX)
+            property_regex = re.compile(Model.PROPERTY_PATTERN)
             mo = property_regex.search(property)
             self.name = mo.group(1)
             self.name_title = upper_first_letter(self.name)
@@ -39,7 +40,7 @@ class Model(object):
             if name is None:
                 if value.startswith('"'):
                     self.name = 'String'
-                elif value.endswith(')'):
+                elif value.endswith('()'):
                     self.name = value[:-2]
                 elif value == 'true' or value == 'false':
                     self.name = 'Bool'
@@ -49,8 +50,7 @@ class Model(object):
                     else:
                         self.name = 'Int'
                 else:
-                    regex = re.compile(Model.ENUM_REGEX)
-                    mo = regex.search(value)
+                    mo = re.search(Model.ENUM_PATTERN, value)
                     if mo:
                         self.name = mo.group(1)
                         self.custom_types[self.name] = value
@@ -61,23 +61,23 @@ class Model(object):
 
         @property
         def is_optional(self):
-            return self.name.endswith("?")
+            return self.name.startswith('Optional<') or self.name.endswith("?")
 
         @property
         def is_array(self):
-            return self.name.endswith("]") and ':' not in self.name
+            return self.name.startswith('Array<') or (self.name.endswith("]") and ':' not in self.name)
 
         @property
         def is_dictionary(self):
-            return self.name.endswith("]") and ':' in self.name
+            return self.name.startswith('Dictionary<') or (self.name.endswith("]") and ':' in self.name)
 
         @property
         def is_observable(self):
-            return self.name.startswith('Observable')
+            return self.name.startswith('Observable<')
 
         @property
         def is_driver(self):
-            return self.name.startswith('Driver')
+            return self.name.startswith('Driver<')
 
         @property
         def default_value(self):
@@ -112,11 +112,11 @@ class Model(object):
 
     @classmethod
     def from_string(cls, string):
-        model_regex = re.compile(Model.STRUCT_REGEX)
+        model_regex = re.compile(Model.MODEL_PATTERN)
         match = model_regex.search(string)
         model_name = match.group(1)
         property_block = match.group(2)
-        property_regex = re.compile(Model.PROPERTY_REGEX)
+        property_regex = re.compile(Model.PROPERTY_PATTERN)
 
         properties = [Model.Property(m.group())
                       for m in property_regex.finditer(property_block)]

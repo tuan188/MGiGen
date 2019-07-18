@@ -32,16 +32,16 @@ def plural_to_singular(st):
     return st
 
 
-def is_number(s):
+def is_number(st):
     try:
-        float(s)
+        float(st)
         return True
     except ValueError:
         pass
 
     try:
         import unicodedata
-        unicodedata.numeric(s)
+        unicodedata.numeric(st)
         return True
     except (TypeError, ValueError):
         pass
