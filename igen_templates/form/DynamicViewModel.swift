@@ -73,18 +73,12 @@ extension {{ name }}ViewModel: ViewModelType {
             .startWith(.valid){{ '\n' if not loop.last }}
         {% endfor %}
 
-        let is{{ submit_title }}Enabled = Driver
-            .combineLatest([
-                {% for p in properties %}
-                {{ p.name }}Validation{{ ',' if not loop.last }}
-                {% endfor %}
-            ])
-            .map {
-                $0.reduce(true) { result, validation -> Bool in
-                    result && validation.isValid
-                }
-            }
-            .startWith(true)
+        let is{{ submit_title }}Enabled = Driver.and(
+            {% for p in properties %}
+            {{ p.name }}Validation.map { $0.isValid }{{ ',' if not loop.last }}
+            {% endfor %}
+        )
+        .startWith(true)
 
         let {{ model_variable }} = Driver.combineLatest({% for p in properties %}{{ p.name }}{{ ', ' if not loop.last }}{% endfor %})
             .map { {% for p in properties %}{{ p.name }}{{ ', ' if not loop.last }}{% endfor %} in
