@@ -15,7 +15,9 @@ final class {{ name }}ViewModelTests: XCTestCase {
 
     private let loadTrigger = PublishSubject<Void>()
     private let reloadTrigger = PublishSubject<Void>()
+    {% if not non_paging %}
     private let loadMoreTrigger = PublishSubject<Void>()
+    {% endif %}
     private let select{{ model_name }}Trigger = PublishSubject<IndexPath>()
 
     override func setUp() {
@@ -27,7 +29,9 @@ final class {{ name }}ViewModelTests: XCTestCase {
         input = {{ name }}ViewModel.Input(
             loadTrigger: loadTrigger.asDriverOnErrorJustComplete(),
             reloadTrigger: reloadTrigger.asDriverOnErrorJustComplete(),
+            {% if not non_paging %}
             loadMoreTrigger: loadMoreTrigger.asDriverOnErrorJustComplete(),
+            {% endif %}
             select{{ model_name }}Trigger: select{{ model_name }}Trigger.asDriverOnErrorJustComplete()
         )
 
@@ -38,7 +42,9 @@ final class {{ name }}ViewModelTests: XCTestCase {
         output.error.drive().disposed(by: disposeBag)
         output.isLoading.drive().disposed(by: disposeBag)
         output.isReloading.drive().disposed(by: disposeBag)
+        {% if not non_paging %}
         output.isLoadingMore.drive().disposed(by: disposeBag)
+        {% endif %}
         output.{{ model_variable }}List.drive().disposed(by: disposeBag)
         output.selected{{ model_name }}.drive().disposed(by: disposeBag)
         output.isEmpty.drive().disposed(by: disposeBag)
@@ -116,6 +122,7 @@ final class {{ name }}ViewModelTests: XCTestCase {
         XCTAssertFalse(useCase.get{{ model_name }}ListCalled)
     }
 
+    {% if not non_paging %}
     func test_loadMoreTrigger_loadMore{{ model_name }}List() {
         // act
         loadTrigger.onNext(())
@@ -178,6 +185,7 @@ final class {{ name }}ViewModelTests: XCTestCase {
         XCTAssertFalse(useCase.get{{ model_name }}ListCalled)
     }
 
+    {% endif %}
     func test_select{{ model_name }}Trigger_to{{ model_name }}Detail() {
         // act
         loadTrigger.onNext(())

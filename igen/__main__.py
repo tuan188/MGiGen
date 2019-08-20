@@ -21,7 +21,9 @@ from .file_header_cmd import FileHeaderCommand
 def cmd_template(parser, context, args):
     parser.epilog = """'list', 'detail', 'form' and 'setting' templates \
 require copying the model to the pasteboard before running the command."""
+
     parser.description = 'Create template files for a scene.'
+
     parser.add_argument(
         'type',
         nargs=1,
@@ -36,17 +38,20 @@ require copying the model to the pasteboard before running the command."""
                  ],
         help="template type"
     )
+
     parser.add_argument(
         'name',
         nargs=1,
         help='scene name'
     )
+
     parser.add_argument(
         '--window',
         required=False,
         action='store_true',
         help='use UIWindow instead of UINavigationController in the Navigator.'
     )
+
     parser.add_argument(
         '--section',
         required=False,
@@ -54,6 +59,7 @@ require copying the model to the pasteboard before running the command."""
         help="""show the list with header sections ('list' and 'setting' \
 templates only)"""
     )
+
     parser.add_argument(
         '--collection',
         required=False,
@@ -61,6 +67,7 @@ templates only)"""
         help="""use UICollectionView instead of UITableView ('list' \
 template only)"""
     )
+
     parser.add_argument(
         '--static',
         required=False,
@@ -68,11 +75,13 @@ template only)"""
         help="""display details of the object in a static UITableViewController \
 ('detail' template only)"""
     )
+
     parser.add_argument(
         '--submit',
         required=False,
         help="set the name of the submit action ('form' template only)"
     )
+
     parser.add_argument(
         '--dynamic',
         required=False,
@@ -80,17 +89,28 @@ template only)"""
         help="""use the dynamic form instead of the static form \
 ('form' template only)"""
     )
+
+    parser.add_argument(
+        '--non-paging',
+        required=False,
+        action='store_true',
+        help='use non-paging list'
+    )
+
     args = parser.parse_args(args)
     template_name = args.type[0]
     scene_name = args.name[0]
+
     options = {
         'window': args.window,
         'section': args.section,
         'collection': args.collection,
         'static': args.static,
         'submit': args.submit,
-        'dynamic': args.dynamic
+        'dynamic': args.dynamic,
+        'non_paging': args.non_paging
     }
+
     TemplateCommand(template_name, scene_name, options).create_files()
 
 

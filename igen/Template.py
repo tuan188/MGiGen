@@ -271,7 +271,8 @@ class Template(object):
                 use_window=self.use_window,
                 model_name=self.model_name,
                 model_variable=self.model_variable,
-                properties=self.model.properties
+                properties=self.model.properties,
+                non_paging=self.non_paging
             )
 
         def _create_view_model(self):
