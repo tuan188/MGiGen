@@ -2,9 +2,7 @@
 
 import os
 from datetime import datetime
-
 from jinja2 import Environment, PackageLoader
-
 from .str_helpers import upper_first_letter, lower_first_letter
 from .file_helpers import create_file
 from .config_cmd import ConfigCommand

@@ -39,7 +39,6 @@ final class {{ name }}ViewModelTests: XCTestCase {
         output.isLoading.drive().disposed(by: disposeBag)
         output.isReloading.drive().disposed(by: disposeBag)
         output.isLoadingMore.drive().disposed(by: disposeBag)
-        output.fetchItems.drive().disposed(by: disposeBag)
         output.{{ model_variable }}Sections.drive().disposed(by: disposeBag)
         output.selected{{ model_name }}.drive().disposed(by: disposeBag)
         output.isEmpty.drive().disposed(by: disposeBag)

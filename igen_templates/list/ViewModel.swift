@@ -17,50 +17,35 @@ extension {{ name }}ViewModel: ViewModelType {
         let isLoading: Driver<Bool>
         let isReloading: Driver<Bool>
         let isLoadingMore: Driver<Bool>
-        let fetchItems: Driver<Void>
         let {{ model_variable }}List: Driver<[{{ model_name }}]>
         let selected{{ model_name }}: Driver<Void>
         let isEmpty: Driver<Bool>
     }
 
     func transform(_ input: Input) -> Output {
-        let configOutput = configPagination(
+        let paginationResult = configPagination(
             loadTrigger: input.loadTrigger,
             reloadTrigger: input.reloadTrigger,
             loadMoreTrigger: input.loadMoreTrigger,
             getItems: useCase.get{{ model_name }}List)
 
-        let (page, fetchItems, loadError, isLoading, isReloading, isLoadingMore) = configOutput
+        let (page, error, isLoading, isReloading, isLoadingMore) = paginationResult.destructured
 
         let {{ model_variable }}List = page
-            .map { $0.items.map { $0 } }
-            .asDriverOnErrorJustComplete()
+            .map { $0.items }
 
-        let selected{{ model_name }} = input.select{{ model_name }}Trigger
-            .withLatestFrom({{ model_variable }}List) {
-                return ($0, $1)
-            }
-            .map { indexPath, {{ model_variable }}List in
-                return {{ model_variable }}List[indexPath.row]
-            }
-            .do(onNext: { {{ model_variable }} in
-                self.navigator.to{{ model_name }}Detail({{ model_variable }}: {{ model_variable }})
-            })
+        let selected{{ model_name }} = select(trigger: input.select{{ model_name }}Trigger, items: {{ model_variable }}List)
+            .do(onNext: navigator.to{{ model_name }}Detail)
             .mapToVoid()
 
-        let isEmpty = Driver.combineLatest(fetchItems, Driver.merge(isLoading, isReloading))
-            .withLatestFrom({{ model_variable }}List) { ($0.1, $1.isEmpty) }
-            .map { isLoading, isEmpty -> Bool in
-                if isLoading { return false }
-                return isEmpty
-            }
+        let isEmpty = checkIfDataIsEmpty(trigger: Driver.merge(isLoading, isReloading),
+                                         items: {{ model_variable }}List)
 
         return Output(
-            error: loadError,
+            error: error,
             isLoading: isLoading,
             isReloading: isReloading,
             isLoadingMore: isLoadingMore,
-            fetchItems: fetchItems,
             {{ model_variable }}List: {{ model_variable }}List,
             selected{{ model_name }}: selected{{ model_name }},
             isEmpty: isEmpty

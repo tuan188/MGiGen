@@ -17,7 +17,6 @@ extension {{ name }}ViewModel: ViewModelType {
         let isLoading: Driver<Bool>
         let isReloading: Driver<Bool>
         let isLoadingMore: Driver<Bool>
-        let fetchItems: Driver<Void>
         let {{ model_variable }}Sections: Driver<[{{ model_name }}Section]>
         let selected{{ model_name }}: Driver<Void>
         let isEmpty: Driver<Bool>
@@ -29,18 +28,17 @@ extension {{ name }}ViewModel: ViewModelType {
     }
 
     func transform(_ input: Input) -> Output {
-        let configOutput = configPagination(
+        let paginationResult = configPagination(
             loadTrigger: input.loadTrigger,
             reloadTrigger: input.reloadTrigger,
             loadMoreTrigger: input.loadMoreTrigger,
             getItems: useCase.get{{ model_name }}List)
 
-        let (page, fetchItems, loadError, isLoading, isReloading, isLoadingMore) = configOutput
+        let (page, error, isLoading, isReloading, isLoadingMore) = paginationResult.destructured
 
         let {{ model_variable }}Sections = page
-            .map { $0.items.map { $0 } }
+            .map { $0.items }
             .map { [{{ model_name }}Section(header: "Section1", {{ model_variable }}List: $0)] }
-            .asDriverOnErrorJustComplete()
 
         let selected{{ model_name }} = input.select{{ model_name }}Trigger
             .withLatestFrom({{ model_variable }}Sections) {
@@ -49,24 +47,17 @@ extension {{ name }}ViewModel: ViewModelType {
             .map { indexPath, {{ model_variable }}Sections -> {{ model_name }} in
                 return {{ model_variable }}Sections[indexPath.section].{{ model_variable }}List[indexPath.row]
             }
-            .do(onNext: { {{ model_variable }} in
-                self.navigator.to{{ model_name }}Detail({{ model_variable }}: {{ model_variable }})
-            })
+            .do(onNext: navigator.to{{ model_name }}Detail)
             .mapToVoid()
 
-        let isEmpty = Driver.combineLatest(fetchItems, Driver.merge(isLoading, isReloading))
-            .withLatestFrom({{ model_variable }}Sections) { ($0.1, $1.isEmpty) }
-            .map { isLoading, isEmpty -> Bool in
-                if isLoading { return false }
-                return isEmpty
-            }
+        let isEmpty = checkIfDataIsEmpty(trigger: Driver.merge(isLoading, isReloading),
+                                         items: {{ model_variable }}Sections)
 
         return Output(
-            error: loadError,
+            error: error,
             isLoading: isLoading,
             isReloading: isReloading,
             isLoadingMore: isLoadingMore,
-            fetchItems: fetchItems,
             {{ model_variable }}Sections: {{ model_variable }}Sections,
             selected{{ model_name }}: selected{{ model_name }},
             isEmpty: isEmpty

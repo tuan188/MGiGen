@@ -1,3 +1,6 @@
+# PYTHON_ARGCOMPLETE_OK
+
+import sys
 from arghandler import subcmd, ArgumentHandler
 
 from . import __version__
@@ -184,9 +187,9 @@ igen json [-h] [--return-classes] [-p] name'''
         .create_models(args.print, args.return_classes))
 
 
-@subcmd('api', help='create input and ouput files for an API')
+@subcmd('api', help='create input and output files for an API')
 def cmd_api(parser, context, args):
-    parser.description = 'Create input and ouput files for an API.'
+    parser.description = 'Create input and output files for an API.'
     parser.add_argument(
         'name',
         nargs=1,
@@ -344,15 +347,22 @@ def cmd_file_header(parser, context, args):
 def main():
     handler = ArgumentHandler(
         use_subcommand_help=True,
+        enable_autocompletion=True,
         epilog='Get help on a subcommand: igen subcommand -h'
     )
+
     handler.add_argument(
         '-v', '--version',
         action='version',
         version=__version__,
         help='show the version number and exit'
     )
-    handler.run()
+
+    # if no parameters are provided, show help
+    if len(sys.argv) == 1:
+        handler.run(['-h'])
+    else:
+        handler.run()
 
 
 if __name__ == '__main__':

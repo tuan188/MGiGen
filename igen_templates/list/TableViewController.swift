@@ -30,6 +30,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             $0.rowHeight = UITableView.automaticDimension
             $0.register(cellType: {{ model_name }}Cell.self)
         }
+
         tableView.rx
             .setDelegate(self)
             .disposed(by: rx.disposeBag)
@@ -70,10 +71,6 @@ final class {{ name }}ViewController: UIViewController, BindableType {
 
         output.isLoadingMore
             .drive(tableView.isLoadingMore)
-            .disposed(by: rx.disposeBag)
-
-        output.fetchItems
-            .drive()
             .disposed(by: rx.disposeBag)
 
         output.selected{{ model_name }}

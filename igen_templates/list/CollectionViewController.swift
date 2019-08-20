@@ -101,10 +101,6 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             .drive(collectionView.isLoadingMore)
             .disposed(by: rx.disposeBag)
 
-        output.fetchItems
-            .drive()
-            .disposed(by: rx.disposeBag)
-
         output.selected{{ model_name }}
             .drive()
             .disposed(by: rx.disposeBag)
