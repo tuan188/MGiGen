@@ -5,7 +5,7 @@ from subprocess import call
 from .config_cmd import ConfigCommand
 from .template import Template, ProjectInfo
 from .pb import pasteboard_read
-from .command import Command
+from .command import Command, CommandOption
 from .encoder import Encoder
 from .model import Model, Enum
 
@@ -15,7 +15,7 @@ class TemplateCommand(Command):
         super(TemplateCommand, self).__init__()
         self.template_name = template_name
         self.scene_name = scene_name
-        self.options = options
+        self.options = CommandOption(options)
 
     def create_files(self):
         config_command = ConfigCommand(global_config=None)

@@ -37,7 +37,7 @@ class Template(object):
             self.developer = project_info.developer
             self.company = project_info.company
             self.project_id = project_info.project_id
-            self.use_window = options['window']
+            self.use_window = options.window
 
             output_path = ConfigCommand(global_config=None).output_path()
             if output_path is None:
@@ -232,11 +232,14 @@ class Template(object):
                 name,
                 project_info
             )
+
             self.model = model
-            self.is_sectioned_list = options['section']
-            self.is_collection = options['collection']
+            self.is_sectioned_list = options.section
+            self.is_collection = options.collection
+            self.non_paging = options.non_paging
             self.model_name = self.model.name
             self.model_variable = lower_first_letter(self.model_name)
+
             self.env = Environment(
                 loader=PackageLoader('igen_templates', 'list'),
                 trim_blocks=True,
@@ -691,8 +694,8 @@ class Template(object):
             self.model_name = self.model.name
             self.model_variable = lower_first_letter(self.model_name)
 
-            self.submit = lower_first_letter(options['submit']) \
-                if options['submit'] else 'submit'
+            self.submit = lower_first_letter(options.submit) \
+                if options.submit else 'submit'
 
             self.submit_title = upper_first_letter(self.submit)
 
@@ -747,8 +750,8 @@ class Template(object):
             self.model_name = self.model.name
             self.model_variable = lower_first_letter(self.model_name)
 
-            self.submit = lower_first_letter(options['submit']) \
-                if options['submit'] else 'submit'
+            self.submit = lower_first_letter(options.submit) \
+                if options.submit else 'submit'
 
             self.submit_title = upper_first_letter(self.submit)
 
@@ -895,7 +898,8 @@ class Template(object):
                 project_info
             )
             self.enum = enum
-            self.is_sectioned_list = options['section']
+            self.is_sectioned_list = options.section
+
             self.env = Environment(
                 loader=PackageLoader('igen_templates', 'setting'),
                 trim_blocks=True,
