@@ -28,13 +28,13 @@ extension {{ name }}ViewModel: ViewModelType {
 
     func transform(_ input: Input) -> Output {
         {% if not paging %}
-        let paginationResult = configPagination(
+        let getPageResult = getPage(
             loadTrigger: input.loadTrigger,
             reloadTrigger: input.reloadTrigger,
             loadMoreTrigger: input.loadMoreTrigger,
             getItems: useCase.get{{ model_name }}List)
 
-        let (page, error, isLoading, isReloading, isLoadingMore) = paginationResult.destructured
+        let (page, error, isLoading, isReloading, isLoadingMore) = getPageResult.destructured
 
         let {{ model_variable }}List = page
             .map { $0.items }
