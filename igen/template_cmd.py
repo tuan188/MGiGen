@@ -59,7 +59,7 @@ class TemplateCommand(Command):
             except Exception:
                 print("The model in the pasteboard is invalid.")
                 exit(1)
-            if self.options['static']:
+            if self.options.static:
                 template = Template.StaticDetailTemplate(
                     model,
                     self.options,
@@ -88,7 +88,7 @@ class TemplateCommand(Command):
             except Exception:
                 print("The model in the pasteboard is invalid.")
                 exit(1)
-            if self.options['dynamic']:
+            if self.options.dynamic:
                 template = Template.DynamicFormTemplate(
                     model,
                     self.options,
