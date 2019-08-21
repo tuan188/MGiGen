@@ -27,7 +27,7 @@ extension {{ name }}ViewModel: ViewModelType {
     }
 
     func transform(_ input: Input) -> Output {
-        {% if not paging %}
+        {% if paging %}
         let getPageResult = getPage(
             loadTrigger: input.loadTrigger,
             reloadTrigger: input.reloadTrigger,

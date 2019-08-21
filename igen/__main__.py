@@ -94,7 +94,7 @@ template only)"""
         '--paging',
         required=False,
         action='store_true',
-        help='use non-paging list'
+        help='use pagination'
     )
 
     args = parser.parse_args(args)
