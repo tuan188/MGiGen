@@ -236,7 +236,7 @@ class Template(object):
             self.model = model
             self.is_sectioned_list = options.section
             self.is_collection = options.collection
-            self.non_paging = options.non_paging
+            self.paging = options.paging
             self.model_name = self.model.name
             self.model_variable = lower_first_letter(self.model_name)
 
@@ -272,7 +272,7 @@ class Template(object):
                 model_name=self.model_name,
                 model_variable=self.model_variable,
                 properties=self.model.properties,
-                non_paging=self.non_paging
+                paging=self.paging
             )
 
         def _create_view_model(self):

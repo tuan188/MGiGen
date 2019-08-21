@@ -91,7 +91,7 @@ template only)"""
     )
 
     parser.add_argument(
-        '--non-paging',
+        '--paging',
         required=False,
         action='store_true',
         help='use non-paging list'
@@ -108,7 +108,7 @@ template only)"""
         'static': args.static,
         'submit': args.submit,
         'dynamic': args.dynamic,
-        'non_paging': args.non_paging
+        'paging': args.paging
     }
 
     TemplateCommand(template_name, scene_name, options).create_files()

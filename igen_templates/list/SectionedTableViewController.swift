@@ -33,7 +33,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             $0.estimatedRowHeight = 550
             $0.rowHeight = UITableView.automaticDimension
             $0.register(cellType: {{ model_name }}Cell.self)
-            {% if non_paging %}
+            {% if not paging %}
             $0.refreshFooter = nil
             {% endif %}
         }
@@ -47,7 +47,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
         let input = {{ name }}ViewModel.Input(
             loadTrigger: Driver.just(()),
             reloadTrigger: tableView.refreshTrigger,
-            {% if not non_paging %}
+            {% if paging %}
             loadMoreTrigger: tableView.loadMoreTrigger,
             {% endif %}
             select{{ model_name }}Trigger: tableView.rx.itemSelected.asDriver()
@@ -86,7 +86,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             .drive(tableView.isRefreshing)
             .disposed(by: rx.disposeBag)
 
-        {% if not non_paging %}
+        {% if paging %}
         output.isLoadingMore
             .drive(tableView.isLoadingMore)
             .disposed(by: rx.disposeBag)

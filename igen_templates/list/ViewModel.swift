@@ -8,7 +8,7 @@ extension {{ name }}ViewModel: ViewModelType {
     struct Input {
         let loadTrigger: Driver<Void>
         let reloadTrigger: Driver<Void>
-        {% if not non_paging %}
+        {% if paging %}
         let loadMoreTrigger: Driver<Void>
         {% endif %}
         let select{{ model_name }}Trigger: Driver<IndexPath>
@@ -18,7 +18,7 @@ extension {{ name }}ViewModel: ViewModelType {
         let error: Driver<Error>
         let isLoading: Driver<Bool>
         let isReloading: Driver<Bool>
-        {% if not non_paging %}
+        {% if paging %}
         let isLoadingMore: Driver<Bool>
         {% endif %}
         let {{ model_variable }}List: Driver<[{{ model_name }}]>
@@ -27,14 +27,7 @@ extension {{ name }}ViewModel: ViewModelType {
     }
 
     func transform(_ input: Input) -> Output {
-        {% if non_paging %}
-        let getListResult = getList(
-            loadTrigger: input.loadTrigger,
-            reloadTrigger: input.reloadTrigger,
-            getItems: useCase.get{{ model_name }}List)
-        
-        let ({{ model_variable }}List, error, isLoading, isReloading) = getListResult.destructured
-        {% else %}
+        {% if not paging %}
         let paginationResult = configPagination(
             loadTrigger: input.loadTrigger,
             reloadTrigger: input.reloadTrigger,
@@ -45,6 +38,13 @@ extension {{ name }}ViewModel: ViewModelType {
 
         let {{ model_variable }}List = page
             .map { $0.items }
+        {% else %}
+        let getListResult = getList(
+            loadTrigger: input.loadTrigger,
+            reloadTrigger: input.reloadTrigger,
+            getItems: useCase.get{{ model_name }}List)
+        
+        let ({{ model_variable }}List, error, isLoading, isReloading) = getListResult.destructured
         {% endif %}
 
         let selected{{ model_name }} = select(trigger: input.select{{ model_name }}Trigger, items: {{ model_variable }}List)
@@ -58,7 +58,7 @@ extension {{ name }}ViewModel: ViewModelType {
             error: error,
             isLoading: isLoading,
             isReloading: isReloading,
-            {% if not non_paging %}
+            {% if paging %}
             isLoadingMore: isLoadingMore,
             {% endif %}
             {{ model_variable }}List: {{ model_variable }}List,

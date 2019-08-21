@@ -57,7 +57,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
         collectionView.do {
             $0.register(cellType: {{ model_name }}Cell.self)
             $0.alwaysBounceVertical = true
-            {% if non_paging %}
+            {% if not paging %}
             $0.refreshFooter = nil
             {% endif %}
         }
@@ -71,7 +71,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
         let input = {{ name }}ViewModel.Input(
             loadTrigger: Driver.just(()),
             reloadTrigger: collectionView.refreshTrigger,
-            {% if not non_paging %}
+            {% if paging %}
             loadMoreTrigger: collectionView.loadMoreTrigger,
             {% endif %}
             select{{ model_name }}Trigger: collectionView.rx.itemSelected.asDriver()
@@ -102,7 +102,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             .drive(collectionView.isRefreshing)
             .disposed(by: rx.disposeBag)
 
-        {% if not non_paging %}
+        {% if paging %}
         output.isLoadingMore
             .drive(collectionView.isLoadingMore)
             .disposed(by: rx.disposeBag)
