@@ -167,7 +167,7 @@ for a UIViewController.'''
 def cmd_init(parser, context, args):
     parser.usage = '''copy the class/struct to the pasteboard then run: \
 igen init [-h] [-p]'''
-    parser.description = 'Create a initialize method for a class/struct.'
+    parser.description = 'Create an initialize method for a class/struct.'
     parser.add_argument(
         '-p', '--print',
         required=False,
@@ -225,9 +225,9 @@ def cmd_api(parser, context, args):
     APICommand(args.name[0]).create_api(args.print)
 
 
-@subcmd('config', help='configure the tool')
+@subcmd('config', help='configure this app')
 def cmd_config(parser, context, args):
-    parser.description = 'Configure the tool.'
+    parser.description = 'Configure this app.'
     parser.epilog = """To configure the project information, run 'igen config project'. \
 To view the configuration file, run 'igen config info'. \
 To delete the configuration file, run 'igen config delete. \
@@ -375,7 +375,7 @@ def main():
         '-v', '--version',
         action='version',
         version=__version__,
-        help='show the version number and exit'
+        help='show the version number'
     )
 
     # if no parameters are provided, show help
