@@ -638,12 +638,18 @@ $ igen header [--file-name] [--project] [--developer] [--created-date] [--copyri
 ```
 
 #### Options:
-`—file-name`: update file name.
-`—project`: update project.
-`—developer`: update developer.
-`—created-date`: update created date.
-`—copyright-year`: update copyright year.
-`—company`: update company.
+
+`--file-name`: update file name.
+
+`--project`: update project.
+
+`--developer`: update developer.
+
+`--created-date`: update created date.
+
+`--copyright-year`: update copyright year.
+
+`--company`: update company.
 
 If you don’t set any options, the tool will update all header information base on its configuration file.
 
