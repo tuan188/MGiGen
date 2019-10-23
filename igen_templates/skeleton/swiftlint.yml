@@ -88,7 +88,7 @@ opt_in_rules: # some rules are only opt-in
   - no_fallthrough_only
   # - no_grouping_extension
   - notification_center_detachment
-  - number_separator
+  # - number_separator
   # - object_literal
   - opening_brace
   - operator_usage_whitespace
@@ -180,16 +180,4 @@ custom_rules:
     name: "Final Class"
     regex: "(^[ ]*class [A-Z]+)"
     message: "Class should be marked as final."
-    severity: warning
-  drive_one_line:
-    excluded: ".*Test(s)?\\.swift"
-    name: "Drive One Line"
-    regex: "(\\.drive\\([^\\)]*\\)\\.)"
-    message: "Break line."
-    severity: warning
-  subscribe_one_line:
-    excluded: ".*Test(s)?\\.swift"
-    name: "Subscribe One Line"
-    regex: "(\\.subscribe\\([^\\)]*\\)\\.)"
-    message: "Break line."
     severity: warning
