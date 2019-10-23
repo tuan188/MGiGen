@@ -1,16 +1,26 @@
 final class {{ name }}: Mappable {
-{% for p in properties %}
+    {% for p in properties %}
+    {% if p.is_optional %}
+    var {{ p.name }}: {{ p.type_name }}
+    {% elif p.is_swift_type %}
     var {{ p.name }} = {{ p.value }}
-{% endfor %}
+    {% else %}
+    var {{ p.name }}: {{ p.type_name }} = {{ p.value }}
+    {% endif %}
+    {% endfor %}
 
     init(
-    {% for p in properties %}
+        {% for p in properties %}
         {{ p.name }}: {{ p.type_name }}{{ "," if not loop.last }}
-    {% endfor %}
+        {% endfor %}
         ) {
-    {% for p in properties %}
+        {% for p in properties %}
         self.{{ p.name }} = {{ p.name }}
-    {% endfor %}
+        {% endfor %}
+    }
+
+    init() {
+
     }
 
     required convenience init?(map: Map) {
@@ -18,13 +28,13 @@ final class {{ name }}: Mappable {
     }
 
     func mapping(map: Map) {
-{% for p in properties %}
-    {% if p.is_date %}
+        {% for p in properties %}
+        {% if p.is_date %}
         {{ p.name }} <- (map["{{ p.raw_name }}"], DateTransform())
-    {% else %}
+        {% else %}
         {{ p.name }} <- map["{{ p.raw_name }}"]
-    {% endif %}
-{% endfor %}
+        {% endif %}
+        {% endfor %}
     }
 }
 
