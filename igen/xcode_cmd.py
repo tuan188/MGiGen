@@ -1,5 +1,6 @@
 import os.path
 import shutil
+import igen_templates
 
 from distutils.dir_util import copy_tree
 from .command import Command
@@ -9,13 +10,18 @@ class XCodeCommand(Command):
 
     def install_templates(self):
         try:
+            source = os.path.join(
+                os.path.dirname(igen_templates.__file__),
+                'xcode_templates/'
+            )
+
             destination = os.path.join(
                 os.path.expanduser("~"),
                 r'Library/Developer/Xcode/Templates/File Templates/Custom Templates/'
             )
 
             copy_tree(
-                r'./igen_templates/xcode_templates',
+                source,
                 destination
             )
 
