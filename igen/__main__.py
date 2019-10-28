@@ -15,6 +15,7 @@ from .bind_cmd import BindViewModelCommand
 from .template_cmd import TemplateCommand
 from .encoder import Encoder
 from .file_header_cmd import FileHeaderCommand
+from .xcode_cmd import XCodeCommand
 
 
 @subcmd('template', help='create template files for a scene')
@@ -362,6 +363,31 @@ def cmd_file_header(parser, context, args):
     paths = args.paths
     cmd = FileHeaderCommand(paths, options)
     cmd.update_header()
+
+
+@subcmd('xcode', help='install Xcode utilities')
+def cmd_xcode(parser, context, args):
+    parser.epilog = 'install Xcode utilities.'
+    parser.description = 'Install Xcode utilities.'
+
+    parser.add_argument(
+        'action',
+        nargs=1,
+        choices=[
+                    'install-templates',
+                    'uninstall-templates'
+                 ],
+        help="action type"
+    )
+
+    args = parser.parse_args(args)
+    action = args.action[0]
+    cmd = XCodeCommand()
+
+    if action == 'install-templates':
+        cmd.install_templates()
+    elif action == 'uninstall-templates':
+        cmd.uninstall_templates()
 
 
 def main():
