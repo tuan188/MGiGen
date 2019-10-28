@@ -216,7 +216,7 @@ then run:
 ```
 $ igen template detail ProductDetail
 ```
- 
+
 Output:
 
 ```
@@ -404,32 +404,32 @@ Content in the pasteboard:
 
 ```swift
 final class ProductsNavigatorMock: ProductsNavigatorType {
-    
+
     // MARK: - toProducts
-    
+
     var toProducts_Called = false
 
     func toProducts() {
         toProducts_Called = true
-    } 
+    }
 
     // MARK: - toProductDetail
-    
+
     var toProductDetail_Called = false
 
     func toProductDetail(product: Product) {
         toProductDetail_Called = true
-    } 
+    }
 
     // MARK: - toEditProduct
-    
+
     var toEditProduct_Called = false
     var toEditProduct_ReturnValue: Driver<EditProductDelegate> = Driver.empty()
 
     func toEditProduct(_ product: Product) -> Driver<EditProductDelegate> {
         toEditProduct_Called = true
         return toEditProduct_ReturnValue
-    } 
+    }
 }
 ```
 
@@ -479,7 +479,7 @@ final class AppViewModelTests: XCTestCase {
     private var viewModel: AppViewModel!
     private var navigator: AppNavigatorMock!
     private var useCase: AppUseCaseMock!
-    
+
     private var input: AppViewModel.Input!
     private var output: AppViewModel.Output!
 
@@ -492,7 +492,7 @@ final class AppViewModelTests: XCTestCase {
         navigator = AppNavigatorMock()
         useCase = AppUseCaseMock()
         viewModel = AppViewModel(navigator: navigator, useCase: useCase)
-        
+
         input = AppViewModel.Input(
             loadTrigger: loadTrigger.asDriverOnErrorJustComplete()
         )
@@ -503,7 +503,7 @@ final class AppViewModelTests: XCTestCase {
 
         output.toMain.drive().disposed(by: disposeBag)
     }
-    
+
     func test_loadTrigger_() {
         // arrange
 
@@ -789,7 +789,22 @@ $ igen config delete [--global]
 
 `--global`: global configuration.
 
-## 8. Other commands:
+## 8. Install Xcode templates:
+
+Install Clean Architecture templates for Xcode:
+
+```
+$ igen xcode install-templates
+```
+
+Uninstall templates:
+
+```
+$ igen xcode uninstall-templates
+```
+
+## 9. Other commands:
+
 Run:
 
 ```
