@@ -20,8 +20,8 @@ from .xcode_cmd import XCodeCommand
 
 @subcmd('template', help='create template files for a scene')
 def cmd_template(parser, context, args):
-    parser.epilog = """'list', 'detail', 'form' and 'setting' templates \
-require copying the model to the pasteboard before running the command."""
+    parser.epilog = """'list', 'detail', 'form' and 'setting' templates require copying the model to the pasteboard \
+before running the command."""
 
     parser.description = 'Create template files for a scene.'
 
@@ -29,14 +29,14 @@ require copying the model to the pasteboard before running the command."""
         'type',
         nargs=1,
         choices=[
-                    'skeleton',
-                    'base',
-                    'list',
-                    'detail',
-                    'form',
-                    'login',
-                    'setting'
-                 ],
+            'skeleton',
+            'base',
+            'list',
+            'detail',
+            'form',
+            'login',
+            'setting'
+        ],
         help="template type"
     )
 
@@ -57,24 +57,21 @@ require copying the model to the pasteboard before running the command."""
         '--section',
         required=False,
         action='store_true',
-        help="""show the list with header sections ('list' and 'setting' \
-templates only)"""
+        help="""show the list with header sections ('list' and 'setting' templates only)"""
     )
 
     parser.add_argument(
         '--collection',
         required=False,
         action='store_true',
-        help="""use UICollectionView instead of UITableView ('list' \
-template only)"""
+        help="""use UICollectionView instead of UITableView ('list' template only)"""
     )
 
     parser.add_argument(
         '--static',
         required=False,
         action='store_true',
-        help="""display details of the object in a static UITableViewController \
-('detail' template only)"""
+        help="""display details of the object in a static UITableViewController ('detail' template only)"""
     )
 
     parser.add_argument(
@@ -87,8 +84,7 @@ template only)"""
         '--dynamic',
         required=False,
         action='store_true',
-        help="""use the dynamic form instead of the static form \
-('form' template only)"""
+        help="""use the dynamic form instead of the static form ('form' template only)"""
     )
 
     parser.add_argument(
@@ -117,8 +113,7 @@ template only)"""
 
 @subcmd('mock', help='create a mock class for a protocol/function')
 def cmd_mock(parser, context, args):
-    parser.usage = '''copy the protocol/function to the pasteboard then run: \
-igen mock [-h] [-p]'''
+    parser.usage = '''copy the protocol/function to the pasteboard then run: igen mock [-h] [-p]'''
     parser.description = 'Create a mock class for a protocol/function.'
     parser.add_argument(
         '-p', '--print',
@@ -133,8 +128,7 @@ igen mock [-h] [-p]'''
 
 @subcmd('test', help='create unit tests for a view model')
 def cmd_test(parser, context, args):
-    parser.usage = '''copy the view model to the pasteboard then run: \
-igen test [-h] [-p]'''
+    parser.usage = '''copy the view model to the pasteboard then run: igen test [-h] [-p]'''
     parser.description = 'Create unit tests for a view model.'
     parser.add_argument(
         '-p', '--print',
@@ -149,10 +143,8 @@ igen test [-h] [-p]'''
 
 @subcmd('bind', help='create a bindViewModel method for a UIViewController')
 def cmd_bind(parser, context, args):
-    parser.usage = '''copy the view model to the pasteboard then run: \
-igen bind [-h] [-p]'''
-    parser.description = '''Create a bindViewModel method \
-for a UIViewController.'''
+    parser.usage = '''copy the view model to the pasteboard then run: igen bind [-h] [-p]'''
+    parser.description = '''Create a bindViewModel method for a UIViewController.'''
     parser.add_argument(
         '-p', '--print',
         required=False,
@@ -166,8 +158,7 @@ for a UIViewController.'''
 
 @subcmd('init', help='create a initialize method for a class/struct')
 def cmd_init(parser, context, args):
-    parser.usage = '''copy the class/struct to the pasteboard then run: \
-igen init [-h] [-p]'''
+    parser.usage = '''copy the class/struct to the pasteboard then run: igen init [-h] [-p]'''
     parser.description = 'Create an initialize method for a class/struct.'
     parser.add_argument(
         '-p', '--print',
@@ -182,8 +173,7 @@ igen init [-h] [-p]'''
 
 @subcmd('json', help='create a model from JSON')
 def cmd_json(parser, context, args):
-    parser.usage = '''copy the JSON to the pasteboard then run: \
-igen json [-h] [--return-classes] [-p] name'''
+    parser.usage = '''copy the JSON to the pasteboard then run: igen json [-h] [--return-classes] [-p] name'''
     parser.description = 'Create a model from JSON.'
     parser.add_argument(
         'name',
@@ -374,9 +364,9 @@ def cmd_xcode(parser, context, args):
         'action',
         nargs=1,
         choices=[
-                    'install-templates',
-                    'uninstall-templates'
-                 ],
+            'install-templates',
+            'uninstall-templates'
+        ],
         help="action type"
     )
 

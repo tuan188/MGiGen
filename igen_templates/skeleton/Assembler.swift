@@ -1,4 +1,5 @@
 protocol Assembler: class,
+    GatewaysAssembler,
     AppAssembler {
     
 }

@@ -92,8 +92,7 @@ class Template(object):
             return output_path
 
         def _make_dirs(self):
-            current_directory = os.getcwd() if self.output_path == '.' \
-                                else self.output_path
+            current_directory = os.getcwd() if self.output_path == '.' else self.output_path
             main_directory = self._make_dir(current_directory, self.name)
             self._make_dir(main_directory, 'Test')
             return main_directory
@@ -492,38 +491,55 @@ class Template(object):
             )
 
         def _make_dirs(self):
-            current_directory = os.getcwd() if self.output_path == '.' \
-                                            else self.output_path
+            current_directory = os.getcwd() if self.output_path == '.' else self.output_path
             main_directory = self._make_dir(current_directory, self.name)
-            self._make_dir(main_directory, "Assembler")
-            self._make_dir(main_directory, "Extensions")
-            self._make_dir(main_directory, "Support")
-            domain_directory = self._make_dir(main_directory, "Domain")
-            self._make_dir(domain_directory, "Model")
-            platform_directory = self._make_dir(main_directory, "Platform")
-            self._make_dir(platform_directory, "Repositories")
-            services_directory = self._make_dir(platform_directory, "Services")
-            self._make_dir(services_directory, "API")
-            scenes_directory = self._make_dir(main_directory, "Scenes")
-            self._make_dir(scenes_directory, "App")
-            self._make_dir(scenes_directory, "Storyboards")
+
+            # Sources
+            sources_directory = self._make_dir(main_directory, 'Sources')
+            self._make_dir(sources_directory, 'Config')  # Sources/Config
+
+            # Sources/Support
+            support_directory = self._make_dir(sources_directory, 'Support')
+            self._make_dir(support_directory, 'Extensions')
+
+            # Sources/Domain
+            domain_directory = self._make_dir(sources_directory, 'Domain')
+            self._make_dir(domain_directory, 'UseCases')
+            self._make_dir(domain_directory, 'Entities')
+
+            # Sources/Data
+            data_directory = self._make_dir(sources_directory, 'Data')
+            self._make_dir(data_directory, 'Gateways')
+            self._make_dir(data_directory, 'API')
+            self._make_dir(data_directory, 'UserDefaults')
+
+            # Sources/Scenes
+            scenes_directory = self._make_dir(sources_directory, 'Scenes')
+            self._make_dir(scenes_directory, 'App')
+            self._make_dir(scenes_directory, 'Storyboards')
+
             return main_directory
 
         def create_files(self):
             print('Successfully created files:')
             output_path = self._make_dirs()
+
+            # Support files
             self._create_podfile()
             self._create_gitignore()
             self._create_localizable()
             self._create_pull_request_template()
             self._create_swiftlint()
+            self._create_BridgingHeader()
+
+            # Source files
             self._create_UnitTestViewController()
             self._create_AppDelegate()
-            self._create_BridgingHeader()
             self._create_assembler()
             self._create_utils()
             self._create_UIViewController_()
             self._create_UIViewController_rx()
+            self._create_GatewaysAssembler()
             self._create_APIError()
             self._create_APIService()
             self._create_APIInput()
@@ -580,16 +596,6 @@ class Template(object):
                 has_file_header=False
             )
 
-        def _create_UnitTestViewController(self):
-            self._create_file_from_template(
-                class_name='UnitTestViewController'
-            )
-
-        def _create_AppDelegate(self):
-            self._create_file_from_template(
-                class_name='AppDelegate'
-            )
-
         def _create_BridgingHeader(self):
             self._create_file_from_template(
                 class_name='{}-Bridging-Header'.format(self.project),
@@ -597,88 +603,106 @@ class Template(object):
                 template_file='Bridging-Header.h'
             )
 
+        def _create_UnitTestViewController(self):
+            self._create_file_from_template(
+                class_name='UnitTestViewController',
+                folder='Sources'
+            )
+
+        def _create_AppDelegate(self):
+            self._create_file_from_template(
+                class_name='AppDelegate',
+                folder='Sources'
+            )
+
         def _create_assembler(self):
             self._create_file_from_template(
                 class_name='Assembler',
-                folder='Assembler'
+                folder='Sources'
             )
 
         def _create_utils(self):
             self._create_file_from_template(
                 class_name='Utils',
-                folder='Support'
+                folder='Sources/Support'
             )
 
         def _create_UIViewController_(self):
             self._create_file_from_template(
                 class_name='UIViewController+',
-                folder='Extensions'
+                folder='Sources/Support/Extensions'
             )
 
         def _create_UIViewController_rx(self):
             self._create_file_from_template(
                 class_name='UIViewController+Rx',
-                folder='Extensions'
+                folder='Sources/Support/Extensions'
+            )
+
+        def _create_GatewaysAssembler(self):
+            self._create_file_from_template(
+                class_name='GatewaysAssembler',
+                folder='Sources/Data/Gateways'
             )
 
         def _create_APIError(self):
             self._create_file_from_template(
                 class_name='APIError',
-                folder='Platform/Services/API'
+                folder='Sources/Data/API'
             )
 
         def _create_APIService(self):
             self._create_file_from_template(
                 class_name='APIService',
-                folder='Platform/Services/API'
+                folder='Sources/Data/API'
             )
 
         def _create_APIInput(self):
             self._create_file_from_template(
                 class_name='APIInput',
-                folder='Platform/Services/API'
+                folder='Sources/Data/API'
             )
 
         def _create_APIOutput(self):
             self._create_file_from_template(
                 class_name='APIOutput',
-                folder='Platform/Services/API'
+                folder='Sources/Data/API'
             )
 
         def _create_APIUrls(self):
             self._create_file_from_template(
                 class_name='APIUrls',
-                folder='Platform/Services/API'
+                folder='Sources/Config'
             )
 
         def _create_AppAssembler(self):
             self._create_file_from_template(
                 class_name='AppAssembler',
-                folder='Scenes/App'
+                folder='Sources/Scenes/App'
             )
 
         def _create_AppNavigator(self):
             self._create_file_from_template(
                 class_name='AppNavigator',
-                folder='Scenes/App'
+                folder='Sources/Scenes/App'
             )
 
         def _create_AppUseCase(self):
             self._create_file_from_template(
                 class_name='AppUseCase',
-                folder='Scenes/App'
+                folder='Sources/Scenes/App'
             )
 
         def _create_AppViewModel(self):
             self._create_file_from_template(
                 class_name='AppViewModel',
-                folder='Scenes/App'
+                folder='Sources/Scenes/App'
             )
 
         def _create_Storyboards(self):
             self._create_file_from_template(
                 class_name='Storyboards',
-                folder='Scenes/Storyboards'
+                folder='Sources/Scenes/Storyboards'
             )
 
     # =============== FormTemplate ===============
