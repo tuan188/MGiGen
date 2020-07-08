@@ -12,7 +12,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
 
     var viewModel: {{ name }}ViewModel!
 
-    private typealias {{ model_name }}SectionModel = SectionModel<String, {{ model_name }}>
+    private typealias {{ model_name }}SectionModel = SectionModel<String, {{ model_name }}ViewModel>
     private var dataSource: RxCollectionViewSectionedReloadDataSource<{{ model_name }}SectionModel>!
 
     struct LayoutOptions {
@@ -86,7 +86,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
         dataSource = RxCollectionViewSectionedReloadDataSource<{{ model_name }}SectionModel>(
             configureCell: { (_, collectionView, indexPath, {{ model_variable }}) -> UICollectionViewCell in
                 return collectionView.dequeueReusableCell(for: indexPath, cellType: {{ model_name }}Cell.self).then {
-                    $0.bindViewModel({{ model_name }}ViewModel({{ model_variable }}: {{ model_variable }}))
+                    $0.bindViewModel({{ model_variable }})
                 }
             },
             configureSupplementaryView: { dataSource, collectionView, kind, indexPath in

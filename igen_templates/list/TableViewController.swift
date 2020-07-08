@@ -57,7 +57,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
                     for: IndexPath(row: index, section: 0),
                     cellType: {{ model_name }}Cell.self)
                     .then {
-                        $0.bindViewModel({{ model_name }}ViewModel({{ model_variable }}: {{ model_variable }}))
+                        $0.bindViewModel({{ model_variable }})
                     }
             }
             .disposed(by: rx.disposeBag)

@@ -21,7 +21,7 @@ extension {{ name }}ViewModel: ViewModelType {
         {% if paging %}
         let isLoadingMore: Driver<Bool>
         {% endif %}
-        let {{ model_variable }}Sections: Driver<[{{ model_name }}Section]>
+        let {{ model_variable }}Sections: Driver<[{{ model_name }}ViewModelSection]>
         let selected{{ model_name }}: Driver<Void>
         let isEmpty: Driver<Bool>
     }
@@ -29,6 +29,11 @@ extension {{ name }}ViewModel: ViewModelType {
     struct {{ model_name }}Section {
         let header: String
         let {{ model_variable }}List: [{{ model_name }}]
+    }
+
+    struct {{ model_name }}ViewModelSection {
+        let header: String
+        let {{ model_variable }}List: [{{ model_name }}ViewModel]
     }
 
     func transform(_ input: Input) -> Output {
@@ -56,6 +61,16 @@ extension {{ name }}ViewModel: ViewModelType {
             .map { [{{ model_name }}Section(header: "Section1", {{ model_variable }}List: $0)] }
         {% endif %}
 
+        let {{ model_variable }}ViewModelSections = {{ model_variable }}Sections
+            .map {
+                return $0.map { section in
+                    return {{ model_name  }}ViewModelSection(
+                        header: section.header,
+                        {{ model_variable }}List: section.{{ model_variable }}List.map({{ model_name }}ViewModel.init)
+                    )
+                }
+            }
+
         let selected{{ model_name }} = input.select{{ model_name }}Trigger
             .withLatestFrom({{ model_variable }}Sections) {
                 return ($0, $1)
@@ -76,7 +91,7 @@ extension {{ name }}ViewModel: ViewModelType {
             {% if paging %} 
             isLoadingMore: isLoadingMore,
             {% endif %}
-            {{ model_variable }}Sections: {{ model_variable }}Sections,
+            {{ model_variable }}Sections: {{ model_variable }}ViewModelSections,
             selected{{ model_name }}: selected{{ model_name }},
             isEmpty: isEmpty
         )

@@ -12,7 +12,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
 
     var viewModel: {{ name }}ViewModel!
 
-    private typealias {{ model_name }}SectionModel = SectionModel<String, {{ model_name }}>
+    private typealias {{ model_name }}SectionModel = SectionModel<String, {{ model_name }}ViewModel>
     private var dataSource: RxTableViewSectionedReloadDataSource<{{ model_name }}SectionModel>!
 
     // MARK: - Life Cycle
@@ -58,7 +58,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
         dataSource = RxTableViewSectionedReloadDataSource<{{ model_name }}SectionModel>(
             configureCell: { (_, tableView, indexPath, {{ model_variable }}) -> UITableViewCell in
                 return tableView.dequeueReusableCell(for: indexPath, cellType: {{ model_name }}Cell.self).then {
-                    $0.bindViewModel({{ model_name }}ViewModel({{ model_variable }}: {{ model_variable }}))
+                    $0.bindViewModel({{ model_variable }})
                 }
             },
             titleForHeaderInSection: { dataSource, section in

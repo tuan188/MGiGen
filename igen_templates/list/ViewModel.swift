@@ -21,7 +21,7 @@ extension {{ name }}ViewModel: ViewModelType {
         {% if paging %}
         let isLoadingMore: Driver<Bool>
         {% endif %}
-        let {{ model_variable }}List: Driver<[{{ model_name }}]>
+        let {{ model_variable }}List: Driver<[{{ model_name }}ViewModel]>
         let selected{{ model_name }}: Driver<Void>
         let isEmpty: Driver<Bool>
     }
@@ -47,6 +47,9 @@ extension {{ name }}ViewModel: ViewModelType {
         let ({{ model_variable }}List, error, isLoading, isReloading) = getListResult.destructured
         {% endif %}
 
+        let {{ model_variable }}ViewModelList = {{ model_variable }}List
+            .map { $0.map({{ model_name }}ViewModel.init) }
+
         let selected{{ model_name }} = select(trigger: input.select{{ model_name }}Trigger, items: {{ model_variable }}List)
             .do(onNext: navigator.to{{ model_name }}Detail)
             .mapToVoid()
@@ -61,7 +64,7 @@ extension {{ name }}ViewModel: ViewModelType {
             {% if paging %}
             isLoadingMore: isLoadingMore,
             {% endif %}
-            {{ model_variable }}List: {{ model_variable }}List,
+            {{ model_variable }}List: {{ model_variable }}ViewModelList,
             selected{{ model_name }}: selected{{ model_name }},
             isEmpty: isEmpty
         )
