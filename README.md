@@ -110,25 +110,28 @@ Output:
 ```
 Successfully created files:
     DemoApp/Podfile
+    DemoApp/gitignore
     DemoApp/Localizable.strings
+    DemoApp/pull_request_template.md
     DemoApp/swiftlint.yml
-    DemoApp/UnitTestViewController.swift
-    DemoApp/AppDelegate.swift
-    DemoApp/Medical-Bridging-Header.h
-    DemoApp/Assembler/Assembler.swift
-    DemoApp/Support/Utils.swift
-    DemoApp/Extensions/UIViewController+.swift
-    DemoApp/Extensions/UIViewController+Rx.swift
-    DemoApp/Platform/Services/API/APIError.swift
-    DemoApp/Platform/Services/API/APIService.swift
-    DemoApp/Platform/Services/API/APIInput.swift
-    DemoApp/Platform/Services/API/APIOutput.swift
-    DemoApp/Platform/Services/API/APIUrls.swift
-    DemoApp/Scenes/App/AppAssembler.swift
-    DemoApp/Scenes/App/AppNavigator.swift
-    DemoApp/Scenes/App/AppUseCase.swift
-    DemoApp/Scenes/App/AppViewModel.swift
-    DemoApp/Scenes/Storyboards/Storyboards.swift
+    DemoApp/MyApp-Bridging-Header.h
+    DemoApp/Sources/UnitTestViewController.swift
+    DemoApp/Sources/AppDelegate.swift
+    DemoApp/Sources/Assembler.swift
+    DemoApp/Sources/Support/Utils.swift
+    DemoApp/Sources/Support/Extensions/UIViewController+.swift
+    DemoApp/Sources/Support/Extensions/UIViewController+Rx.swift
+    DemoApp/Sources/Data/Gateways/GatewaysAssembler.swift
+    DemoApp/Sources/Data/API/APIError.swift
+    DemoApp/Sources/Data/API/APIService.swift
+    DemoApp/Sources/Data/API/APIInput.swift
+    DemoApp/Sources/Data/API/APIOutput.swift
+    DemoApp/Sources/Config/APIUrls.swift
+    DemoApp/Sources/Scenes/App/AppAssembler.swift
+    DemoApp/Sources/Scenes/App/AppNavigator.swift
+    DemoApp/Sources/Scenes/App/AppUseCase.swift
+    DemoApp/Sources/Scenes/App/AppViewModel.swift
+    DemoApp/Sources/Scenes/Storyboards/Storyboards.swift
 ```
 
 ### 1.3. List Template:
