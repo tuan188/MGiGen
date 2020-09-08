@@ -1,3 +1,5 @@
+import RxSwift
+
 protocol {{ name }}UseCaseType {
 
 }

@@ -1,5 +1,6 @@
 @testable import {{ project }}
 import XCTest
+import UIKit
 import Reusable
 
 final class {{ name }}ViewControllerTests: XCTestCase {
