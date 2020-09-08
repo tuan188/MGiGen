@@ -2,6 +2,7 @@
 
 @testable import ___PROJECTNAME___
 import XCTest
+import UIKit
 import Reusable
 
 final class ___VARIABLE_productName___ViewControllerTests: XCTestCase {

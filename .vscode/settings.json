@@ -1,5 +1,10 @@
 {
     "python.linting.pylintEnabled": false,
     "python.linting.enabled": true,
-    "python.linting.flake8Enabled": true
+    "python.linting.flake8Enabled": true,
+    "files.exclude": {
+        "build": true,
+        "dist": true,
+        "igen.egg-info": true,
+    }
 }

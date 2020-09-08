@@ -1,5 +1,7 @@
 //___FILEHEADER___
 
+import RxSwift
+
 protocol ___VARIABLE_productName___UseCaseType {
     
 }

@@ -3,7 +3,7 @@
 @testable import ___PROJECTNAME___
 import XCTest
 import RxSwift
-import RxBlocking
+import RxCocoa
 
 final class ___VARIABLE_productName___ViewModelTests: XCTestCase {
     private var viewModel: ___VARIABLE_productName___ViewModel!
@@ -22,8 +22,7 @@ final class ___VARIABLE_productName___ViewModelTests: XCTestCase {
         viewModel = ___VARIABLE_productName___ViewModel(navigator: navigator, useCase: useCase)
         
         input = ___VARIABLE_productName___ViewModel.Input()
-        output = viewModel.transform(input)
-        
         disposeBag = DisposeBag()
+        output = viewModel.transform(input, disposeBag: disposeBag)
     }
 }

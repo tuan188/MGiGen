@@ -1,12 +1,16 @@
 //___FILEHEADER___
 
+import MGArchitecture
+import RxSwift
+import RxCocoa
+
 struct ___VARIABLE_productName___ViewModel {
     let navigator: ___VARIABLE_productName___NavigatorType
     let useCase: ___VARIABLE_productName___UseCaseType
 }
 
-// MARK: - ViewModelType
-extension ___VARIABLE_productName___ViewModel: ViewModelType {
+// MARK: - ViewModel
+extension ___VARIABLE_productName___ViewModel: ViewModel {
     struct Input {
         
     }
@@ -15,7 +19,7 @@ extension ___VARIABLE_productName___ViewModel: ViewModelType {
         
     }
     
-    func transform(_ input: Input) -> Output {
+    func transform(_ input: Input, disposeBag: DisposeBag) -> Output {
         return Output()
     }
 }
