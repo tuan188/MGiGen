@@ -1,7 +1,6 @@
 @testable import {{ project }}
 import XCTest
 import RxSwift
-import RxBlocking
 
 final class {{ name }}ViewModelTests: XCTestCase {
     private var viewModel: {{ name }}ViewModel!
@@ -35,29 +34,17 @@ final class {{ name }}ViewModelTests: XCTestCase {
             select{{ model_name }}Trigger: select{{ model_name }}Trigger.asDriverOnErrorJustComplete()
         )
 
-        output = viewModel.transform(input)
-
         disposeBag = DisposeBag()
-
-        output.error.drive().disposed(by: disposeBag)
-        output.isLoading.drive().disposed(by: disposeBag)
-        output.isReloading.drive().disposed(by: disposeBag)
-        {% if paging %}
-        output.isLoadingMore.drive().disposed(by: disposeBag)
-        {% endif %}
-        output.{{ model_variable }}Sections.drive().disposed(by: disposeBag)
-        output.selected{{ model_name }}.drive().disposed(by: disposeBag)
-        output.isEmpty.drive().disposed(by: disposeBag)
+        output = viewModel.transform(input, disposeBag: disposeBag)
     }
 
     func test_loadTrigger_get{{ model_name }}List() {
         // act
         loadTrigger.onNext(())
-        let {{ model_variable }}Sections = try? output.{{ model_variable }}Sections.toBlocking(timeout: 1).first()
 
         // assert
         XCTAssert(useCase.get{{ model_name }}ListCalled)
-        XCTAssertEqual({{ model_variable }}Sections?[0].{{ model_variable }}List.count, 1)
+        XCTAssertEqual(output.{{ model_variable }}Sections[0].{{ model_variable }}List.count, 1)
     }
 
     func test_loadTrigger_get{{ model_name }}List_failedShowError() {
@@ -66,21 +53,19 @@ final class {{ name }}ViewModelTests: XCTestCase {
 
         // act
         loadTrigger.onNext(())
-        let error = try? output.error.toBlocking(timeout: 1).first()
 
         // assert
         XCTAssert(useCase.get{{ model_name }}ListCalled)
-        XCTAssert(error is TestError)
+        XCTAssert(output.error is TestError)
     }
 
     func test_reloadTrigger_get{{ model_name }}List() {
         // act
         reloadTrigger.onNext(())
-        let {{ model_variable }}Sections = try? output.{{ model_variable }}Sections.toBlocking(timeout: 1).first()
 
         // assert
         XCTAssert(useCase.get{{ model_name }}ListCalled)
-        XCTAssertEqual({{ model_variable }}Sections?[0].{{ model_variable }}List.count, 1)
+        XCTAssertEqual(output.{{ model_variable }}Sections[0].{{ model_variable }}List.count, 1)
     }
 
     func test_reloadTrigger_get{{ model_name }}List_failedShowError() {
@@ -89,11 +74,10 @@ final class {{ name }}ViewModelTests: XCTestCase {
 
         // act
         reloadTrigger.onNext(())
-        let error = try? output.error.toBlocking(timeout: 1).first()
 
         // assert
         XCTAssert(useCase.get{{ model_name }}ListCalled)
-        XCTAssert(error is TestError)
+        XCTAssert(output.error is TestError)
     }
 
     func test_reloadTrigger_notGet{{ model_name }}ListIfStillLoading() {
@@ -128,11 +112,10 @@ final class {{ name }}ViewModelTests: XCTestCase {
         loadTrigger.onNext(())
         useCase.get{{ model_name }}ListCalled = false
         loadMoreTrigger.onNext(())
-        let {{ model_variable }}Sections = try? output.{{ model_variable }}Sections.toBlocking(timeout: 1).first()
 
         // assert
         XCTAssert(useCase.get{{ model_name }}ListCalled)
-        XCTAssertEqual({{ model_variable }}Sections?[0].{{ model_variable }}List.count, 2)
+        XCTAssertEqual(output.{{ model_variable }}Sections[0].{{ model_variable }}List.count, 2)
     }
 
     func test_loadMoreTrigger_loadMore{{ model_name }}List_failedShowError() {
@@ -140,10 +123,9 @@ final class {{ name }}ViewModelTests: XCTestCase {
         loadTrigger.onNext(())
         useCase.get{{ model_name }}ListReturnValue = Observable.error(TestError())
         loadMoreTrigger.onNext(())
-        let error = try? output.error.toBlocking(timeout: 1).first()
 
         // assert
-        XCTAssert(error is TestError)
+        XCTAssert(output.error is TestError)
     }
 
     func test_loadMoreTrigger_notLoadMore{{ model_name }}ListIfStillLoading() {

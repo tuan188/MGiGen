@@ -1,15 +1,22 @@
 import UIKit
+import MGArchitecture
+import RxSwift
+import RxCocoa
 import Reusable
+import Then
 
-final class {{ name }}ViewController: UIViewController, BindableType {
+final class {{ name }}ViewController: UIViewController, Bindable {
 
     // MARK: - IBOutlets
 
-    @IBOutlet weak var collectionView: LoadMoreCollectionView!
+    @IBOutlet weak var collectionView: PagingCollectionView!
 
     // MARK: - Properties
 
     var viewModel: {{ name }}ViewModel!
+    var disposeBag = DisposeBag()
+
+    private var {{ model_variable }}List = [{{ model_name }}ItemViewModel]()
 
     struct LayoutOptions {
         var itemSpacing: CGFloat = 16
@@ -56,15 +63,13 @@ final class {{ name }}ViewController: UIViewController, BindableType {
     private func configView() {
         collectionView.do {
             $0.register(cellType: {{ model_name }}Cell.self)
+            $0.delegate = self
+            $0.prefetchDataSource = self
             $0.alwaysBounceVertical = true
             {% if not paging %}
             $0.refreshFooter = nil
             {% endif %}
         }
-
-        collectionView.rx
-            .setDelegate(self)
-            .disposed(by: rx.disposeBag)
     }
 
     func bindViewModel() {
@@ -77,42 +82,49 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             select{{ model_name }}Trigger: collectionView.rx.itemSelected.asDriver()
         )
 
-        let output = viewModel.transform(input)
+        let output = viewModel.transform(input, disposeBag: disposeBag)
 
-        output.{{ model_variable }}List
+        output.${{ model_variable }}List
+            .asDriver()
+            .do(onNext: { [unowned self] {{ model_variable }}List in
+                self.{{ model_variable }}List = {{ model_variable }}List
+            })
             .drive(collectionView.rx.items) { collectionView, index, {{ model_variable }} in
                 return collectionView.dequeueReusableCell(
                     for: IndexPath(row: index, section: 0),
-                    cellType: {{ model_name }}Cell.self)
-                    .then {
-                        $0.bindViewModel({{ model_variable }})
-                    }
+                    cellType: {{ model_name }}Cell.self
+                )
+                .then {
+                    $0.bindViewModel({{ model_variable }})
+                }
             }
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
 
-        output.error
+        output.$error
+            .asDriver()
+            .unwrap()
             .drive(rx.error)
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
 
-        output.isLoading
+        output.$isLoading
+            .asDriver()
             .drive(rx.isLoading)
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
 
-        output.isReloading
+        output.$isReloading
+            .asDriver()
             .drive(collectionView.isRefreshing)
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
 
         {% if paging %}
-        output.isLoadingMore
+        output.$isLoadingMore
+            .asDriver()
             .drive(collectionView.isLoadingMore)
             .disposed(by: rx.disposeBag)
 
         {% endif %}
-        output.selected{{ model_name }}
-            .drive()
-            .disposed(by: rx.disposeBag)
-
-        output.isEmpty
+        output.$isEmpty
+            .asDriver()
             .drive()
             .disposed(by: rx.disposeBag)
     }
@@ -129,6 +141,7 @@ extension {{ name }}ViewController: UICollectionViewDelegate, UICollectionViewDe
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
+        // Set Collection View's Estimate Size to None in Storyboard
         return layoutOptions.itemSize
     }
 
@@ -154,4 +167,15 @@ extension {{ name }}ViewController: UICollectionViewDelegate, UICollectionViewDe
 // MARK: - StoryboardSceneBased
 extension {{ name }}ViewController: StoryboardSceneBased {
     static var sceneStoryboard = UIStoryboard()
+}
+
+// MARK: - UICollectionViewDataSourcePrefetching
+extension {{ name }}CollectionViewController: UICollectionViewDataSourcePrefetching {
+    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {
+        
+    }
 }

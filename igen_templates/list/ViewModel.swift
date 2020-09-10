@@ -1,3 +1,7 @@
+import MGArchitecture
+import RxSwift
+import RxCocoa
+
 struct {{ name }}ViewModel {
     let navigator: {{ name }}NavigatorType
     let useCase: {{ name }}UseCaseType
@@ -15,58 +19,68 @@ extension {{ name }}ViewModel: ViewModelType {
     }
 
     struct Output {
-        let error: Driver<Error>
-        let isLoading: Driver<Bool>
-        let isReloading: Driver<Bool>
+        @Property var error: Error?
+        @Property var isLoading = false
+        @Property var isReloading = false
         {% if paging %}
-        let isLoadingMore: Driver<Bool>
+        @Property var isLoadingMore = false
         {% endif %}
-        let {{ model_variable }}List: Driver<[{{ model_name }}ViewModel]>
-        let selected{{ model_name }}: Driver<Void>
-        let isEmpty: Driver<Bool>
+        @Property var {{ model_variable }}List = [{{ model_name }}ViewModel]()
+        @Property var isEmpty = false
     }
 
     func transform(_ input: Input) -> Output {
-        {% if paging %}
-        let getPageResult = getPage(
-            loadTrigger: input.loadTrigger,
-            reloadTrigger: input.reloadTrigger,
-            loadMoreTrigger: input.loadMoreTrigger,
-            getItems: useCase.get{{ model_name }}List)
+        let output = Output()
 
+        {% if paging %}
+        let getPageInput = GetPageInput(loadTrigger: input.loadTrigger,
+                                        reloadTrigger: input.reloadTrigger,
+                                        loadMoreTrigger: input.loadMoreTrigger,
+                                        getItems: useCase.get{{ model_name }}List(page:))
+
+        let getPageResult = getPage(input: getPageInput)
         let (page, error, isLoading, isReloading, isLoadingMore) = getPageResult.destructured
 
         let {{ model_variable }}List = page
             .map { $0.items }
         {% else %}
-        let getListResult = getList(
-            loadTrigger: input.loadTrigger,
-            reloadTrigger: input.reloadTrigger,
-            getItems: useCase.get{{ model_name }}List)
-        
+        let getListInput = GetListInput(loadTrigger: input.loadTrigger,
+                                        reloadTrigger: input.reloadTrigger,
+                                        loadMoreTrigger: input.loadMoreTrigger,
+                                        getItems: useCase.get{{ model_name }}List(page:))
+
+        let getListResult = getList(input: getListInput)
         let ({{ model_variable }}List, error, isLoading, isReloading) = getListResult.destructured
         {% endif %}
 
         let {{ model_variable }}ViewModelList = {{ model_variable }}List
             .map { $0.map({{ model_name }}ViewModel.init) }
 
-        let selected{{ model_name }} = select(trigger: input.select{{ model_name }}Trigger, items: {{ model_variable }}List)
-            .do(onNext: navigator.to{{ model_name }}Detail)
-            .mapToVoid()
+        select(trigger: input.select{{ model_name }}Trigger, items: {{ model_variable }}List)
+            .drive(onNext: navigator.to{{ model_name }}Detail)
+            .disposed(by: disposeBag)
 
-        let isEmpty = checkIfDataIsEmpty(trigger: Driver.merge(isLoading, isReloading),
-                                         items: {{ model_variable }}List)
+        checkIfDataIsEmpty(trigger: Driver.merge(isLoading, isReloading),
+                           items: {{ model_variable }}Sections)
 
-        return Output(
-            error: error,
-            isLoading: isLoading,
-            isReloading: isReloading,
-            {% if paging %}
-            isLoadingMore: isLoadingMore,
-            {% endif %}
-            {{ model_variable }}List: {{ model_variable }}ViewModelList,
-            selected{{ model_name }}: selected{{ model_name }},
-            isEmpty: isEmpty
-        )
+        pagingError
+            .drive(output.$error)
+            .disposed(by: disposeBag)
+        
+        isLoading
+            .drive(output.$isLoading)
+            .disposed(by: disposeBag)
+        
+        isReloading
+            .drive(output.$isReloading)
+            .disposed(by: disposeBag)
+
+        {% if paging %}
+        isLoadingMore
+            .drive(output.$isLoadingMore)
+            .disposed(by: disposeBag)
+
+        {% endif %}
+        return output
     }
 }

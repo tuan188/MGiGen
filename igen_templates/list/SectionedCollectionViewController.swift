@@ -1,19 +1,23 @@
 import UIKit
 import Reusable
-import RxDataSources
+import RxSwift
+import RxCocoa
+import MGArchitecture
+import MGLoadMore
+import Then
 
-final class {{ name }}ViewController: UIViewController, BindableType {
+final class {{ name }}ViewController: UIViewController, Bindable {
 
     // MARK: - IBOutlets
 
-    @IBOutlet weak var collectionView: LoadMoreCollectionView!
+    @IBOutlet weak var collectionView: PagingCollectionView!
 
     // MARK: - Properties
 
     var viewModel: {{ name }}ViewModel!
-
-    private typealias {{ model_name }}SectionModel = SectionModel<String, {{ model_name }}ViewModel>
-    private var dataSource: RxCollectionViewSectionedReloadDataSource<{{ model_name }}SectionModel>!
+    var disposeBag = DisposeBag()
+    
+    private var {{ model_variable }}Sections = [{{ name }}ViewModel.{{ model_name }}SectionViewModel]()
 
     struct LayoutOptions {
         var itemSpacing: CGFloat = 16
@@ -60,15 +64,16 @@ final class {{ name }}ViewController: UIViewController, BindableType {
     private func configView() {
         collectionView.do {
             $0.register(cellType: {{ model_name }}Cell.self)
+            $0.register(supplementaryViewType: {{ model_name }}HeaderView.self, 
+                        ofKind: UICollectionView.elementKindSectionHeader)
+            $0.delegate = self
+            $0.dataSource = self
+            $0.prefetchDataSource = self
             $0.alwaysBounceVertical = true
             {% if not paging %}
             $0.refreshFooter = nil
             {% endif %}
         }
-
-        collectionView.rx
-            .setDelegate(self)
-            .disposed(by: rx.disposeBag)
     }
 
     func bindViewModel() {
@@ -81,50 +86,41 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             select{{ model_name }}Trigger: collectionView.rx.itemSelected.asDriver()
         )
 
-        let output = viewModel.transform(input)
+        let output = viewModel.transform(input, disposeBag: disposeBag)
 
-        dataSource = RxCollectionViewSectionedReloadDataSource<{{ model_name }}SectionModel>(
-            configureCell: { (_, collectionView, indexPath, {{ model_variable }}) -> UICollectionViewCell in
-                return collectionView.dequeueReusableCell(for: indexPath, cellType: {{ model_name }}Cell.self).then {
-                    $0.bindViewModel({{ model_variable }})
-                }
-            },
-            configureSupplementaryView: { dataSource, collectionView, kind, indexPath in
-                return UICollectionReusableView()
+        output.$productSections
+            .asDriver()
+            .drive(onNext: { [unowned self] sections in
+                self.{{ model_variable }}Sections = sections
+                self.collectionView.reloadData()
             })
+            .disposed(by: disposeBag)
 
-        output.{{ model_variable }}Sections
-            .map {
-                $0.map { section in
-                    {{ model_name }}SectionModel(model: section.header, items: section.{{ model_variable }}List)
-                }
-            }
-            .drive(collectionView.rx.items(dataSource: dataSource))
-            .disposed(by: rx.disposeBag)
-
-        output.error
+        output.$error
+            .asDriver()
+            .unwrap()
             .drive(rx.error)
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
 
-        output.isLoading
+        output.$isLoading
+            .asDriver()
             .drive(rx.isLoading)
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
 
-        output.isReloading
+        output.$isReloading
+            .asDriver()
             .drive(collectionView.isRefreshing)
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
 
         {% if paging %}
-        output.isLoadingMore
+        output.$isLoadingMore
+            .asDriver()
             .drive(collectionView.isLoadingMore)
             .disposed(by: rx.disposeBag)
 
         {% endif %}
-        output.selected{{ model_name }}
-            .drive()
-            .disposed(by: rx.disposeBag)
-
-        output.isEmpty
+        output.$isEmpty
+            .asDriver()
             .drive()
             .disposed(by: rx.disposeBag)
     }
@@ -140,6 +136,7 @@ extension {{ name }}ViewController: UICollectionViewDelegate, UICollectionViewDe
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
+        // Set Collection View's Estimate Size to None in Storyboard
         return layoutOptions.itemSize
     }
 
@@ -159,6 +156,46 @@ extension {{ name }}ViewController: UICollectionViewDelegate, UICollectionViewDe
                         layout collectionViewLayout: UICollectionViewLayout,
                         minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return layoutOptions.itemSpacing
+    }
+
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: collectionView.bounds.width, height: 44)
+    }
+}
+
+// MARK: - UICollectionViewDataSource
+extension {{ name }}ViewController: UICollectionViewDataSource {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return {{ model_variable }}Sections.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return {{ model_variable }}Sections[section].{{ model_variable }}List.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let {{ model_variable }} = {{ model_variable }}Sections[indexPath.section].{{ model_variable }}List[indexPath.row]
+        
+        return collectionView.dequeueReusableCell(for: indexPath, cellType: {{ model_name }}Cell.self)
+            .then { [weak self] in
+                $0.bindViewModel({{ model_variable }})
+            }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        viewForSupplementaryElementOfKind kind: String,
+                        at indexPath: IndexPath) -> UICollectionReusableView {
+        let section = {{ model_variable }}Sections[indexPath.section]
+        
+        return collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader,
+                                                               for: indexPath,
+                                                               viewType: {{ model_name }}HeaderView.self)
+            .then {
+                $0.titleLabel.text = section.header
+            }
     }
 }
 

@@ -1,10 +1,11 @@
 struct {{ model_name }}ViewModel {
-    let {{ model_variable }}: {{ model_name }}
-    
     {% for p in properties %}
-    var {{ p.name }}: String {
-        return ""
-    }
-        
+    let {{ p.name }}: String      
     {% endfor %}
+
+    init({{ model_variable }}: {{ model_name }}) {
+        {% for p in properties %}
+        self.{{ p.name }} = ""    
+        {% endfor %}
+    }
 }

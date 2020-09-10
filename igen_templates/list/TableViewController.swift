@@ -1,15 +1,21 @@
 import UIKit
 import Reusable
+import RxSwift
+import RxCocoa
+import MGArchitecture
+import MGLoadMore
+import Then
 
-final class {{ name }}ViewController: UIViewController, BindableType {
+final class {{ name }}ViewController: UIViewController, Bindable {
 
     // MARK: - IBOutlets
 
-    @IBOutlet weak var tableView: LoadMoreTableView!
+    @IBOutlet weak var tableView: PagingTableView!
 
     // MARK: - Properties
 
     var viewModel: {{ name }}ViewModel!
+    var disposeBag = DisposeBag()
 
     // MARK: - Life Cycle
 
@@ -26,17 +32,15 @@ final class {{ name }}ViewController: UIViewController, BindableType {
 
     private func configView() {
         tableView.do {
+            $0.register(cellType: {{ model_name }}Cell.self)
+            $0.delegate = self
+            $0.prefetchDataSource = self
             $0.estimatedRowHeight = 550
             $0.rowHeight = UITableView.automaticDimension
-            $0.register(cellType: {{ model_name }}Cell.self)
             {% if not paging %}
             $0.refreshFooter = nil
             {% endif %}
         }
-
-        tableView.rx
-            .setDelegate(self)
-            .disposed(by: rx.disposeBag)
     }
 
     func bindViewModel() {
@@ -49,42 +53,38 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             select{{ model_name }}Trigger: tableView.rx.itemSelected.asDriver()
         )
 
-        let output = viewModel.transform(input)
+        let output = viewModel.transform(input, disposeBag: disposeBag)
 
-        output.{{ model_variable }}List
+        output.${{ model_variable }}List
             .drive(tableView.rx.items) { tableView, index, {{ model_variable }} in
                 return tableView.dequeueReusableCell(
                     for: IndexPath(row: index, section: 0),
-                    cellType: {{ model_name }}Cell.self)
-                    .then {
-                        $0.bindViewModel({{ model_variable }})
-                    }
+                    cellType: {{ model_name }}Cell.self
+                )
+                .then {
+                    $0.bindViewModel({{ model_variable }})
+                }
             }
             .disposed(by: rx.disposeBag)
 
-        output.error
+        output.$error
+            .asDriver()
+            .unwrap()
             .drive(rx.error)
-            .disposed(by: rx.disposeBag)
-
-        output.isLoading
+            .disposed(by: disposeBag)
+        
+        output.$isLoading
+            .asDriver()
             .drive(rx.isLoading)
-            .disposed(by: rx.disposeBag)
-
-        output.isReloading
-            .drive(tableView.isRefreshing)
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
 
         {% if paging %}
-        output.isLoadingMore
+        output.$isLoadingMore
             .drive(tableView.isLoadingMore)
             .disposed(by: rx.disposeBag)
 
         {% endif %}
-        output.selected{{ model_name }}
-            .drive()
-            .disposed(by: rx.disposeBag)
-
-        output.isEmpty
+        output.$isEmpty
             .drive()
             .disposed(by: rx.disposeBag)
     }
@@ -99,6 +99,17 @@ extension {{ name }}ViewController {
 extension {{ name }}ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+}
+
+// MARK: - UITableViewDataSourcePrefetching
+extension {{ name }}ViewController: UITableViewDataSourcePrefetching {
+    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+
+    }
+    
+    func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
+        
     }
 }
 

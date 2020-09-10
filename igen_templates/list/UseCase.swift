@@ -1,3 +1,6 @@
+import RxSwift
+import MGArchitecture
+
 protocol {{ name }}UseCaseType {
     {% if paging %}
     func get{{ model_name }}List(page: Int) -> Observable<PagingInfo<{{ model_name }}>>

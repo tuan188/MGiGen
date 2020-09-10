@@ -1,5 +1,6 @@
 @testable import {{ project }}
 import RxSwift
+import MGArchitecture
 
 final class {{ name }}UseCaseMock: {{ name }}UseCaseType {
 
