@@ -1,6 +1,7 @@
-import RxSwift
-import RxCocoa
 import MGArchitecture
+import RxCocoa
+import RxSwift
+import UIKit
 
 struct {{ name }}ViewModel {
     let navigator: {{ name }}NavigatorType
@@ -36,7 +37,7 @@ extension {{ name }}ViewModel: ViewModel {
 
     struct {{ model_name }}SectionViewModel {
         let header: String
-        let {{ model_variable }}List: [{{ model_name }}ViewModel]
+        let {{ model_variable }}List: [{{ model_name }}ItemViewModel]
     }
 
     func transform(_ input: Input, disposeBag: DisposeBag) -> Output {
@@ -49,7 +50,7 @@ extension {{ name }}ViewModel: ViewModel {
                                         getItems: useCase.get{{ model_name }}List(page:))
 
         let getPageResult = getPage(input: getPageInput)
-        let (page, pagingError, isLoading, isReloading, isLoadingMore) = getPageResult.destructured
+        let (page, error, isLoading, isReloading, isLoadingMore) = getPageResult.destructured
 
         let {{ model_variable }}Sections = page
             .map { $0.items }
@@ -57,8 +58,7 @@ extension {{ name }}ViewModel: ViewModel {
         {% else %}
         let getListInput = GetListInput(loadTrigger: input.loadTrigger,
                                         reloadTrigger: input.reloadTrigger,
-                                        loadMoreTrigger: input.loadMoreTrigger,
-                                        getItems: useCase.get{{ model_name }}List(page:))
+                                        getItems: useCase.get{{ model_name }}List)
 
         let getListResult = getList(input: getListInput)
         let ({{ model_variable }}List, error, isLoading, isReloading) = getListResult.destructured
@@ -91,8 +91,10 @@ extension {{ name }}ViewModel: ViewModel {
 
         checkIfDataIsEmpty(trigger: Driver.merge(isLoading, isReloading),
                            items: {{ model_variable }}Sections)
+            .drive(output.$isEmpty)
+            .disposed(by: disposeBag)
 
-        pagingError
+        error
             .drive(output.$error)
             .disposed(by: disposeBag)
         

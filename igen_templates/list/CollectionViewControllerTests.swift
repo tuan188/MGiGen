@@ -1,7 +1,7 @@
 @testable import {{ project }}
-import XCTest
-import UIKit
 import Reusable
+import UIKit
+import XCTest
 
 final class {{ name }}ViewControllerTests: XCTestCase {
     private var viewController: {{ name }}ViewController!

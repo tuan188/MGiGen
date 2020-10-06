@@ -1,17 +1,16 @@
 @testable import {{ project }}
-import XCTest
 import RxSwift
+import XCTest
 
 final class {{ name }}ViewModelTests: XCTestCase {
     private var viewModel: {{ name }}ViewModel!
     private var navigator: {{ name }}NavigatorMock!
     private var useCase: {{ name }}UseCaseMock!
-
     private var input: {{ name }}ViewModel.Input!
     private var output: {{ name }}ViewModel.Output!
-
     private var disposeBag: DisposeBag!
 
+    // Triggers
     private let loadTrigger = PublishSubject<Void>()
     private let reloadTrigger = PublishSubject<Void>()
     {% if paging %}

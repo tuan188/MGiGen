@@ -1,5 +1,5 @@
-import RxSwift
 import MGArchitecture
+import RxSwift
 
 protocol {{ name }}UseCaseType {
     {% if paging %}

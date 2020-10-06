@@ -137,7 +137,7 @@ The List Template shows a list of objects in a UITableView or a UICollectionView
 Copy the model to the pasteboard (clipboard) then run:
 
 ```
-$ igen template list <Scene_Name> [--section] [--collection] [--window]
+$ igen template list <Scene_Name> [--section] [--collection] [--window] [--paging]
 ```
 
 #### Options:

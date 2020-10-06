@@ -1,5 +1,5 @@
-import UIKit
 import Reusable
+import UIKit
 
 final class {{ model_name }}Cell: UICollectionViewCell, NibReusable {
 {% for p in properties %}

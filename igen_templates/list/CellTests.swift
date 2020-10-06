@@ -1,5 +1,6 @@
 @testable import {{ project }}
 import XCTest
+import Reusable
 
 final class {{ model_name }}CellTests: XCTestCase {
     var cell: {{ model_name }}Cell!

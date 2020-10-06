@@ -1,5 +1,5 @@
-import UIKit
 import Reusable
+import UIKit
 
 protocol {{ name }}Assembler {
     {% if use_window %}

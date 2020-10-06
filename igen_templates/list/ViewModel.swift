@@ -1,6 +1,7 @@
 import MGArchitecture
-import RxSwift
 import RxCocoa
+import RxSwift
+import UIKit
 
 struct {{ name }}ViewModel {
     let navigator: {{ name }}NavigatorType
@@ -25,11 +26,11 @@ extension {{ name }}ViewModel: ViewModel {
         {% if paging %}
         @Property var isLoadingMore = false
         {% endif %}
-        @Property var {{ model_variable }}List = [{{ model_name }}ViewModel]()
+        @Property var {{ model_variable }}List = [{{ model_name }}ItemViewModel]()
         @Property var isEmpty = false
     }
 
-    func transform(_ input: Input) -> Output {
+    func transform(_ input: Input, disposeBag: DisposeBag) -> Output {
         let output = Output()
 
         {% if paging %}
@@ -46,24 +47,38 @@ extension {{ name }}ViewModel: ViewModel {
         {% else %}
         let getListInput = GetListInput(loadTrigger: input.loadTrigger,
                                         reloadTrigger: input.reloadTrigger,
-                                        loadMoreTrigger: input.loadMoreTrigger,
-                                        getItems: useCase.get{{ model_name }}List(page:))
+                                        getItems: useCase.get{{ model_name }}List)
 
         let getListResult = getList(input: getListInput)
         let ({{ model_variable }}List, error, isLoading, isReloading) = getListResult.destructured
         {% endif %}
 
-        let {{ model_variable }}ViewModelList = {{ model_variable }}List
-            .map { $0.map({{ model_name }}ViewModel.init) }
+        {{ model_variable }}List
+            .map { $0.map({{ model_name }}ItemViewModel.init) }
+            .drive(output.${{ model_variable }}List)
+            .disposed(by: disposeBag)
 
+        {% if paging %}
         select(trigger: input.select{{ model_name }}Trigger, items: {{ model_variable }}List)
             .drive(onNext: navigator.to{{ model_name }}Detail)
             .disposed(by: disposeBag)
 
         checkIfDataIsEmpty(trigger: Driver.merge(isLoading, isReloading),
-                           items: {{ model_variable }}Sections)
+                           items: {{ model_variable }}List)
+            .drive(output.$isEmpty)
+            .disposed(by: disposeBag)
+        {% else %}
+        select(trigger: input.select{{ model_name }}Trigger, items: {{ model_variable }}List)
+            .drive(onNext: navigator.to{{ model_name }}Detail)
+            .disposed(by: disposeBag)
 
-        pagingError
+        checkIfDataIsEmpty(trigger: Driver.merge(isLoading, isReloading),
+                           items: {{ model_variable }}List)
+            .drive(output.$isEmpty)
+            .disposed(by: disposeBag)
+        {% endif %}
+
+        error
             .drive(output.$error)
             .disposed(by: disposeBag)
         

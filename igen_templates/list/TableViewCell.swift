@@ -1,5 +1,5 @@
-import UIKit
 import Reusable
+import UIKit
 
 final class {{ model_name }}Cell: UITableViewCell, NibReusable {
 {% for p in properties %}
@@ -10,7 +10,7 @@ final class {{ model_name }}Cell: UITableViewCell, NibReusable {
         super.awakeFromNib()
     }
 
-    func bindViewModel(_ viewModel: {{ model_name }}ViewModel?) {
+    func bindViewModel(_ viewModel: {{ model_name }}ItemViewModel) {
         {% for p in properties %}
         {{ p.name }}Label.text = ""
         {% endfor %}

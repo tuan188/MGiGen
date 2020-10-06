@@ -1,4 +1,4 @@
-struct {{ model_name }}ViewModel {
+struct {{ model_name }}ItemViewModel {
     {% for p in properties %}
     let {{ p.name }}: String      
     {% endfor %}

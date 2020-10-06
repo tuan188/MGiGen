@@ -1,10 +1,10 @@
-import UIKit
-import Reusable
-import RxSwift
-import RxCocoa
 import MGArchitecture
 import MGLoadMore
+import Reusable
+import RxCocoa
+import RxSwift
 import Then
+import UIKit
 
 final class {{ name }}ViewController: UIViewController, Bindable {
 
@@ -56,6 +56,7 @@ final class {{ name }}ViewController: UIViewController, Bindable {
         let output = viewModel.transform(input, disposeBag: disposeBag)
 
         output.${{ model_variable }}List
+            .asDriver()
             .drive(tableView.rx.items) { tableView, row, {{ model_variable }} in
                 return tableView.dequeueReusableCell(
                     for: IndexPath(row: row, section: 0),
@@ -80,11 +81,13 @@ final class {{ name }}ViewController: UIViewController, Bindable {
 
         {% if paging %}
         output.$isLoadingMore
+            .asDriver() 
             .drive(tableView.isLoadingMore)
             .disposed(by: disposeBag)
 
         {% endif %}
         output.$isEmpty
+            .asDriver()
             .drive()
             .disposed(by: disposeBag)
     }

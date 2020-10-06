@@ -1,12 +1,12 @@
-import UIKit
-import Reusable
-import RxSwift
-import RxCocoa
-import MGLoadMore
 import MGArchitecture
+import MGLoadMore
+import Reusable
+import RxCocoa
+import RxSwift
 import Then
+import UIKit
 
-final class {{ name }}ViewController: UIViewController, BindableType {
+final class {{ name }}ViewController: UIViewController, Bindable {
 
     // MARK: - IBOutlets
 
@@ -55,22 +55,14 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             select{{ model_name }}Trigger: tableView.rx.itemSelected.asDriver()
         )
 
-        let output = viewModel.transform(input)
+        let output = viewModel.transform(input, disposeBag: disposeBag)
 
-        output.${{ model_variable }}List
+        output.${{ model_variable }}Sections
             .asDriver()
-            .do(onNext: { [unowned self] {{ model_variable }}List in
-                self.{{ model_variable }}List = {{ model_variable }}List
+            .drive(onNext: { [unowned self] sections in
+                self.{{ model_variable }}Sections = sections
+                self.tableView.reloadData()
             })
-            .drive(tableView.rx.items) { tableView, index, {{ model_variable }} in
-                return tableView.dequeueReusableCell(
-                    for: IndexPath(row: index, section: 0),
-                    cellType: {{ model_name }}Cell.self
-                )
-                .then {
-                    $0.bindViewModel({{ model_variable }})
-                }
-            }
             .disposed(by: disposeBag)
 
         output.$error
@@ -90,14 +82,16 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             .disposed(by: disposeBag)
 
         {% if paging %}
-        output.isLoadingMore
+        output.$isLoadingMore
+            .asDriver()
             .drive(tableView.isLoadingMore)
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
 
         {% endif %}
-        output.isEmpty
+        output.$isEmpty
+            .asDriver()
             .drive()
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
     }
 
 }
@@ -107,10 +101,45 @@ extension {{ name }}ViewController {
 
 }
 
+// MARK: - UITableViewDataSource
+extension {{ name }}ViewController: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return {{ model_variable }}Sections.count
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return {{ model_variable }}Sections[section].{{ model_variable }}List.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let {{ model_variable }} = {{ model_variable }}Sections[indexPath.section].{{ model_variable }}List[indexPath.row]
+        
+        return tableView.dequeueReusableCell(for: indexPath,
+                                             cellType: {{ model_name }}Cell.self)
+            .then {
+                $0.bindViewModel({{ model_variable }})
+            }
+    }
+}
+
 // MARK: - UITableViewDelegate
 extension {{ name }}ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return CGFloat.leastNonzeroMagnitude
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 44
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let header = tableView.dequeueReusableHeaderFooterView({{ model_name }}HeaderView.self)
+        header?.titleLabel.text = {{ model_variable }}Sections[section].header
+        return header
     }
 }
 

@@ -1,9 +1,10 @@
-import UIKit
 import MGArchitecture
-import RxSwift
-import RxCocoa
+import MGLoadMore
 import Reusable
+import RxCocoa
+import RxSwift
 import Then
+import UIKit
 
 final class {{ name }}ViewController: UIViewController, Bindable {
 
@@ -120,13 +121,13 @@ final class {{ name }}ViewController: UIViewController, Bindable {
         output.$isLoadingMore
             .asDriver()
             .drive(collectionView.isLoadingMore)
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
 
         {% endif %}
         output.$isEmpty
             .asDriver()
             .drive()
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
     }
 
 }
@@ -170,7 +171,7 @@ extension {{ name }}ViewController: StoryboardSceneBased {
 }
 
 // MARK: - UICollectionViewDataSourcePrefetching
-extension {{ name }}CollectionViewController: UICollectionViewDataSourcePrefetching {
+extension {{ name }}ViewController: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
 
     }
