@@ -56,16 +56,16 @@ final class {{ name }}ViewController: UIViewController, Bindable {
         let output = viewModel.transform(input, disposeBag: disposeBag)
 
         output.${{ model_variable }}List
-            .drive(tableView.rx.items) { tableView, index, {{ model_variable }} in
+            .drive(tableView.rx.items) { tableView, row, {{ model_variable }} in
                 return tableView.dequeueReusableCell(
-                    for: IndexPath(row: index, section: 0),
+                    for: IndexPath(row: row, section: 0),
                     cellType: {{ model_name }}Cell.self
                 )
                 .then {
                     $0.bindViewModel({{ model_variable }})
                 }
             }
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
 
         output.$error
             .asDriver()
@@ -81,12 +81,12 @@ final class {{ name }}ViewController: UIViewController, Bindable {
         {% if paging %}
         output.$isLoadingMore
             .drive(tableView.isLoadingMore)
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
 
         {% endif %}
         output.$isEmpty
             .drive()
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
     }
 }
 

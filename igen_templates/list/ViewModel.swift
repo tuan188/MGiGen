@@ -7,8 +7,8 @@ struct {{ name }}ViewModel {
     let useCase: {{ name }}UseCaseType
 }
 
-// MARK: - ViewModelType
-extension {{ name }}ViewModel: ViewModelType {
+// MARK: - ViewModel
+extension {{ name }}ViewModel: ViewModel {
     struct Input {
         let loadTrigger: Driver<Void>
         let reloadTrigger: Driver<Void>

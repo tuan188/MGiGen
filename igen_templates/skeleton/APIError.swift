@@ -1,3 +1,6 @@
+import Foundation
+import MGAPIService
+
 struct APIExpiredTokenError: APIError {
     var errorDescription: String? {
         return NSLocalizedString("api.expiredTokenError",

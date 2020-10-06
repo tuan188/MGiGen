@@ -20,6 +20,7 @@ extension ___VARIABLE_productName___ViewModel: ViewModel {
     }
     
     func transform(_ input: Input, disposeBag: DisposeBag) -> Output {
-        return Output()
+        let output = Output()
+        return output
     }
 }

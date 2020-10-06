@@ -89,9 +89,9 @@ final class {{ name }}ViewController: UIViewController, Bindable {
             .do(onNext: { [unowned self] {{ model_variable }}List in
                 self.{{ model_variable }}List = {{ model_variable }}List
             })
-            .drive(collectionView.rx.items) { collectionView, index, {{ model_variable }} in
+            .drive(collectionView.rx.items) { collectionView, row, {{ model_variable }} in
                 return collectionView.dequeueReusableCell(
-                    for: IndexPath(row: index, section: 0),
+                    for: IndexPath(row: row, section: 0),
                     cellType: {{ model_name }}Cell.self
                 )
                 .then {

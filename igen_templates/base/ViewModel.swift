@@ -18,6 +18,8 @@ extension {{ name }}ViewModel: ViewModel {
     }
 
     func transform(_ input: Input, disposeBag: DisposeBag) -> Output {
-        return Output()
+        let output = Output()
+
+        return output()
     }
 }
