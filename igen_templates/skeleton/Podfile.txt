@@ -2,30 +2,24 @@ platform :ios, '10.0'
 
 def pods
     # Clean Architecture
-    pod 'MGArchitecture', '~> 1.3.1'
-    pod 'MGAPIService', '~> 2.2.1'
-    pod 'MGLoadMore', '~> 1.3.1'
-    pod 'Alamofire', '~> 4.9.1'
+    pod 'MGArchitecture', '~> 2.0.1'
+    pod 'MGAPIService', '~> 3.0.0'
+    pod 'MGLoadMore', '~> 3.0.0'
+    pod 'Dto'
 
     # Rx
-    pod 'NSObject+Rx', '~> 5.1'
-    pod 'RxDataSources', '~> 4.0'
+    pod 'RxViewController'
 
     # Core
-    pod 'ObjectMapper', '~> 3.5'
     pod 'Reusable', '~> 4.1'
     pod 'Then', '~> 2.7'
-    pod 'MJRefresh', '~> 3.4.3'
-    pod 'Validator', '~> 3.2.1'
 
     # Others
     pod 'MBProgressHUD', '~> 1.2'
-    pod 'Localize-Swift', '~> 3.1'
     pod 'SDWebImage', '~> 5.8.3'
 end
 
 def test_pods
-    pod 'RxBlocking', '~> 5.1'
     pod 'RxTest', '~> 5.1'
 end
 
@@ -38,5 +32,14 @@ target '{{ project }}' do
         inherit! :search_paths
         test_pods
     end
+end
 
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      if config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f < 10.0
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '10.0'
+      end
+    end
+  end
 end
