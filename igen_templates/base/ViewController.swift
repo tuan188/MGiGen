@@ -1,9 +1,9 @@
-import UIKit
 import MGArchitecture
-import RxSwift
-import RxCocoa
 import Reusable
+import RxCocoa
+import RxSwift
 import Then
+import UIKit
 
 final class {{ name }}ViewController: UIViewController, Bindable {
     

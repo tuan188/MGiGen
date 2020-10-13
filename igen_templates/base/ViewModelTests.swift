@@ -1,7 +1,7 @@
 @testable import {{ project }}
-import XCTest
-import RxSwift
 import RxCocoa
+import RxSwift
+import XCTest
 
 final class {{ name }}ViewModelTests: XCTestCase {
     private var viewModel: {{ name }}ViewModel!
