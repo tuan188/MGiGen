@@ -1,23 +1,26 @@
 @testable import {{ project }}
+import Dto
 import RxSwift
+import ValidatedPropertyKit
 
 final class {{ name }}UseCaseMock: {{ name }}UseCaseType {
-    // MARK: - validate username
     
-    var validateUsernameCalled = false
-    var validateUsernameReturnValue = ValidationResult.valid
+    // MARK: - validateUserName
     
-    func validate(username: String) -> ValidationResult {
-        validateUsernameCalled = true
-        return validateUsernameReturnValue
+    var validateUserNameCalled = false
+    var validateUserNameReturnValue = ValidationResult.success(())
+    
+    func validateUserName(_ username: String) -> ValidationResult {
+        validateUserNameCalled = true
+        return validateUserNameReturnValue
     }
     
-    // MARK: - validate password
+    // MARK: - validatePassword
     
     var validatePasswordCalled = false
-    var validatePasswordReturnValue = ValidationResult.valid
+    var validatePasswordReturnValue = ValidationResult.success(())
     
-    func validate(password: String) -> ValidationResult {
+    func validatePassword(_ password: String) -> ValidationResult {
         validatePasswordCalled = true
         return validatePasswordReturnValue
     }
@@ -27,9 +30,8 @@ final class {{ name }}UseCaseMock: {{ name }}UseCaseType {
     var loginCalled = false
     var loginReturnValue = Observable.just(())
     
-    func login(username: String, password: String) -> Observable<Void> {
+    func login(dto: LoginDto) -> Observable<Void> {
         loginCalled = true
         return loginReturnValue
     }
-
 }

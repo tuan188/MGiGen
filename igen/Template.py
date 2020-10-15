@@ -934,12 +934,19 @@ class Template(object):
             self._create_view_model()
             self._create_use_case()
             self._create_view_controller()
+            self._create_login_dto()
             # Test
             self._create_use_case_mock()
             self._create_navigator_mock()
             self._create_view_model_tests()
             self._create_view_controller_tests()
             return output_path
+
+        def _create_login_dto(self):
+            self._create_file_from_template(
+                class_name='LoginDto',
+                template_file='LoginDto.swift'
+            )
 
     # =============== SettingTemplate ===============
 

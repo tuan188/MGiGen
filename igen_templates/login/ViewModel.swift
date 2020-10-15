@@ -1,10 +1,15 @@
+import MGArchitecture
+import RxCocoa
+import RxSwift
+import ValidatedPropertyKit
+
 struct {{ name }}ViewModel {
     let navigator: {{ name }}NavigatorType
     let useCase: {{ name }}UseCaseType
 }
 
-// MARK: - ViewModelType
-extension {{ name }}ViewModel: ViewModelType {
+// MARK: - ViewModel
+extension {{ name }}ViewModel: ViewModel {
     struct Input {
         let usernameTrigger: Driver<String>
         let passwordTrigger: Driver<String>
@@ -12,71 +17,73 @@ extension {{ name }}ViewModel: ViewModelType {
     }
 
     struct Output {
-        let usernameValidation: Driver<ValidationResult>
-        let passwordValidation: Driver<ValidationResult>
-        let login: Driver<Void>
-        let isLoginEnabled: Driver<Bool>
-        let isLoading: Driver<Bool>
-        let error: Driver<Error>
+        @Property var usernameValidationMessage = ""
+        @Property var passwordValidationMessage = ""
+        @Property var isLoginEnabled = true
+        @Property var isLoading = false
+        @Property var error: Error?
     }
 
-    func transform(_ input: Input) -> Output {
+    func transform(_ input: Input, disposeBag: DisposeBag) -> Output {
+        let output = Output()
+        
         let errorTracker = ErrorTracker()
         let activityIndicator = ActivityIndicator()
-
-        let error = errorTracker.asDriver()
+        
+        errorTracker
+            .drive(output.$error)
+            .disposed(by: disposeBag)
+        
         let isLoading = activityIndicator.asDriver()
-
-        let usernameValidation = validate(
-            object: input.usernameTrigger,
-            trigger: input.loginTrigger,
-            validator: useCase.validate(username:)
-        )
-
-        let passwordValidation = validate(
-            object: input.passwordTrigger,
-            trigger: input.loginTrigger,
-            validator: useCase.validate(password:)
-        )
-
+        
+        isLoading
+            .drive(output.$isLoading)
+            .disposed(by: disposeBag)
+        
+        let usernameValidation = Driver.combineLatest(input.usernameTrigger, input.loginTrigger)
+            .map { $0.0 }
+            .map(useCase.validateUserName(_:))
+        
+        usernameValidation
+            .map { $0.message }
+            .drive(output.$usernameValidationMessage)
+            .disposed(by: disposeBag)
+  
+        let passwordValidation = Driver.combineLatest(input.passwordTrigger, input.loginTrigger)
+            .map { $0.0 }
+            .map(useCase.validatePassword(_:))
+        
+        passwordValidation
+            .map { $0.message }
+            .drive(output.$passwordValidationMessage)
+            .disposed(by: disposeBag)
+        
         let validation = Driver.and(
             usernameValidation.map { $0.isValid },
             passwordValidation.map { $0.isValid }
         )
         .startWith(true)
-
+        
         let isLoginEnabled = Driver.merge(validation, isLoading.not())
-
-        let login = input.loginTrigger
+        
+        isLoginEnabled
+            .drive(output.$isLoginEnabled)
+            .disposed(by: disposeBag)
+        
+        input.loginTrigger
             .withLatestFrom(isLoginEnabled)
             .filter { $0 }
             .withLatestFrom(Driver.combineLatest(input.usernameTrigger, input.passwordTrigger))
             .flatMapLatest { username, password -> Driver<Void> in
-                self.useCase.login(username: username, password: password)
+                self.useCase.login(dto: LoginDto(username: username, password: password))
                     .trackError(errorTracker)
                     .trackActivity(activityIndicator)
                     .asDriverOnErrorJustComplete()
             }
             .do(onNext: navigator.toMain)
-
-        return Output(
-            usernameValidation: usernameValidation,
-            passwordValidation: passwordValidation,
-            login: login,
-            isLoginEnabled: isLoginEnabled,
-            isLoading: isLoading,
-            error: error
-        )
-    }
-}
-
-extension ViewModelType {
-    func validate<T>(object: Driver<T>,
-                     trigger: Driver<Void>,
-                     validator: @escaping (T) -> ValidationResult) -> Driver<ValidationResult> {
-        return Driver.combineLatest(object, trigger)
-            .map { $0.0 }
-            .map { validator($0) }
-            .startWith(.valid)
+            .drive()
+            .disposed(by: disposeBag)
+        
+        return output
     }
 }
