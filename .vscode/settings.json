@@ -6,5 +6,8 @@
         "build": true,
         "dist": true,
         "igen.egg-info": true,
-    }
+    },
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportMissingImports": "none"
+    },
 }

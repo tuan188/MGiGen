@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from jinja2 import Environment, PackageLoader
+from jinja2 import Environment, PackageLoader  # type: ignore
 from .str_helpers import lower_first_letter, upper_first_letter
 from .pb import pasteboard_write
 from .command import Command
