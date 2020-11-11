@@ -1,7 +1,11 @@
-import UIKit
+import Dto
+import MGArchitecture
 import Reusable
+import RxCocoa
+import RxSwift
+import UIKit
 
-final class {{ name }}ViewController: UIViewController, BindableType {
+final class {{ name }}ViewController: UIViewController, Bindable {
 
     // MARK: - IBOutlets
 
@@ -12,6 +16,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
     // MARK: - Properties
 
     var viewModel: {{ name }}ViewModel!
+    var disposeBag = DisposeBag()
 
     {% for p in properties %}
     {% if p.type.name == 'String' %}
@@ -68,37 +73,34 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             dataTrigger: dataTrigger.asDriverOnErrorJustComplete()
         )
 
-        let output = viewModel.transform(input)
+        let output = viewModel.transform(input, disposeBag: disposeBag)
 
-        output.cancel
-            .drive()
-            .disposed(by: rx.disposeBag)
-
-        output.cells
+        output.$cells
+            .asDriver()
             .drive(cellsBinder)
-            .disposed(by: rx.disposeBag)
-
-        output.{{ submit }}
-            .drive()
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
 
         {% for p in properties %}
-        output.{{ p.name }}Validation
+        output.${{ p.name }}Validation
+            .asDriver()
             .drive({{ p.name }}ValidatorBinder)
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
 
         {% endfor %}
-        output.is{{ submit_title }}Enabled
+        output.$is{{ submit_title }}Enabled
+            .asDriver()
             .drive({{ submit }}Button.rx.isEnabled)
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
 
-        output.error
-            .drive(rx.error)
-            .disposed(by: rx.disposeBag)
+        output.$error
+            .asDriver()
+            .drive()
+            .disposed(by: disposeBag)
 
-        output.isLoading
-            .drive(rx.isLoading)
-            .disposed(by: rx.disposeBag)
+        output.$isLoading
+            .asDriver()
+            .drive()
+            .disposed(by: disposeBag)
     }
 }
 
@@ -112,7 +114,7 @@ extension {{ name }}ViewController {
     }
 
     {% endfor %}
-    var cellsBinder: Binder<([{{ name }}ViewModel.CellType], Bool)> {
+    var cellsBinder: Binder<([{{ name }}ViewModel.CellType], needReload: Bool)> {
         return Binder(self) { vc, args in
             let (cells, needReload) = args
             vc.cells = cells

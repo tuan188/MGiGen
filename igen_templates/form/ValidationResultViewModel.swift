@@ -1,3 +1,4 @@
+import Dto
 import UIKit
 
 struct ValidationResultViewModel {
@@ -5,19 +6,19 @@ struct ValidationResultViewModel {
 
     var backgroundColor: UIColor {
         switch validationResult {
-        case .valid:
+        case .success:
             return UIColor.white
-        case .invalid:
+        case .failure:
             return UIColor.yellow
         }
     }
 
     var text: String {
         switch validationResult {
-        case .valid:
+        case .success:
             return " "
-        case .invalid(let errors):
-            return errors.map { $0.localizedDescription }.joined(separator: "\n")
+        case .failure(let error):
+            return error.localizedDescription
         }
     }
 }

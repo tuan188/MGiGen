@@ -1,3 +1,6 @@
+import Reusable
+import RxCocoa
+import RxSwift
 import UIKit
 
 final class {{ name }}{{ property.name_title }}Cell: UITableViewCell, NibReusable {

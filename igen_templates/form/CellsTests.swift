@@ -11,17 +11,17 @@ final class {{ name }}CellsTests: XCTestCase {
     override func setUp() {
         super.setUp()
         {% for p in properties %}
-        {{ p.name }}Cell = {{ name }}{{ p.name_title }}Cell.loadFromNib()
+//        {{ p.name }}Cell = {{ name }}{{ p.name_title }}Cell.loadFromNib()
         {% endfor %}
     }
     
     func test_ibOutlets() {
         {% for p in properties %}
         // {{ p.name_title }} cell
-        XCTAssertNotNil({{ p.name }}Cell)
+//        XCTAssertNotNil({{ p.name }}Cell)
         {% if p.type.name == 'String' %}
-        XCTAssertNotNil({{ p.name }}Cell.{{ p.name }}TextField)
-        XCTAssertNotNil({{ p.name }}Cell.{{ p.name }}ValidationLabel)
+//        XCTAssertNotNil({{ p.name }}Cell.{{ p.name }}TextField)
+//        XCTAssertNotNil({{ p.name }}Cell.{{ p.name }}ValidationLabel)
         {% endif %}
         
         {% endfor %}

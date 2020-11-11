@@ -1,3 +1,7 @@
+import Dto
+import RxCocoa
+import RxSwift
+
 protocol {{ name }}UseCaseType {
     {% for p in properties %}
     func validate({{ p.name }}: {{ p.type.name }}) -> ValidationResult
@@ -8,7 +12,7 @@ protocol {{ name }}UseCaseType {
 struct {{ name }}UseCase: {{ name }}UseCaseType {
     {% for p in properties %}
     func validate({{ p.name }}: {{ p.type.name }}) -> ValidationResult {
-        return ValidationResult.valid
+        return ValidationResult.success(())
     }
     
     {% endfor %}
