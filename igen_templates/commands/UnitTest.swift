@@ -2,14 +2,13 @@ final class {{ name }}ViewModelTests: XCTestCase {
     private var viewModel: {{ name }}ViewModel!
     private var navigator: {{ name }}NavigatorMock!
     private var useCase: {{ name }}UseCaseMock!
-    
     private var input: {{ name }}ViewModel.Input!
     private var output: {{ name }}ViewModel.Output!
-
     private var disposeBag: DisposeBag!
 
+    // Triggers
 {% for p in input_properties %}
-    private let {{ p.name }} = PublishSubject<{{ p.type_name }}>()
+    private let {{ p.name }}Trigger = PublishSubject<{{ p.type_name }}>()
 {% endfor %}
 
     override func setUp() {
@@ -24,17 +23,12 @@ final class {{ name }}ViewModelTests: XCTestCase {
         {% endfor %}
         )
 
-        output = viewModel.transform(input)
-
         disposeBag = DisposeBag()
-
-    {% for p in output_properties %}
-        output.{{ p.name }}.drive().disposed(by: disposeBag)
-    {% endfor %}
+        output = viewModel.transform(input, disposeBag: disposeBag)
     }
     
 {% for p in input_properties %}
-    func test_{{ p.name }}_() {
+    func test_{{ p.name }}Trigger_() {
         // arrange
 
 
