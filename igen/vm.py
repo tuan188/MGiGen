@@ -15,9 +15,6 @@ class ViewModel(object):
         def __str__(self):
             return "let {}: Driver<{}>".format(self.name, self.type_name)
 
-        def __str__(self):
-            return "let {}: Driver<{}>".format(self.name, self.type_name)
-
     def __init__(self, vm_text):
         super(ViewModel, self).__init__()
         self.vm_text = vm_text
@@ -49,9 +46,9 @@ class ViewModel(object):
             # Output
             output_block_regex = re.compile("struct Output {([^}]+)")
             output_block = output_block_regex.search(str).group(1)
-            output_properties_regex = re.compile(r'@Property var (\w+)(?:\s=|:).*$')
+            output_properties_regex = re.compile(r'(?:let|var) (\w+)(?: =|:)(?:.*)')
             output_properties = [
-                ViewModel.Property(p[0], '')
+                ViewModel.Property(p, 'Any')
                 for p in output_properties_regex.findall(output_block)
             ]
 
