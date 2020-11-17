@@ -27,18 +27,24 @@ extension {{ name }}ViewModel: ViewModel {
     func transform(_ input: Input, disposeBag: DisposeBag) -> Output {
         let output = Output()
         
+        // Error
+
         let errorTracker = ErrorTracker()
-        let activityIndicator = ActivityIndicator()
-        
+
         errorTracker
             .drive(output.$error)
             .disposed(by: disposeBag)
+
+        // Loading
         
+        let activityIndicator = ActivityIndicator()
         let isLoading = activityIndicator.asDriver()
         
         isLoading
             .drive(output.$isLoading)
             .disposed(by: disposeBag)
+
+        // Validations
         
         let usernameValidation = Driver.combineLatest(input.usernameTrigger, input.loginTrigger)
             .map { $0.0 }
@@ -69,6 +75,8 @@ extension {{ name }}ViewModel: ViewModel {
         isLoginEnabled
             .drive(output.$isLoginEnabled)
             .disposed(by: disposeBag)
+
+        // Login
         
         input.loginTrigger
             .withLatestFrom(isLoginEnabled)
