@@ -1,59 +1,65 @@
+import MGArchitecture
+import RxCocoa
+import RxSwift
+
 struct {{ name }}ViewModel {
     let navigator: {{ name }}NavigatorType
     let useCase: {{ name }}UseCaseType
 }
 
 // MARK: - ViewModelType
-extension {{ name }}ViewModel: ViewModelType {
+extension {{ name }}ViewModel: ViewModel {
     struct Input {
         let loadTrigger: Driver<Void>
         let select{{ enum.name }}Trigger: Driver<IndexPath>
     }
     
     struct Output {
-        let {{ enum.name_variable }}List: Driver<[{{ enum.name }}]>
-        let selected{{ enum.name }}: Driver<Void>
+        @Property var {{ enum.name_variable }}List = [{{ enum.name }}]()
     }
 
-    func transform(_ input: Input) -> Output {
+    func transform(_ input: Input, disposeBag: DisposeBag) -> Output {
+        let output = Output()
+
         let {{ enum.name_variable }}List = input.loadTrigger
             .map {
                 {{ enum.name }}.allCases
             }
+
+        {{ enum.name_variable }}List
+            .drive(output.${{ enum.name_variable }}List)
+            .disposed(by: disposeBag)
         
-        let selected{{ enum.name }} = input.select{{ enum.name }}Trigger
+        input.select{{ enum.name }}Trigger
             .withLatestFrom({{ enum.name_variable }}List) { indexPath, {{ enum.name_variable }}List in
                 {{ enum.name_variable }}List[indexPath.row]
             }
-            .do(onNext: { {{ enum.name_variable }} in
+            .drive(onNext: { {{ enum.name_variable }} in
                 switch {{ enum.name_variable }} {
-            {% for enum_case in enum.cases %}
+                {% for enum_case in enum.cases %}
                 case .{{ enum_case }}:
                     self.navigator.to{{ enum.cases_title[loop.index0] }}()
-            {% endfor %}
+                {% endfor %}
                 }
             })
-            .mapToVoid()
+            .disposed(by: disposeBag)
         
-        return Output(
-            {{ enum.name_variable }}List: {{ enum.name_variable }}List,
-            selected{{ enum.name }}: selected{{ enum.name }}
-        )
+        return output
     }
 }
 
 extension {{ name }}ViewModel {
     enum {{ enum.name }}: Int, CustomStringConvertible, CaseIterable {
-    {% for enum_case in enum.cases %}
+        {% for enum_case in enum.cases %}
         case {{ enum_case }}
-    {% endfor %}
+        {% endfor %}
         
         var description: String {
             switch self {
-        {% for enum_case in enum.cases %}
+            {% for enum_case in enum.cases %}
             case .{{ enum_case }}:
                 return "{{ enum.cases_title[loop.index0] }}"
-        {% endfor %}
+            {% endfor %}
             }
         }
     }

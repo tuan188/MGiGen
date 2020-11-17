@@ -1,7 +1,9 @@
+import UIKit
+
 protocol {{ name }}NavigatorType {
-{% for enum_case in enum.cases_title %}
+    {% for enum_case in enum.cases_title %}
     func to{{ enum_case }}()
-{% endfor %}
+    {% endfor %}
 }
 
 struct {{ name }}Navigator: {{ name }}NavigatorType {
@@ -12,9 +14,9 @@ struct {{ name }}Navigator: {{ name }}NavigatorType {
     unowned let navigationController: UINavigationController
     {% endif %}
 
-{% for enum_case in enum.cases_title %}
+    {% for enum_case in enum.cases_title %}
     func to{{ enum_case }}() {
 
     }{{ '\n' if not loop.last }}
-{% endfor %}
+    {% endfor %}
 }

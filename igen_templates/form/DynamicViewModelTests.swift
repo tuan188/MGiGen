@@ -1,18 +1,18 @@
 @testable import {{ project }}
-import XCTest
+import Dto
 import RxSwift
-import RxBlocking
+import ValidatedPropertyKit
+import XCTest
 
 final class {{ name }}ViewModelTests: XCTestCase {
     private var viewModel: {{ name }}ViewModel!
     private var navigator: {{ name }}NavigatorMock!
     private var useCase: {{ name }}UseCaseMock!
-
     private var input: {{ name }}ViewModel.Input!
     private var output: {{ name }}ViewModel.Output!
-
     private var disposeBag: DisposeBag!
 
+    // Triggers
     private let loadTrigger = PublishSubject<{{ name }}ViewModel.TriggerType>()
     private let {{ submit }}Trigger = PublishSubject<Void>()
     private let cancelTrigger = PublishSubject<Void>()
@@ -31,44 +31,27 @@ final class {{ name }}ViewModelTests: XCTestCase {
             dataTrigger: dataTrigger.asDriverOnErrorJustComplete()
         )
 
-        output = viewModel.transform(input)
-
         disposeBag = DisposeBag()
-
-        {% for p in properties %}
-        output.{{ p.name }}Validation.drive().disposed(by: disposeBag)
-        {% endfor %}
-        output.is{{ submit_title }}Enabled.drive().disposed(by: disposeBag)
-        output.{{ submit }}.drive().disposed(by: disposeBag)
-        output.cancel.drive().disposed(by: disposeBag)
-        output.error.drive().disposed(by: disposeBag)
-        output.isLoading.drive().disposed(by: disposeBag)
-        output.cells.drive().disposed(by: disposeBag)
+        output = viewModel.transform(input, disposeBag: disposeBag)
     }
 
     func test_loadTrigger_cells_need_reload() {
         // act
         loadTrigger.onNext(.load)
-
-        let args = try? output.cells.toBlocking(timeout: 1).first()
-        let cells = args?.0
-        let needReload = args?.1
+        let (cells, needReload) = output.cells
 
         // assert
-        XCTAssertEqual(cells?.count, {{ properties|length }})
+        XCTAssertEqual(cells.count, {{ properties|length }})
         XCTAssertEqual(needReload, true)
     }
 
     func test_loadTrigger_cells_no_need_reload() {
         // act
         loadTrigger.onNext(.endEditing)
-
-        let args = try? output.cells.toBlocking(timeout: 1).first()
-        let cells = args?.0
-        let needReload = args?.1
+        let (cells, needReload) = output.cells
 
         // assert
-        XCTAssertEqual(cells?.count, {{ properties|length }})
+        XCTAssertEqual(cells.count, {{ properties|length }})
         XCTAssertEqual(needReload, false)
     }
 
@@ -86,12 +69,12 @@ final class {{ name }}ViewModelTests: XCTestCase {
         let {{ p.name }} = {{ p.type.mock_value }}
         dataTrigger.onNext({{ name }}ViewModel.DataType.{{ p.name }}({{ p.name }}))
         loadTrigger.onNext(.endEditing)
-        let args = try? output.cells.toBlocking(timeout: 1).first()
-        let cells = args?.0
+        let (cells, _) = output.cells
 
         // assert
-        if let dataType = cells?[{{ loop.index0 }}].dataType,
-            case let {{ name }}ViewModel.DataType.{{ p.name }}({{ p.name }}) = dataType {
+        let dataType = cells[{{ loop.index0 }}].dataType
+
+        if case let {{ name }}ViewModel.DataType.{{ p.name }}({{ p.name }}) = dataType {
             XCTAssertEqual({{ p.name }}, {{ p.name }})
         } else {
             XCTFail()
@@ -112,15 +95,14 @@ final class {{ name }}ViewModelTests: XCTestCase {
     func test_loadTriggerInvoked_enable_{{ submit }}_byDefault() {
         // act
         loadTrigger.onNext(.load)
-        let is{{ submit_title }}Enabled = try? output.is{{ submit_title }}Enabled.toBlocking(timeout: 1).first()
 
         // assert
-        XCTAssertEqual(is{{ submit_title }}Enabled, true)
+        XCTAssertEqual(output.is{{ submit_title }}Enabled, true)
     }
 
     func test_{{ submit }}Trigger_not_{{ submit }}() {
         {% for p in properties %}
-        useCase.validate{{ p.name_title }}ReturnValue = ValidationResult.invalid([TestError()])
+        useCase.validate{{ p.name_title }}ReturnValue = ValidationResult.failure(ValidationError(message: ""))
         {% endfor %}
 
         // act
@@ -128,10 +110,12 @@ final class {{ name }}ViewModelTests: XCTestCase {
         dataTrigger.onNext({{ name }}ViewModel.DataType.{{ p.name }}({{ p.type.mock_value }}))
         {% endfor %}
         {{ submit }}Trigger.onNext(())
-        let is{{ submit_title }}Enabled = try? output.is{{ submit_title }}Enabled.toBlocking(timeout: 1).first()
 
         // assert
-        XCTAssertEqual(is{{ submit_title }}Enabled, false)
+        XCTAssertEqual(output.is{{ submit_title }}Enabled, false)
+        {% for p in properties %}
+        XCTAssertEqual(output.{{ p.name }}Validation.isValid, false)
+        {% endfor %}
         XCTAssertFalse(useCase.{{ submit }}Called)
     }
 
@@ -151,11 +135,10 @@ final class {{ name }}ViewModelTests: XCTestCase {
         // act
         {{ submit }}Trigger.onNext(())
         {{ submit }}ReturnValue.onError(TestError())
-        let error = try? output.error.toBlocking(timeout: 1).first()
 
         // assert
         XCTAssert(useCase.{{ submit }}Called)
-        XCTAssert(error is TestError)
+        XCTAssert(output.error is TestError)
     }
 
 }

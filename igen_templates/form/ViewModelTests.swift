@@ -1,23 +1,21 @@
 @testable import {{ project }}
-import XCTest
+import Dto
 import RxSwift
-import RxBlocking
+import ValidatedPropertyKit
+import XCTest
 
 final class {{ name }}ViewModelTests: XCTestCase {
-
     private var viewModel: {{ name }}ViewModel!
     private var navigator: {{ name }}NavigatorMock!
     private var useCase: {{ name }}UseCaseMock!
-
     private var input: {{ name }}ViewModel.Input!
     private var output: {{ name }}ViewModel.Output!
-
     private var disposeBag: DisposeBag!
 
+    // Triggers
     {% for p in properties %}
     private let {{ p.name }}Trigger = PublishSubject<{{ p.type.name }}>()
     {% endfor %}
-
     private let loadTrigger = PublishSubject<Void>()
     private let {{ submit }}Trigger = PublishSubject<Void>()
     private let cancelTrigger = PublishSubject<Void>()
@@ -40,47 +38,30 @@ final class {{ name }}ViewModelTests: XCTestCase {
             cancelTrigger: cancelTrigger.asDriverOnErrorJustComplete()
         )
 
-        output = viewModel.transform(input)
-
         disposeBag = DisposeBag()
-
-        {% for p in properties %}
-        output.{{ p.name }}.drive().disposed(by: disposeBag)
-        {% endfor %}
-        {% for p in properties %}
-        output.{{ p.name }}Validation.drive().disposed(by: disposeBag)
-        {% endfor %}
-        output.is{{ submit_title }}Enabled.drive().disposed(by: disposeBag)
-        output.{{ submit }}.drive().disposed(by: disposeBag)
-        output.cancel.drive().disposed(by: disposeBag)
-        output.error.drive().disposed(by: disposeBag)
-        output.isLoading.drive().disposed(by: disposeBag)
+        output = viewModel.transform(input, disposeBag: disposeBag)
     }
 
-    func test_loadTriggerInvoked_show{{ model_name }}() {
+    func test_loadTrigger_show{{ model_name }}() {
         // act
         loadTrigger.onNext(())
-        {% for p in properties %}
-        let {{ p.name }} = try? output.{{ p.name }}.toBlocking(timeout: 1).first()
-        {% endfor %}
 
         // assert
         {% for p in properties %}
-        XCTAssertEqual({{ p.name }}, {{ model_variable }}.{{ p.name }})
+        XCTAssertEqual(output.{{ p.name }}, {{ model_variable }}.{{ p.name }})
         {% endfor %}
     }
 
-    func test_loadTriggerInvoked_enable_{{ submit }}_byDefault() {
+    func test_loadTrigger_enable_{{ submit }}_byDefault() {
         // act
         loadTrigger.onNext(())
-        let is{{ submit_title }}Enabled = try? output.is{{ submit_title }}Enabled.toBlocking(timeout: 1).first()
 
         // assert
-        XCTAssertEqual(is{{ submit_title }}Enabled, true)
+        XCTAssertEqual(output.is{{ submit_title }}Enabled, true)
     }
 
     {% for p in properties %}
-    func test_{{ p.name }}TriggerInvoked_validate{{ p.name_title }}() {
+    func test_{{ p.name }}Trigger_validate{{ p.name_title }}() {
         // act
         {{ p.name }}Trigger.onNext({{ p.type.mock_value }})
         {{ submit }}Trigger.onNext(())
@@ -89,19 +70,18 @@ final class {{ name }}ViewModelTests: XCTestCase {
         XCTAssert(useCase.validate{{ p.name_title }}Called)
     }
 
-    func test_{{ p.name }}TriggerInvoked_validate{{ p.name_title }}FailNotEnable_{{ submit }}() {
+    func test_{{ p.name }}Trigger_validate{{ p.name_title }}FailNotEnable_{{ submit }}() {
         // arrange
-        useCase.validate{{ p.name_title }}ReturnValue = ValidationResult.invalid([TestError()])
+        useCase.validate{{ p.name_title }}ReturnValue = ValidationResult.failure(ValidationError(message: ""))
 
         // act
         {% for p in properties %}
         {{ p.name }}Trigger.onNext({{ p.type.mock_value }})
         {% endfor %}
         {{ submit }}Trigger.onNext(())
-        let is{{ submit_title }}Enabled = try? output.is{{ submit_title }}Enabled.toBlocking(timeout: 1).first()
 
         // assert
-        XCTAssertEqual(is{{ submit_title }}Enabled, false)
+        XCTAssertEqual(output.is{{ submit_title }}Enabled, false)
     } {{ '\n' if not loop.last }}
     {% endfor %}
 
@@ -111,16 +91,15 @@ final class {{ name }}ViewModelTests: XCTestCase {
         {{ p.name }}Trigger.onNext({{ p.type.mock_value }})
         {% endfor %}
         {{ submit }}Trigger.onNext(())
-        let is{{ submit_title }}Enabled = try? output.is{{ submit_title }}Enabled.toBlocking(timeout: 1).first()
 
         // assert
-        XCTAssertEqual(is{{ submit_title }}Enabled, true)
+        XCTAssertEqual(output.is{{ submit_title }}Enabled, true)
     }
 
-    func test_{{ submit }}TriggerInvoked_not_{{ submit }}() {
+    func test_{{ submit }}Trigger_not_{{ submit }}() {
         // arrange
         {% if properties %}
-        useCase.validate{{ properties[0].name_title }}ReturnValue = ValidationResult.invalid([TestError()])
+        useCase.validate{{ properties[0].name_title }}ReturnValue = ValidationResult.failure(ValidationError(message: ""))
         {% endif %}
 
         // act
@@ -133,7 +112,7 @@ final class {{ name }}ViewModelTests: XCTestCase {
         XCTAssertFalse(useCase.{{ submit }}Called)
     }
 
-    func test_{{ submit }}TriggerInvoked_{{ submit }}() {
+    func test_{{ submit }}Trigger_{{ submit }}() {
         // act
         {% for p in properties %}
         {{ p.name }}Trigger.onNext({{ p.type.mock_value }})
@@ -145,7 +124,7 @@ final class {{ name }}ViewModelTests: XCTestCase {
         XCTAssert(navigator.dismissCalled)
     }
 
-    func test_{{ submit }}TriggerInvoked_{{ submit }}FailShowError() {
+    func test_{{ submit }}Trigger_{{ submit }}FailShowError() {
         // arrange
         useCase.{{ submit }}ReturnValue = Observable.error(TestError())
 
@@ -154,20 +133,18 @@ final class {{ name }}ViewModelTests: XCTestCase {
         {{ p.name }}Trigger.onNext({{ p.type.mock_value }})
         {% endfor %}
         {{ submit }}Trigger.onNext(())
-        let error = try? output.error.toBlocking(timeout: 1).first()
 
         // assert
         XCTAssert(useCase.{{ submit }}Called)
         XCTAssertFalse(navigator.dismissCalled)
-        XCTAssert(error is TestError)
+        XCTAssert(output.error is TestError)
     }
 
-    func test_cancelTriggerInvoked_dismiss() {
+    func test_cancelTrigger_dismiss() {
         // act
         cancelTrigger.onNext(())
 
         // assert
         XCTAssert(navigator.dismissCalled)
     }
-
 }

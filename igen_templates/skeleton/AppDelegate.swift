@@ -1,14 +1,15 @@
+import RxCocoa
+import RxSwift
 import UIKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     var assembler: Assembler = DefaultAssembler()
+    var disposeBag = DisposeBag()
 
     func applicationDidFinishLaunching(_ application: UIApplication) {
-        Localize.setCurrentLanguage("ja")
-
         let window = UIWindow(frame: UIScreen.main.bounds)
         self.window = window
         
@@ -23,6 +24,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func bindViewModel(window: UIWindow) {
         let vm: AppViewModel = assembler.resolve(window: window)
         let input = AppViewModel.Input(loadTrigger: Driver.just(()))
-        let output = vm.transform(input)
+        let output = vm.transform(input, disposeBag: disposeBag)
     }
 }

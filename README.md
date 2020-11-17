@@ -140,7 +140,7 @@ The List Template shows a list of objects in a UITableView or a UICollectionView
 Copy the model to the pasteboard (clipboard) then run:
 
 ```
-$ igen template list <Scene_Name> [--section] [--collection] [--window]
+$ igen template list <Scene_Name> [--section] [--collection] [--window] [--paging]
 ```
 
 #### Options:
@@ -175,7 +175,7 @@ Output:
 ```
 Successfully created files:
     ProductList/ProductListViewModel.swift
-    ProductList/ProductViewModel.swift
+    ProductList/ProductItemViewModel.swift
     ProductList/ProductListNavigator.swift
     ProductList/ProductListUseCase.swift
     ProductList/ProductListViewController.swift
@@ -362,6 +362,7 @@ Successfully created files:
     Login/LoginViewModel.swift
     Login/LoginUseCase.swift
     Login/LoginViewController.swift
+    Login/LoginDto.swift
     Login/Test/LoginUseCaseMock.swift
     Login/Test/LoginNavigatorMock.swift
     Login/Test/LoginViewModelTests.swift
@@ -410,29 +411,29 @@ final class ProductsNavigatorMock: ProductsNavigatorType {
 
     // MARK: - toProducts
 
-    var toProducts_Called = false
+    var toProductsCalled = false
 
     func toProducts() {
-        toProducts_Called = true
-    }
+        toProductsCalled = true
+    } 
 
     // MARK: - toProductDetail
 
-    var toProductDetail_Called = false
+    var toProductDetailCalled = false
 
     func toProductDetail(product: Product) {
-        toProductDetail_Called = true
-    }
+        toProductDetailCalled = true
+    } 
 
     // MARK: - toEditProduct
 
-    var toEditProduct_Called = false
-    var toEditProduct_ReturnValue: Driver<EditProductDelegate> = Driver.empty()
+    var toEditProductCalled = false
+    var toEditProductReturnValue = Driver<EditProductDelegate>.empty()
 
     func toEditProduct(_ product: Product) -> Driver<EditProductDelegate> {
-        toEditProduct_Called = true
-        return toEditProduct_ReturnValue
-    }
+        toEditProductCalled = true
+        return toEditProductReturnValue
+    } 
 }
 ```
 
@@ -452,14 +453,19 @@ $ igen test [-p]
 Copy the view model:
 
 ```swift
-struct AppViewModel: ViewModelType {
-
+struct LoginViewModel: ViewModel {
     struct Input {
-        let loadTrigger: Driver<Void>
+        let usernameTrigger: Driver<String>
+        let passwordTrigger: Driver<String>
+        let loginTrigger: Driver<Void>
     }
 
     struct Output {
-        let toMain: Driver<Void>
+        @Property var usernameValidationMessage = ""
+        @Property var passwordValidationMessage = ""
+        @Property var isLoginEnabled = true
+        @Property var isLoading = false
+        @Property var error: Error?
     }
 ```
 
@@ -478,36 +484,58 @@ The result has been copied to the pasteboard.
 Content in the pasteboard:
 
 ```swift
-final class AppViewModelTests: XCTestCase {
-    private var viewModel: AppViewModel!
-    private var navigator: AppNavigatorMock!
-    private var useCase: AppUseCaseMock!
-
-    private var input: AppViewModel.Input!
-    private var output: AppViewModel.Output!
-
+final class LoginViewModelTests: XCTestCase {
+    private var viewModel: LoginViewModel!
+    private var navigator: LoginNavigatorMock!
+    private var useCase: LoginUseCaseMock!
+    private var input: LoginViewModel.Input!
+    private var output: LoginViewModel.Output!
     private var disposeBag: DisposeBag!
 
-    private let loadTrigger = PublishSubject<Void>()
+    // Triggers
+    private let usernameTriggerTrigger = PublishSubject<String>()
+    private let passwordTriggerTrigger = PublishSubject<String>()
+    private let loginTriggerTrigger = PublishSubject<Void>()
 
     override func setUp() {
         super.setUp()
-        navigator = AppNavigatorMock()
-        useCase = AppUseCaseMock()
-        viewModel = AppViewModel(navigator: navigator, useCase: useCase)
-
-        input = AppViewModel.Input(
-            loadTrigger: loadTrigger.asDriverOnErrorJustComplete()
+        navigator = LoginNavigatorMock()
+        useCase = LoginUseCaseMock()
+        viewModel = LoginViewModel(navigator: navigator, useCase: useCase)
+        
+        input = LoginViewModel.Input(
+            usernameTrigger: usernameTrigger.asDriverOnErrorJustComplete(),
+            passwordTrigger: passwordTrigger.asDriverOnErrorJustComplete(),
+            loginTrigger: loginTrigger.asDriverOnErrorJustComplete()
         )
 
-        output = viewModel.transform(input)
-
         disposeBag = DisposeBag()
+        output = viewModel.transform(input, disposeBag: disposeBag)
+    }
+    
+    func test_usernameTriggerTrigger_() {
+        // arrange
 
-        output.toMain.drive().disposed(by: disposeBag)
+
+        // act
+
+
+        // assert
+        XCTAssert(true)
     }
 
-    func test_loadTrigger_() {
+    func test_passwordTriggerTrigger_() {
+        // arrange
+
+
+        // act
+
+
+        // assert
+        XCTAssert(true)
+    }
+
+    func test_loginTriggerTrigger_() {
         // arrange
 
 

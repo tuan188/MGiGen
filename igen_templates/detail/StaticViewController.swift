@@ -1,17 +1,21 @@
-import UIKit
+import MGArchitecture
 import Reusable
+import RxCocoa
+import RxSwift
+import UIKit
 
-final class {{ name }}ViewController: UITableViewController, BindableType {
+final class {{ name }}ViewController: UITableViewController, Bindable {
 
     // MARK: - IBOutlets
 
-{% for p in properties %}
+    {% for p in properties %}
     @IBOutlet weak var {{ p.name }}Label: UILabel!
-{% endfor %}
+    {% endfor %}
 
     // MARK: - Properties
 
     var viewModel: {{ name }}ViewModel!
+    var disposeBag = DisposeBag()
 
     // MARK: - Life Cycle
 
@@ -35,14 +39,15 @@ final class {{ name }}ViewController: UITableViewController, BindableType {
             loadTrigger: Driver.just(())
         )
 
-        let output = viewModel.transform(input)
+        let output = viewModel.transform(input, disposeBag: disposeBag)
 
-    {% for p in properties %}
-        output.{{ p.name }}
+        {% for p in properties %}
+        output.${{ p.name }}
+            .asDriver()
             .drive()
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
 
-    {% endfor %}
+        {% endfor %}
     }
 }
 

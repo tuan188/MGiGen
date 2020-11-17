@@ -1,8 +1,10 @@
-import UIKit
+import MGArchitecture
 import Reusable
-import RxDataSources
+import RxCocoa
+import RxSwift
+import UIKit
 
-final class {{ name }}ViewController: UIViewController, BindableType {
+final class {{ name }}ViewController: UIViewController, Bindable {
     
     // MARK: - IBOutlets
     
@@ -11,10 +13,10 @@ final class {{ name }}ViewController: UIViewController, BindableType {
     // MARK: - Properties
 
     var viewModel: {{ name }}ViewModel!
-    
-    private typealias {{ name }}{{ enum.name }}SectionModel = SectionModel<String, {{ name }}ViewModel.{{ enum.name }}>
-    private var dataSource: RxTableViewSectionedReloadDataSource<{{ name }}{{ enum.name }}SectionModel>?
-    
+    var disposeBag = DisposeBag()
+
+    private var {{ enum.name_variable }}Sections = [{{ name }}ViewModel.{{ enum.name }}Section]()
+
     // MARK: - Life Cycle
     
     override func viewDidLoad() {
@@ -42,38 +44,37 @@ final class {{ name }}ViewController: UIViewController, BindableType {
             select{{ enum.name }}Trigger: tableView.rx.itemSelected.asDriver()
         )
         
-        let output = viewModel.transform(input)
+        let output = viewModel.transform(input, disposeBag: disposeBag)
         
-        let dataSource = RxTableViewSectionedReloadDataSource<{{ name }}{{ enum.name }}SectionModel>(
-            configureCell: { (_, tableView, indexPath, {{ enum.name_variable }}) -> UITableViewCell in
-                return tableView.dequeueReusableCell(for: indexPath, cellType: {{ enum.name }}Cell.self)
-                    .then {
-                        $0.titleLabel.text = {{ enum.name_variable }}.description
-                    }
-            }, titleForHeaderInSection: { dataSource, section in
-                return dataSource.sectionModels[section].model
+        output.${{ enum.name_variable }}Sections
+            .asDriver()
+            .drive(onNext: { [unowned self] sections in
+                self.{{ enum.name_variable }}Sections = sections
+                self.tableView.reloadData()
             })
-        
-        self.dataSource = dataSource
-        
-        output.{{ enum.name_variable }}Sections
-            .map {
-                $0.map { section in
-                    {{ name }}{{ enum.name }}SectionModel(model: section.title, items: section.{{ enum.name_variable }}List)
-                }
-            }
-            .drive(tableView.rx.items(dataSource: dataSource))
-            .disposed(by: rx.disposeBag)
-        
-        output.selected{{ enum.name }}
-            .drive()
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
     }
 }
 
-// MARK: - StoryboardSceneBased
-extension {{ name }}ViewController: StoryboardSceneBased {
-    static var sceneStoryboard = UIStoryboard()
+// MARK: - UITableViewDataSource
+extension {{ name }}ViewController: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return {{ enum.name_variable }}Sections.count
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return {{ enum.name_variable }}Sections[section].{{ enum.name_variable }}List.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let {{ enum.name_variable }} = {{ enum.name_variable }}Sections[indexPath.section].{{ enum.name_variable }}List[indexPath.row]
+        
+        return tableView.dequeueReusableCell(for: indexPath, cellType: {{ enum.name }}Cell.self)
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return {{ enum.name_variable }}Sections[section].title
+    }
 }
 
 // MARK: - UITableViewDelegate
@@ -81,4 +82,9 @@ extension {{ name }}ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
     }
+}
+
+// MARK: - StoryboardSceneBased
+extension {{ name }}ViewController: StoryboardSceneBased {
+    static var sceneStoryboard = UIStoryboard()  // TODO: - Replace with a specific storyboard
 }

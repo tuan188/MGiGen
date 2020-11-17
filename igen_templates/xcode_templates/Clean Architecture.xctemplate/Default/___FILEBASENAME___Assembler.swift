@@ -1,5 +1,8 @@
 //___FILEHEADER___
 
+import UIKit
+import Reusable
+
 protocol ___VARIABLE_productName___Assembler {
     func resolve(navigationController: UINavigationController) -> ___VARIABLE_productName___ViewController
     func resolve(navigationController: UINavigationController) -> ___VARIABLE_productName___ViewModel

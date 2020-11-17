@@ -5,11 +5,12 @@
         {% endfor %}
         )
 
-        let output = viewModel.transform(input)
+        let output = viewModel.transform(input, disposeBag: disposeBag)
 
     {% for p in output_properties %}
-        output.{{ p.name }}
-              .drive()
-              .disposed(by: rx.disposeBag){{ '\n' if not loop.last }}
+        output.${{ p.name }}
+            .asDriver()
+            .drive()
+            .disposed(by: disposeBag){{ '\n' if not loop.last }}
     {% endfor %}
     }

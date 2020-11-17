@@ -33,6 +33,8 @@ class ViewModel(object):
     def properties(self):
         try:
             str = self.vm_text
+
+            # Input
             input_block_regex = re.compile("struct Input {([^}]+)")
             input_block = input_block_regex.search(str).group(1)
             input_properties_regex = re.compile(r'let (\w+): Driver<([^>]+)>')
@@ -40,13 +42,16 @@ class ViewModel(object):
                 ViewModel.Property(p[0], p[1])
                 for p in input_properties_regex.findall(input_block)
             ]
+
+            # Output
             output_block_regex = re.compile("struct Output {([^}]+)")
             output_block = output_block_regex.search(str).group(1)
-            output_properties_regex = re.compile(r'let (\w+): Driver<([^>]+)>')
+            output_properties_regex = re.compile(r'(?:let|var) (\w+)(?: =|:)(?:.*)')
             output_properties = [
-                ViewModel.Property(p[0], p[1])
+                ViewModel.Property(p, 'Any')
                 for p in output_properties_regex.findall(output_block)
             ]
+
             return (input_properties, output_properties)
         except Exception:
             print("The ViewModel in the pasteboard is invalid.")

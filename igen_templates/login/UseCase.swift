@@ -1,19 +1,23 @@
+import Dto
+import RxSwift
+import ValidatedPropertyKit
+
 protocol {{ name }}UseCaseType {
-    func validate(username: String) -> ValidationResult
-    func validate(password: String) -> ValidationResult
-    func login(username: String, password: String) -> Observable<Void>
+    func validateUserName(_ username: String) -> ValidationResult
+    func validatePassword(_ password: String) -> ValidationResult
+    func login(dto: LoginDto) -> Observable<Void>
 }
 
 struct {{ name }}UseCase: {{ name }}UseCaseType {
-    func validate(username: String) -> ValidationResult {
-        return ValidationResult.valid
+    func validateUserName(_ username: String) -> ValidationResult {
+        return .success(())
     }
     
-    func validate(password: String) -> ValidationResult {
-        return ValidationResult.valid
+    func validatePassword(_ password: String) -> ValidationResult {
+        return .success(())
     }
     
-    func login(username: String, password: String) -> Observable<Void> {
-        return Observable.just(())
+    func login(dto: LoginDto) -> Observable<Void> {
+        return Observable.empty()
     }
 }

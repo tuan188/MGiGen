@@ -1,3 +1,4 @@
+import Reusable
 import UIKit
 
 protocol {{ name }}Assembler {

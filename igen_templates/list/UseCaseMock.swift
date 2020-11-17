@@ -1,4 +1,5 @@
 @testable import {{ project }}
+import MGArchitecture
 import RxSwift
 
 final class {{ name }}UseCaseMock: {{ name }}UseCaseType {
@@ -10,7 +11,7 @@ final class {{ name }}UseCaseMock: {{ name }}UseCaseType {
     {% if paging %}
     var get{{ model_name }}ListReturnValue: Observable<PagingInfo<{{ model_name }}>> = {
         let items = [
-            {{ model_name }}().with { $0.id = 1 }
+            {{ model_name }}()
         ]
 
         let page = PagingInfo<{{ model_name }}>(page: 1, items: items)
@@ -24,7 +25,7 @@ final class {{ name }}UseCaseMock: {{ name }}UseCaseType {
     {% else %}
     var get{{ model_name }}ListReturnValue: Observable<[{{ model_name }}]> = {
         let items = [
-            {{ model_name }}().with { $0.id = 1 }
+            {{ model_name }}()
         ]
         
         return Observable.just(items)

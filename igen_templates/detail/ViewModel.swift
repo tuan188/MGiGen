@@ -1,38 +1,44 @@
+import MGArchitecture
+import RxCocoa
+import RxSwift
+
 struct {{ name }}ViewModel {
     let navigator: {{ name }}NavigatorType
     let useCase: {{ name }}UseCaseType
     let {{ model_variable }}: {{ model_name }}
 }
 
-// MARK: - ViewModelType
-extension {{ name }}ViewModel: ViewModelType {
+// MARK: - ViewModel
+extension {{ name }}ViewModel: ViewModel {
     struct Input {
         let loadTrigger: Driver<Void>
     }
 
     struct Output {
-        let cells: Driver<[CellType]>
+        @Property var cells = [CellType]()
     }
 
     enum CellType {
-    {% for p in properties %}
+        {% for p in properties %}
         case {{ p.name }}({{ p.type.name }})
-    {% endfor %}
+        {% endfor %}
     }
 
-    func transform(_ input: Input) -> Output {
-        let {{ model_variable }} = input.loadTrigger
-            .map { self.{{ model_variable }} }
+    func transform(_ input: Input, disposeBag: DisposeBag) -> Output {
+        let output = Output()
 
-        let cells = {{ model_variable }}
+        input.loadTrigger
+            .map { self.{{ model_variable }} }
             .map { {{ model_variable }} -> [CellType] in
-                var cells = [CellType]()
-            {% for p in properties %}
-                cells.append(CellType.{{ p.name }}({{ model_variable }}.{{ p.name }}))
-            {% endfor %}
-                return cells
+                return [
+                    {% for p in properties %}
+                    CellType.{{ p.name }}({{ model_variable }}.{{ p.name }}){{ ',' if not loop.last }}
+                    {% endfor %}
+                ]
             }
+            .drive(output.$cells)
+            .disposed(by: disposeBag)
             
-        return Output(cells: cells)
+        return output
     }
 }

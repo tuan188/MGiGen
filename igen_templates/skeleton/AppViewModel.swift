@@ -1,10 +1,14 @@
+import MGArchitecture
+import RxCocoa
+import RxSwift
+
 struct AppViewModel {
     let navigator: AppNavigatorType
     let useCase: AppUseCaseType
 }
 
-// MARK: - ViewModelType
-extension AppViewModel: ViewModelType {
+// MARK: - ViewModel
+extension AppViewModel: ViewModel {
     struct Input {
         let loadTrigger: Driver<Void>
     }
@@ -13,7 +17,7 @@ extension AppViewModel: ViewModelType {
 
     }
     
-    func transform(_ input: Input) -> Output {
+    func transform(_ input: Input, disposeBag: DisposeBag) -> Output {
         return Output()
     }
 }

@@ -1,4 +1,5 @@
 @testable import {{ project }}
+import Dto
 import RxSwift
 
 final class {{ name }}UseCaseMock: {{ name }}UseCaseType {
@@ -7,7 +8,7 @@ final class {{ name }}UseCaseMock: {{ name }}UseCaseType {
     // MARK: - validate {{ p.name }}
 
     var validate{{ p.name_title }}Called = false
-    var validate{{ p.name_title }}ReturnValue = ValidationResult.valid
+    var validate{{ p.name_title }}ReturnValue = ValidationResult.success(())
     
     func validate({{ p.name }}: {{ p.type.name }}) -> ValidationResult {
         validate{{ p.name_title }}Called = true
@@ -18,7 +19,6 @@ final class {{ name }}UseCaseMock: {{ name }}UseCaseType {
     // MARK: - {{ submit }}
     
     var {{ submit }}Called = false
-
     var {{ submit }}ReturnValue = Observable.just(())
     
     func {{ submit }}(_ {{ model_variable }}: {{ model_name }}) -> Observable<Void> {

@@ -253,14 +253,22 @@ class Template(object):
             self._create_navigator()
             self._create_use_case()
             self._create_view_controller()
-            self._create_table_view_cell()
+            self._create_cells()
             self._create_assembler()
+
+            if self.is_sectioned_list:
+                self._create_header_view()
+
             # Test
             self._create_view_model_tests()
             self._create_use_case_mock()
             self._create_navigator_mock()
             self._create_view_controller_tests()
-            self._create_table_view_cell_tests()
+            self._create_cells_tests()
+
+            if self.is_sectioned_list:
+                self._create_header_view_tests()
+
             return output_path
 
         def _content_from_template(self, template):
@@ -278,13 +286,13 @@ class Template(object):
             self._create_file_from_template(
                 class_name=self.name + 'ViewModel',
                 template_file='SectionedViewModel.swift'
-                              if self.is_sectioned_list
-                              else 'ViewModel.swift'
+                if self.is_sectioned_list
+                else 'ViewModel.swift'
             )
 
         def _create_item_view_model(self):
             self._create_file_from_template(
-                class_name=self.model_name + 'ViewModel',
+                class_name=self.model_name + 'ItemViewModel',
                 template_file="ItemViewModel.swift"
             )
 
@@ -305,7 +313,20 @@ class Template(object):
                 template_file=template_file
             )
 
-        def _create_table_view_cell(self):
+        def _create_header_view(self):
+            class_name = self.model_name + 'HeaderView'
+
+            if self.is_collection:
+                template_file = 'CollectionHeaderView.swift'
+            else:
+                template_file = 'TableHeaderView.swift'
+
+            self._create_file_from_template(
+                class_name=class_name,
+                template_file=template_file
+            )
+
+        def _create_cells(self):
             self._create_file_from_template(
                 class_name=self.model_name + 'Cell',
                 template_file='CollectionViewCell.swift'
@@ -333,10 +354,17 @@ class Template(object):
                 folder='Test'
             )
 
-        def _create_table_view_cell_tests(self):
+        def _create_cells_tests(self):
             self._create_file_from_template(
                 class_name='{}CellTests'.format(self.model_name),
-                template_file='TableViewCellTests.swift',
+                template_file='CellTests.swift',
+                folder='Test'
+            )
+
+        def _create_header_view_tests(self):
+            self._create_file_from_template(
+                class_name='{}HeaderViewTests'.format(self.model_name),
+                template_file='HeaderViewTests.swift',
                 folder='Test'
             )
 
@@ -906,12 +934,19 @@ class Template(object):
             self._create_view_model()
             self._create_use_case()
             self._create_view_controller()
+            self._create_login_dto()
             # Test
             self._create_use_case_mock()
             self._create_navigator_mock()
             self._create_view_model_tests()
             self._create_view_controller_tests()
             return output_path
+
+        def _create_login_dto(self):
+            self._create_file_from_template(
+                class_name='LoginDto',
+                template_file='LoginDto.swift'
+            )
 
     # =============== SettingTemplate ===============
 

@@ -1,7 +1,11 @@
-import UIKit
+import Dto
+import MGArchitecture
 import Reusable
+import RxCocoa
+import RxSwift
+import UIKit
 
-final class {{ name }}ViewController: UITableViewController, BindableType {
+final class {{ name }}ViewController: UITableViewController, Bindable {
 
     // MARK: - IBOutlets
 
@@ -9,13 +13,14 @@ final class {{ name }}ViewController: UITableViewController, BindableType {
     @IBOutlet weak var {{ submit }}Button: UIBarButtonItem!
     {% for p in properties %}
     {% if p.type.name == 'String' %}
-    @IBOutlet weak var nameTextField: UITextField!
+    @IBOutlet weak var {{ p.name }}TextField: UITextField!
     {% endif %}
     {% endfor %}
 
     // MARK: - Properties
 
     var viewModel: {{ name }}ViewModel!
+    var disposeBag = DisposeBag()
 
     {% for p in properties %}
     {% if p.type.name != 'String' %}
@@ -58,39 +63,36 @@ final class {{ name }}ViewController: UITableViewController, BindableType {
                 .asDriverOnErrorJustComplete()
         )
 
-        let output = viewModel.transform(input)
+        let output = viewModel.transform(input, disposeBag: disposeBag)
 
         {% for p in properties %}
-        output.{{ p.name }}
+        output.${{ p.name }}
+            .asDriver()
             .drive({{ (p.name + 'TextField.rx.text') if p.type.name == 'String'}})
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
 
         {% endfor %}
         {% for p in properties %}
-        output.{{ p.name }}Validation
+        output.${{ p.name }}Validation
+            .asDriver()
             .drive({{ p.name }}ValidatorBinder)
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
 
         {% endfor %}
-        output.is{{ submit_title }}Enabled
+        output.$is{{ submit_title }}Enabled
+            .asDriver()
             .drive({{ submit }}Button.rx.isEnabled)
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
 
-        output.{{ submit }}
+        output.$error
+            .asDriver()
             .drive()
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
 
-        output.cancel
+        output.$isLoading
+            .asDriver()
             .drive()
-            .disposed(by: rx.disposeBag)
-
-        output.error
-            .drive(rx.error)
-            .disposed(by: rx.disposeBag)
-
-        output.isLoading
-            .drive(rx.isLoading)
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
     }
 
 }
@@ -108,5 +110,5 @@ extension {{ name }}ViewController {
 
 // MARK: - StoryboardSceneBased
 extension {{ name }}ViewController: StoryboardSceneBased {
-    static var sceneStoryboard = UIStoryboard()
+    static var sceneStoryboard = UIStoryboard()  // TODO: - Replace with a specific storyboard
 }

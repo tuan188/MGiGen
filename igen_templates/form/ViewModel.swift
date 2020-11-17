@@ -1,11 +1,16 @@
+import Dto
+import MGArchitecture
+import RxCocoa
+import RxSwift
+
 struct {{ name }}ViewModel {
     let navigator: {{ name }}NavigatorType
     let useCase: {{ name }}UseCaseType
     let {{ model_variable }}: {{ model_name }}
 }
 
-// MARK: - ViewModelType
-extension {{ name }}ViewModel: ViewModelType {
+// MARK: - ViewModel
+extension {{ name }}ViewModel: ViewModel {
     struct Input {
         let loadTrigger: Driver<Void>
         {% for p in properties %}
@@ -17,32 +22,47 @@ extension {{ name }}ViewModel: ViewModelType {
 
     struct Output {
         {% for p in properties %}
-        let {{ p.name }}: Driver<{{ p.type.name }}>
+        @Property var {{ p.name }} = {{ p.type.default_value }}
         {% endfor %}
         {% for p in properties %}
-        let {{ p.name }}Validation: Driver<ValidationResult>
+        @Property var {{ p.name }}Validation = ValidationResult.success(())
         {% endfor %}
-        let is{{ submit_title }}Enabled: Driver<Bool>
-        let {{ submit }}: Driver<Void>
-        let cancel: Driver<Void>
-        let error: Driver<Error>
-        let isLoading: Driver<Bool>
+        @Property var is{{ submit_title }}Enabled = true
+        @Property var error: Error?
+        @Property var isLoading = false
     }
 
-    func transform(_ input: Input) -> Output {
-        let errorTracker = ErrorTracker()
-        let error = errorTracker.asDriver()
+    func transform(_ input: Input, disposeBag: DisposeBag) -> Output {
+        let output = Output()
 
+        // Error
+        
+        let errorTracker = ErrorTracker()
+        
+        errorTracker
+            .asDriver()
+            .drive(output.$error)
+            .disposed(by: disposeBag)
+
+        // Loading
+        
         let activityIndicator = ActivityIndicator()
-        let isLoading = activityIndicator.asDriver()
+        
+        activityIndicator.asDriver()
+            .drive(output.$isLoading)
+            .disposed(by: disposeBag)
 
         // Properties
+
         {% for p in properties %}
-        let {{ p.name }} = input.loadTrigger
-            .map { self.{{ model_variable }}.{{ p.name }} }{{ '\n' if not loop.last }}
+        input.loadTrigger
+            .map { self.{{ model_variable }}.{{ p.name }} }
+            .drive(output.${{ p.name }})
+            .disposed(by: disposeBag){{ '\n' if not loop.last }}
         {% endfor %}
 
         // Validations
+        
         {% for p in properties %}
         let {{ p.name }}Validation = Driver.combineLatest(
                 input.{{ p.name }}Trigger,
@@ -51,8 +71,14 @@ extension {{ name }}ViewModel: ViewModelType {
             .map { $0.0 }
             .map { {{ p.name }} -> ValidationResult in
                 self.useCase.validate({{ p.name }}: {{ p.name }})
-            }{{ '\n' if not loop.last }}
+            }
+
+        {{ p.name }}Validation
+            .drive(output.${{ p.name }}Validation)
+            .disposed(by: disposeBag){{ '\n' if not loop.last }}
         {% endfor %}
+
+        // Actions
 
         let is{{ submit_title }}Enabled = Driver.and(
             {% for p in properties %}
@@ -61,7 +87,11 @@ extension {{ name }}ViewModel: ViewModelType {
         )
         .startWith(true)
 
-        let {{ submit }} = input.{{ submit }}Trigger
+        is{{ submit_title }}Enabled
+            .drive(output.$is{{ submit_title }}Enabled)
+            .disposed(by: disposeBag)
+
+        input.{{ submit }}Trigger
             .withLatestFrom(is{{ submit_title }}Enabled)
             .filter { $0 }
             .withLatestFrom(Driver.combineLatest(
@@ -82,27 +112,15 @@ extension {{ name }}ViewModel: ViewModelType {
                     .asDriverOnErrorJustComplete()
                     .map { _ in {{ model_variable }} }
             }
-            .do(onNext: { {{ model_variable }} in
-                // notify then dismiss
+            .drive(onNext: { {{ model_variable }} in
                 self.navigator.dismiss()
             })
-            .mapToVoid()
+            .disposed(by: disposeBag)
 
-        let cancel = input.cancelTrigger
-            .do(onNext: navigator.dismiss)
+        input.cancelTrigger
+            .drive(onNext: navigator.dismiss)
+            .disposed(by: disposeBag)
 
-        return Output(
-            {% for p in properties %}
-            {{ p.name }}: {{ p.name }},
-            {% endfor %}
-            {% for p in properties %}
-            {{ p.name }}Validation: {{ p.name }}Validation,
-            {% endfor %}
-            is{{ submit_title }}Enabled: is{{ submit_title }}Enabled,
-            {{ submit }}: {{ submit }},
-            cancel: cancel,
-            error: error,
-            isLoading: isLoading
-        )
+        return output
     }
 }

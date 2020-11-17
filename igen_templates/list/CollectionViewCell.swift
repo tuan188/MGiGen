@@ -1,3 +1,4 @@
+import Reusable
 import UIKit
 
 final class {{ model_name }}Cell: UICollectionViewCell, NibReusable {
@@ -9,15 +10,9 @@ final class {{ model_name }}Cell: UICollectionViewCell, NibReusable {
         super.awakeFromNib()
     }
 
-    func bindViewModel(_ viewModel: {{ model_name }}ViewModel?) {
-        if let viewModel = viewModel {
+    func bindViewModel(_ viewModel: {{ model_name }}ItemViewModel) {
         {% for p in properties %}
-            {{ p.name }}Label.text = ""
+        {{ p.name }}Label.text = ""
         {% endfor %}
-        } else {
-        {% for p in properties %}
-            {{ p.name }}Label.text = ""
-        {% endfor %}
-        }
     }
 }

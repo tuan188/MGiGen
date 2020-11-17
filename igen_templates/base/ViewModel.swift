@@ -1,10 +1,14 @@
+import MGArchitecture
+import RxSwift
+import RxCocoa
+
 struct {{ name }}ViewModel {
     let navigator: {{ name }}NavigatorType
     let useCase: {{ name }}UseCaseType
 }
 
-// MARK: - ViewModelType
-extension {{ name }}ViewModel: ViewModelType {
+// MARK: - ViewModel
+extension {{ name }}ViewModel: ViewModel {
     struct Input {
 
     }
@@ -13,7 +17,9 @@ extension {{ name }}ViewModel: ViewModelType {
 
     }
 
-    func transform(_ input: Input) -> Output {
-        return Output()
+    func transform(_ input: Input, disposeBag: DisposeBag) -> Output {
+        let output = Output()
+
+        return output
     }
 }

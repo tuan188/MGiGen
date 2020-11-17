@@ -1,18 +1,16 @@
 @testable import {{ project }}
-import XCTest
 import RxSwift
-import RxBlocking
+import XCTest
 
 final class {{ name }}ViewModelTests: XCTestCase {
     private var viewModel: {{ name }}ViewModel!
     private var navigator: {{ name }}NavigatorMock!
     private var useCase: {{ name }}UseCaseMock!
-
     private var input: {{ name }}ViewModel.Input!
     private var output: {{ name }}ViewModel.Output!
-
     private var disposeBag: DisposeBag!
 
+    // Triggers
     private let loadTrigger = PublishSubject<Void>()
 
     override func setUp() {
@@ -24,20 +22,16 @@ final class {{ name }}ViewModelTests: XCTestCase {
         input = {{ name }}ViewModel.Input(
             loadTrigger: loadTrigger.asDriverOnErrorJustComplete()
         )
-
-        output = viewModel.transform(input)
-
+        
         disposeBag = DisposeBag()
-
-        output.cells.drive().disposed(by: disposeBag)
+        output = viewModel.transform(input, disposeBag: disposeBag)
     }
 
-    func test_loadTriggerInvoked_createCells() {
+    func test_loadTrigger_createCells() {
         // act
         loadTrigger.onNext(())
-        let cells = try? output.cells.toBlocking(timeout: 1).first()
 
         // assert
-        XCTAssertNotEqual(cells?.count, 0)
+        XCTAssertNotEqual(output.cells.count, 0)
     }
 }

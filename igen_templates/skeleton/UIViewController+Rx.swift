@@ -1,5 +1,7 @@
-import UIKit
 import MBProgressHUD
+import RxCocoa
+import RxSwift
+import UIKit
 
 extension Reactive where Base: UIViewController {
     var error: Binder<Error> {

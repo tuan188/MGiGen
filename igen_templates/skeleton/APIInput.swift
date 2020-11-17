@@ -1,13 +1,14 @@
 import Alamofire
+import MGAPIService
 
 class APIInput: APIInputBase {
     override init(urlString: String,
                   parameters: [String: Any]?,
-                  requestType: HTTPMethod,
+                  method: HTTPMethod,
                   requireAccessToken: Bool) {
         super.init(urlString: urlString,
                    parameters: parameters,
-                   requestType: requestType,
+                   method: method,
                    requireAccessToken: requireAccessToken)
         self.headers = [
             "Content-Type": "application/json; charset=utf-8",

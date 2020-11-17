@@ -9,15 +9,15 @@ final class {{ name }}CellsTests: XCTestCase {
     override func setUp() {
         super.setUp()
         {% for p in properties %}
-        {{ p.name }}Cell = {{ model_name }}{{ p.name_title }}Cell.loadFromNib()
+//        {{ p.name }}Cell = {{ model_name }}{{ p.name_title }}Cell.loadFromNib()
         {% endfor %}
     }
 
     func test_ibOutlets() {
         {% for p in properties %}
         // {{ p.name_title }} cell
-        XCTAssertNotNil({{ p.name }}Cell)
-        XCTAssertNotNil({{ p.name }}Cell.{{ p.name }}Label){{ '\n' if not loop.last }}
+//        XCTAssertNotNil({{ p.name }}Cell)
+//        XCTAssertNotNil({{ p.name }}Cell.{{ p.name }}Label){{ '\n' if not loop.last }}
         {% endfor %}
     }
 }

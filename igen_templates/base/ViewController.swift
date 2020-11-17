@@ -1,13 +1,18 @@
-import UIKit
+import MGArchitecture
 import Reusable
+import RxCocoa
+import RxSwift
+import Then
+import UIKit
 
-final class {{ name }}ViewController: UIViewController, BindableType {
+final class {{ name }}ViewController: UIViewController, Bindable {
     
     // MARK: - IBOutlets
     
     // MARK: - Properties
     
     var viewModel: {{ name }}ViewModel!
+    var disposeBag = DisposeBag()
 
     // MARK: - Life Cycle
     
@@ -28,7 +33,7 @@ final class {{ name }}ViewController: UIViewController, BindableType {
 
     func bindViewModel() {
         let input = {{ name }}ViewModel.Input()
-        let output = viewModel.transform(input)
+        let output = viewModel.transform(input, disposeBag: disposeBag)
     }
 }
 
