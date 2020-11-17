@@ -110,25 +110,28 @@ Output:
 ```
 Successfully created files:
     DemoApp/Podfile
+    DemoApp/gitignore
     DemoApp/Localizable.strings
+    DemoApp/pull_request_template.md
     DemoApp/swiftlint.yml
-    DemoApp/UnitTestViewController.swift
-    DemoApp/AppDelegate.swift
-    DemoApp/Medical-Bridging-Header.h
-    DemoApp/Assembler/Assembler.swift
-    DemoApp/Support/Utils.swift
-    DemoApp/Extensions/UIViewController+.swift
-    DemoApp/Extensions/UIViewController+Rx.swift
-    DemoApp/Platform/Services/API/APIError.swift
-    DemoApp/Platform/Services/API/APIService.swift
-    DemoApp/Platform/Services/API/APIInput.swift
-    DemoApp/Platform/Services/API/APIOutput.swift
-    DemoApp/Platform/Services/API/APIUrls.swift
-    DemoApp/Scenes/App/AppAssembler.swift
-    DemoApp/Scenes/App/AppNavigator.swift
-    DemoApp/Scenes/App/AppUseCase.swift
-    DemoApp/Scenes/App/AppViewModel.swift
-    DemoApp/Scenes/Storyboards/Storyboards.swift
+    DemoApp/NewApp-Bridging-Header.h
+    DemoApp/Sources/UnitTestViewController.swift
+    DemoApp/Sources/AppDelegate.swift
+    DemoApp/Sources/Assembler.swift
+    DemoApp/Sources/Support/Utils.swift
+    DemoApp/Sources/Support/Extensions/UIViewController+.swift
+    DemoApp/Sources/Support/Extensions/UIViewController+Rx.swift
+    DemoApp/Sources/Data/Gateways/GatewaysAssembler.swift
+    DemoApp/Sources/Data/API/APIError.swift
+    DemoApp/Sources/Data/API/APIService.swift
+    DemoApp/Sources/Data/API/APIInput.swift
+    DemoApp/Sources/Data/API/APIOutput.swift
+    DemoApp/Sources/Config/APIUrls.swift
+    DemoApp/Sources/Scenes/App/AppAssembler.swift
+    DemoApp/Sources/Scenes/App/AppNavigator.swift
+    DemoApp/Sources/Scenes/App/AppUseCase.swift
+    DemoApp/Sources/Scenes/App/AppViewModel.swift
+    DemoApp/Sources/Scenes/Storyboards/Storyboards.swift
 ```
 
 ### 1.3. List Template:
@@ -172,7 +175,7 @@ Output:
 ```
 Successfully created files:
     ProductList/ProductListViewModel.swift
-    ProductList/ProductViewModel.swift
+    ProductList/ProductItemViewModel.swift
     ProductList/ProductListNavigator.swift
     ProductList/ProductListUseCase.swift
     ProductList/ProductListViewController.swift
@@ -359,6 +362,7 @@ Successfully created files:
     Login/LoginViewModel.swift
     Login/LoginUseCase.swift
     Login/LoginViewController.swift
+    Login/LoginDto.swift
     Login/Test/LoginUseCaseMock.swift
     Login/Test/LoginNavigatorMock.swift
     Login/Test/LoginViewModelTests.swift
@@ -407,29 +411,29 @@ final class ProductsNavigatorMock: ProductsNavigatorType {
 
     // MARK: - toProducts
 
-    var toProducts_Called = false
+    var toProductsCalled = false
 
     func toProducts() {
-        toProducts_Called = true
-    }
+        toProductsCalled = true
+    } 
 
     // MARK: - toProductDetail
 
-    var toProductDetail_Called = false
+    var toProductDetailCalled = false
 
     func toProductDetail(product: Product) {
-        toProductDetail_Called = true
-    }
+        toProductDetailCalled = true
+    } 
 
     // MARK: - toEditProduct
 
-    var toEditProduct_Called = false
-    var toEditProduct_ReturnValue: Driver<EditProductDelegate> = Driver.empty()
+    var toEditProductCalled = false
+    var toEditProductReturnValue = Driver<EditProductDelegate>.empty()
 
     func toEditProduct(_ product: Product) -> Driver<EditProductDelegate> {
-        toEditProduct_Called = true
-        return toEditProduct_ReturnValue
-    }
+        toEditProductCalled = true
+        return toEditProductReturnValue
+    } 
 }
 ```
 
@@ -449,14 +453,19 @@ $ igen test [-p]
 Copy the view model:
 
 ```swift
-struct AppViewModel: ViewModelType {
-
+struct LoginViewModel: ViewModel {
     struct Input {
-        let loadTrigger: Driver<Void>
+        let usernameTrigger: Driver<String>
+        let passwordTrigger: Driver<String>
+        let loginTrigger: Driver<Void>
     }
 
     struct Output {
-        let toMain: Driver<Void>
+        @Property var usernameValidationMessage = ""
+        @Property var passwordValidationMessage = ""
+        @Property var isLoginEnabled = true
+        @Property var isLoading = false
+        @Property var error: Error?
     }
 ```
 
@@ -475,36 +484,58 @@ The result has been copied to the pasteboard.
 Content in the pasteboard:
 
 ```swift
-final class AppViewModelTests: XCTestCase {
-    private var viewModel: AppViewModel!
-    private var navigator: AppNavigatorMock!
-    private var useCase: AppUseCaseMock!
-
-    private var input: AppViewModel.Input!
-    private var output: AppViewModel.Output!
-
+final class LoginViewModelTests: XCTestCase {
+    private var viewModel: LoginViewModel!
+    private var navigator: LoginNavigatorMock!
+    private var useCase: LoginUseCaseMock!
+    private var input: LoginViewModel.Input!
+    private var output: LoginViewModel.Output!
     private var disposeBag: DisposeBag!
 
-    private let loadTrigger = PublishSubject<Void>()
+    // Triggers
+    private let usernameTriggerTrigger = PublishSubject<String>()
+    private let passwordTriggerTrigger = PublishSubject<String>()
+    private let loginTriggerTrigger = PublishSubject<Void>()
 
     override func setUp() {
         super.setUp()
-        navigator = AppNavigatorMock()
-        useCase = AppUseCaseMock()
-        viewModel = AppViewModel(navigator: navigator, useCase: useCase)
-
-        input = AppViewModel.Input(
-            loadTrigger: loadTrigger.asDriverOnErrorJustComplete()
+        navigator = LoginNavigatorMock()
+        useCase = LoginUseCaseMock()
+        viewModel = LoginViewModel(navigator: navigator, useCase: useCase)
+        
+        input = LoginViewModel.Input(
+            usernameTrigger: usernameTrigger.asDriverOnErrorJustComplete(),
+            passwordTrigger: passwordTrigger.asDriverOnErrorJustComplete(),
+            loginTrigger: loginTrigger.asDriverOnErrorJustComplete()
         )
 
-        output = viewModel.transform(input)
-
         disposeBag = DisposeBag()
+        output = viewModel.transform(input, disposeBag: disposeBag)
+    }
+    
+    func test_usernameTriggerTrigger_() {
+        // arrange
 
-        output.toMain.drive().disposed(by: disposeBag)
+
+        // act
+
+
+        // assert
+        XCTAssert(true)
     }
 
-    func test_loadTrigger_() {
+    func test_passwordTriggerTrigger_() {
+        // arrange
+
+
+        // act
+
+
+        // assert
+        XCTAssert(true)
+    }
+
+    func test_loginTriggerTrigger_() {
         // arrange
 
 
