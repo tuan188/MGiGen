@@ -114,7 +114,7 @@ Successfully created files:
     DemoApp/Localizable.strings
     DemoApp/pull_request_template.md
     DemoApp/swiftlint.yml
-    DemoApp/MyApp-Bridging-Header.h
+    DemoApp/DemoApp-Bridging-Header.h
     DemoApp/Sources/UnitTestViewController.swift
     DemoApp/Sources/AppDelegate.swift
     DemoApp/Sources/Assembler.swift
