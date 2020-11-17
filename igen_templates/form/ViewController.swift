@@ -13,7 +13,7 @@ final class {{ name }}ViewController: UITableViewController, Bindable {
     @IBOutlet weak var {{ submit }}Button: UIBarButtonItem!
     {% for p in properties %}
     {% if p.type.name == 'String' %}
-    @IBOutlet weak var nameTextField: UITextField!
+    @IBOutlet weak var {{ p.name }}TextField: UITextField!
     {% endif %}
     {% endfor %}
 
